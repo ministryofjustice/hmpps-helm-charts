@@ -9,7 +9,7 @@ env:
     valueFrom:
       secretKeyRef:
         key: {{ $key }}
-        name: {{ template "app.name" $ }}
+        name: {{ include "generic-service.name" . }}
 {{- end }}
 {{- range $key, $val := .Values.env }}
   - name: {{ $key }}
