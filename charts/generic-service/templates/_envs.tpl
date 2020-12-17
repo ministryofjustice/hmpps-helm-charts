@@ -3,13 +3,14 @@
 Environment variables for web and worker containers
 */}}
 {{- define "deployment.envs" -}}
+{{- $appName := include "generic-service.name" . -}}
 env:
 {{- range $key, $val := .Values.secrets }}
   - name: {{ $key }}
     valueFrom:
       secretKeyRef:
         key: {{ $key }}
-        name: {{ include "generic-service.name" . }}
+        name: {{ $appName }}
 {{- end }}
 {{- range $key, $val := .Values.env }}
   - name: {{ $key }}
