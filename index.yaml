@@ -3,6 +3,16 @@ entries:
   generic-service:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2020-12-17T12:34:04.184698592Z"
+    description: A Helm chart for Kubernetes
+    digest: dbac7c2d1f86163aee17852fac681396cf1bd58104a4413124f0d233dce21f6c
+    name: generic-service
+    type: application
+    urls:
+    - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-service-1.0.3/generic-service-1.0.3.tgz
+    version: 1.0.3
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2020-12-17T12:18:30.665396314Z"
     description: A Helm chart for Kubernetes
     digest: 3eb1bc1707727844daeb59c0088b82672916d6b924a71d4ba430ad385eee640e
