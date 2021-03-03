@@ -1,0 +1,16 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: quay.io/hmpps/hmpps-clamav
+  tag: latest
+  pullPolicy: IfNotPresent
+  port: 3310
+
+refresh_clamav_db_cron: "0 12 * * *"
+
+# This is the group ID of the container USER, this sets the correct permissions
+# for the emptyDir{} volume used to stored the antivirus db.
+runasgroupid: 1000

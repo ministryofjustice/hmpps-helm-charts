@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "app.fullname" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 2
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      {{- include "app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "app.selectorLabels" . | nindent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - {{ template "app.name" . }}
+              topologyKey: kubernetes.io/hostname
+      securityContext:
+        fsGroup: {{ .Values.runasgroupid }}
+      containers:
+        - name: clamd
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ['clamd']
+          ports:
+            - containerPort: {{ .Values.image.port }}
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.image.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.image.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          volumeMounts:
+            - mountPath: /var/lib/clamav
+              name: avdata
+      initContainers:
+      - name: initfreshclam
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
+        command: ['freshclam']
+        args: ['--no-dns']
+        volumeMounts:
+        - mountPath: /var/lib/clamav
+          name: avdata
+      - name: init2freshclam
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        command: ['freshclam']
+        volumeMounts:
+        - mountPath: /var/lib/clamav
+          name: avdata
+      volumes:
+      - name: avdata
+        emptyDir: {}
