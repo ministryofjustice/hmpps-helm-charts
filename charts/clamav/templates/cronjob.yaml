@@ -1,0 +1,23 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: refresh-clamav-db 
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.refresh_clamav_db_cron | quote }}
+  concurrencyPolicy: "Forbid"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 200
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: refresh-clamav-db
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            command: ["kubectl"]
+            args: ["rollout", "restart", "deployment/clamav"]
+          restartPolicy: OnFailure
+          serviceAccountName: refreshclamav
