@@ -22,8 +22,11 @@ jobs:
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.0.1
-        with:
-          config: .github/config/cf.yaml
+
+      - name: Set CT config environment variable
+        id: ct_config
+        run: |
+            echo "CT_CONFIG=.github/config/ct.yaml" >> $GITHUB_ENV
 
       - name: Run chart-testing (list-changed)
         id: list-changed
