@@ -30,13 +30,9 @@ jobs:
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
-        env:
-          CT_TARGET_BRANCH: main
 
       - name: Run chart-testing (lint)
         run: ct lint
-        env:
-          CT_TARGET_BRANCH: main
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.0.0
@@ -44,6 +40,4 @@ jobs:
 
       - name: Run chart-testing (install)
         run: ct install
-        env:
-          CT_TARGET_BRANCH: main
 
