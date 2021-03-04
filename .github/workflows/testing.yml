@@ -44,4 +44,6 @@ jobs:
 
       - name: Run chart-testing (install)
         run: ct install
+        env:
+          CT_TARGET_BRANCH: main
 
