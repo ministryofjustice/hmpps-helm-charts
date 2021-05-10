@@ -9,19 +9,19 @@ runbookUrl: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/maste
 # Alert by default will target resources uses a regex and the application name (.Values.nameOverride).
 # To be more or less specific with promql queries set these overrides in the parent chart, examples:
 
-#podTargetOverride: ".*"
+# podTargetOverride: ".*"
 
-#deploymentTargetOverride: ".*"
+# deploymentTargetOverride: ".*"
 
-#ingressTargetOverride: ".*"
+# ingressTargetOverride: ".*"
 
-#statefulsetTargetOverride: ".*"
+# statefulsetTargetOverride: ".*"
 
-#hpaTargetOverride: ".*"
+# hpaTargetOverride: ".*"
 
-#jobTargetOverride: ".*"
+# jobTargetOverride: ".*"
 
-#cronjobTargetOverride: ".*"
+# cronjobTargetOverride: ".*"
 
 extraAnnotations: {}
 
