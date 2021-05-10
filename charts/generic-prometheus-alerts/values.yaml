@@ -2,12 +2,15 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Name of application, which is used to filter the alert queries, override specific resource types below.
+targetApplication: ""
+
 # The alert severity label is used within Alert Manager and determines which slack channel alerts are sent to.
 alertSeverity: digital-prison-service-dev
 
 runbookUrl: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#
 
-# Alert by default will target resources uses a regex and the application name (.Values.nameOverride).
+# Alert by default will target resources uses a regex and the application name (.Values.targetApplication).
 # To be more or less specific with promql queries set these overrides in the parent chart, examples:
 
 # podTargetOverride: ".*"
