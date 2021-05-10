@@ -1,12 +1,12 @@
 {{- $targetNamespace := .Release.Namespace }}
-{{- $nameOverrideRegex := printf "%s.*" .Values.nameOverride }}
-{{- $targetPod := default $nameOverrideRegex .Values.podTargetOverride }}
-{{- $targetDeployment := default .Values.nameOverride .Values.deploymentTargetOverride }}
-{{- $targetIngress := default .Values.nameOverride .Values.ingressTargetOverride }}
-{{- $targetJobName := default $nameOverrideRegex .Values.jobTargetOverride }}
-{{- $targetCronjob := default $nameOverrideRegex .Values.cronjobTargetOverride }}
-{{- $targetStatefulset := default .Values.nameOverride .Values.statefulsetTargetOverride }}
-{{- $targetHpa := default .Values.nameOverride .Values.hpaTargetOverride }}
+{{- $targetApplicationRegex := printf "%s.*" .Values.targetApplication }}
+{{- $targetPod := default $targetApplicationRegex .Values.podTargetOverride }}
+{{- $targetDeployment := default .Values.targetApplication .Values.deploymentTargetOverride }}
+{{- $targetIngress := default .Values.targetApplication .Values.ingressTargetOverride }}
+{{- $targetJobName := default $targetApplicationRegex .Values.jobTargetOverride }}
+{{- $targetCronjob := default $targetApplicationRegex .Values.cronjobTargetOverride }}
+{{- $targetStatefulset := default .Values.targetApplication .Values.statefulsetTargetOverride }}
+{{- $targetHpa := default .Values.targetApplication .Values.hpaTargetOverride }}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
