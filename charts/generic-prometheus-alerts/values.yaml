@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# The alert severity label is used within Alert Manager and determines which slack channel alerts are sent to.
+# The alert severity label is used within Alert Manager and determines which slack channel alerts are sent to.
 alertSeverity: digital-prison-service-dev
 
 runbookUrl: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#
