@@ -1,4 +1,5 @@
 {{- $targetNamespace := .Release.Namespace }}
+{{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
 {{- $targetApplicationRegex := printf "%s.*" .Values.targetApplication }}
 {{- $targetPod := default $targetApplicationRegex .Values.podTargetOverride }}
 {{- $targetDeployment := default .Values.targetApplication .Values.deploymentTargetOverride }}
@@ -11,12 +12,12 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: {{ include "generic-prometheus-alerts.fullname" . }}
+  name: {{ $targetApplication }}-alerts
   labels:
     {{- include "generic-prometheus-alerts.labels" . | nindent 4 }}
 spec:
   groups:
-  - name: {{ include "generic-prometheus-alerts.fullname" . }}
+  - name: {{ $targetApplication }}-alerts
     rules:
     - alert: 5xxErrorResponses
       annotations:
