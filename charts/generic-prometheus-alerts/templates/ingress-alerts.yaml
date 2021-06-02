@@ -1,0 +1,42 @@
+{{- $targetNamespace := .Release.Namespace }}
+{{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
+{{- $targetIngress := default .Values.targetApplication .Values.ingressTargetOverride }}
+{{- $modSecBlockingStatusCode := default "406" .Values.modSecBlockingStatusCodeOverride }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ $targetApplication }}-ingress
+  labels:
+    {{- include "generic-prometheus-alerts.labels" . | nindent 4 }}
+spec:
+  groups:
+    - name: {{ $targetApplication }}-ingress
+      rules:
+        - alert: 5xxErrorResponses
+          annotations:
+            message: Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}} is serving 5xx responses
+            runbook_url: {{ .Values.runbookUrl }}5xxErrorResponses
+          expr: |-
+            avg(rate(nginx_ingress_controller_request_duration_seconds_count{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status=~"5.*"}[1m]) * 60 > 0) by (ingress,exported_namespace)
+          for: 1m
+          labels:
+            severity: {{ .Values.alertSeverity }}
+        - alert: RatelimitBlocking
+          annotations:
+            message: Rate limit is being applied on ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}
+            runbook_url: {{ .Values.runbookUrl }}rate-limiting
+          expr: |-
+            avg(rate(nginx_ingress_controller_request_duration_seconds_count{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status="429"}[1m]) * 60 > 0) by (ingress,exported_namespace)
+          for: 1m
+          labels:
+            severity: {{ .Values.alertSeverity }}
+        - alert: ModSecurityBlocking
+          annotations:
+            message: Mod_Security is blocking ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}
+            runbook_url: {{ .Values.runbookUrl }}mod-security-blocking
+          expr: |-
+            avg(rate(nginx_ingress_controller_request_duration_seconds_count{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status="{{ $modSecBlockingStatusCode }}"}[1m]) * 60 > 0) by (ingress,exported_namespace)
+          for: 1m
+          labels:
+            severity: {{ .Values.alertSeverity }}

@@ -3,7 +3,6 @@
 {{- $targetApplicationRegex := printf "%s.*" .Values.targetApplication }}
 {{- $targetPod := default $targetApplicationRegex .Values.podTargetOverride }}
 {{- $targetDeployment := default .Values.targetApplication .Values.deploymentTargetOverride }}
-{{- $targetIngress := default .Values.targetApplication .Values.ingressTargetOverride }}
 {{- $targetJobName := default $targetApplicationRegex .Values.jobTargetOverride }}
 {{- $targetCronjob := default $targetApplicationRegex .Values.cronjobTargetOverride }}
 {{- $targetStatefulset := default .Values.targetApplication .Values.statefulsetTargetOverride }}
@@ -12,22 +11,13 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: {{ $targetApplication }}-alerts
+  name: {{ $targetApplication }}-app
   labels:
     {{- include "generic-prometheus-alerts.labels" . | nindent 4 }}
 spec:
   groups:
-    - name: {{ $targetApplication }}-alerts
+    - name: {{ $targetApplication }}-app
       rules:
-        - alert: 5xxErrorResponses
-          annotations:
-            message: Ingress {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}} is serving 5xx responses
-            runbook_url: {{ .Values.runbookUrl }}5xxErrorResponses
-          expr: |-
-            avg(rate(nginx_ingress_controller_request_duration_seconds_count{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status=~"5.*"}[1m]) * 60 > 0) by (ingress)
-          for: 1m
-          labels:
-            severity: {{ .Values.alertSeverity }}
         - alert: KubePodCrashLooping
           annotations:
             message: Pod {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.pod {{`}}`}} ({{`{{`}} $labels.container {{`}}`}}) is restarting {{`{{`}} printf "%.2f" $value {{`}}`}} times / 5 minutes.
@@ -83,7 +73,6 @@ spec:
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
-
         - alert: KubeStatefulSetGenerationMismatch
           annotations:
             message: StatefulSet generation for {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.statefulset {{`}}`}} does not match, this indicates that the StatefulSet has failed but has not been rolled back.
