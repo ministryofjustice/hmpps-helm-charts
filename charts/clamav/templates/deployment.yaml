@@ -36,7 +36,7 @@ spec:
       securityContext:
         fsGroup: {{ .Values.runasgroupid }}
       containers:
-        - name: clamd
+        - name: {{ template "app.fullname" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ['clamd']
