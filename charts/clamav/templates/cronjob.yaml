@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: refresh-clamav-db 
+  name: {{ template "app.fullname" . }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
 spec:
@@ -12,12 +12,13 @@ spec:
   startingDeadlineSeconds: 200
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 86400
       template:
         spec:
           containers:
-          - name: refresh-clamav-db
+          - name: {{ template "app.fullname" . }}-refresh
             image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
             command: ["kubectl"]
-            args: ["rollout", "restart", "deployment/clamav"]
+            args: ["rollout", "restart", "deployment/{{ template "app.fullname" . }}"]
           restartPolicy: OnFailure
           serviceAccountName: refreshclamav
