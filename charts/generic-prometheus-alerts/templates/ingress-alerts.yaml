@@ -1,3 +1,4 @@
+{{- if .Values.ingressAlertsEnabled -}}
 {{- $targetNamespace := .Release.Namespace }}
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
 {{- $targetIngress := default .Values.targetApplication .Values.ingressTargetOverride }}
@@ -40,3 +41,4 @@ spec:
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
+{{- end }}

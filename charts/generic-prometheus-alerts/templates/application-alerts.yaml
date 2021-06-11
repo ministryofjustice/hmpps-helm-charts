@@ -5,7 +5,6 @@
 {{- $targetDeployment := default .Values.targetApplication .Values.deploymentTargetOverride }}
 {{- $targetJobName := default $targetApplicationRegex .Values.jobTargetOverride }}
 {{- $targetCronjob := default $targetApplicationRegex .Values.cronjobTargetOverride }}
-{{- $targetStatefulset := default .Values.targetApplication .Values.statefulsetTargetOverride }}
 {{- $targetHpa := default .Values.targetApplication .Values.hpaTargetOverride }}
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -58,50 +57,6 @@ spec:
             kube_deployment_spec_replicas{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", deployment=~"{{ $targetDeployment }}"}
               !=
             kube_deployment_status_replicas_available{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", deployment=~"{{ $targetDeployment }}"}
-          for: 15m
-          labels:
-            severity: {{ .Values.alertSeverity }}
-        - alert: KubeStatefulSetReplicasMismatch
-          annotations:
-            message: StatefulSet {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.statefulset {{`}}`}} has not matched the expected number of replicas for longer than 15 minutes.
-            runbook_url: {{ .Values.runbookUrl }}alert-name-kubestatefulsetreplicasmismatch
-            summary: Deployment has not matched the expected number of replicas.
-          expr: |-
-            kube_statefulset_status_replicas_ready{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", statefulset=~"{{ $targetStatefulset }}"}
-              !=
-            kube_statefulset_status_replicas{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", statefulset=~"{{ $targetStatefulset }}"}
-          for: 15m
-          labels:
-            severity: {{ .Values.alertSeverity }}
-        - alert: KubeStatefulSetGenerationMismatch
-          annotations:
-            message: StatefulSet generation for {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.statefulset {{`}}`}} does not match, this indicates that the StatefulSet has failed but has not been rolled back.
-            runbook_url: {{ .Values.runbookUrl }}alert-name-kubestatefulsetgenerationmismatch
-            summary: StatefulSet generation mismatch due to possible roll-back
-          expr: |-
-            kube_statefulset_status_observed_generation{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", statefulset=~"{{ $targetStatefulset }}"}
-              !=
-            kube_statefulset_metadata_generation{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", statefulset=~"{{ $targetStatefulset }}"}
-          for: 15m
-          labels:
-            severity: {{ .Values.alertSeverity }}
-        - alert: KubeStatefulSetUpdateNotRolledOut
-          annotations:
-            message: StatefulSet {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.statefulset {{`}}`}} update has not been rolled out.
-            runbook_url: {{ .Values.runbookUrl }}alert-name-kubestatefulsetupdatenotrolledout
-            summary: StatefulSet update has not been rolled out.
-          expr: |-
-            max without (revision) (
-              kube_statefulset_status_current_revision{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", statefulset=~"{{ $targetStatefulset }}"}
-                unless
-              kube_statefulset_status_update_revision{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", statefulset=~"{{ $targetStatefulset }}"}
-            )
-              *
-            (
-              kube_statefulset_replicas{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", statefulset=~"{{ $targetStatefulset }}"}
-                !=
-              kube_statefulset_status_replicas_updated{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", statefulset=~"{{ $targetStatefulset }}"}
-            )
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -188,5 +143,17 @@ spec:
             (kube_resourcequota{namespace=~"{{ $targetNamespace }}", job="kube-state-metrics", type="hard"} > 0)
               > 90
           for: 15m
+          labels:
+            severity: {{ .Values.alertSeverity }}
+        - alert: KubeContainerOOMKilled
+          annotations:
+            message: "Container {{`{{`}} $labels.container {{`}}`}} in pod {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.pod {{`}}`}} has been OOM Killed (out of memory) {{`{{`}} $value {{`}}`}} times in the last 10 minutes."
+            runbook_url: {{ .Values.runbookUrl }}KubeContainerOOMKilled
+            summary: Kubernetes container OOM killed (instance {{`{{`}} $labels.instance {{`}}`}})
+          expr: |-
+            (kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}"}
+             - kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}"} offset 10m >= 1)
+              and ignoring (reason) min_over_time(kube_pod_container_status_last_terminated_reason{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}", reason="OOMKilled"}[10m]) == 1
+          for: 0m
           labels:
             severity: {{ .Values.alertSeverity }}
