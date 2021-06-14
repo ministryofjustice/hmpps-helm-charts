@@ -6,7 +6,6 @@ replicaCount: 2
 image:
   repository: quay.io/hmpps/hmpps-clamav
   tag: latest
-  pullPolicy: IfNotPresent
   port: 3310
 
 refresh_clamav_db_cron: "0 12 * * *"

@@ -38,7 +38,7 @@ spec:
       containers:
         - name: {{ template "app.fullname" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: Always
           command: ['clamd']
           ports:
             - containerPort: {{ .Values.image.port }}
@@ -53,23 +53,3 @@ spec:
               port: {{ .Values.image.port }}
             initialDelaySeconds: 30
             periodSeconds: 20
-          volumeMounts:
-            - mountPath: /var/lib/clamav
-              name: avdata
-      initContainers:
-      - name: initfreshclam
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
-        command: ['freshclam']
-        args: ['--no-dns']
-        volumeMounts:
-        - mountPath: /var/lib/clamav
-          name: avdata
-      - name: init2freshclam
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        command: ['freshclam']
-        volumeMounts:
-        - mountPath: /var/lib/clamav
-          name: avdata
-      volumes:
-      - name: avdata
-        emptyDir: {}
