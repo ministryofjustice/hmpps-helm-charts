@@ -134,7 +134,7 @@ spec:
             severity: {{ .Values.alertSeverity }}
         - alert: KubeQuotaExceeded
           annotations:
-            message: Namespace {{`{{`}} $labels.namespace {{`}}`}} is using {{`}}`}} printf "%0.0f" $value {{`}}`}}% of its {{`}}`}} $labels.resource {{`}}`}} quota.
+            message: Namespace {{`{{`}} $labels.namespace {{`}}`}} is using {{`{{`}} printf "%0.0f" $value {{`}}`}}% of its {{`{{`}} $labels.resource {{`}}`}} quota.
             runbook_url: {{ .Values.runbookUrl }}KubeQuotaExceeded
             summary: Namespace quota has exceeded the limits.
           expr: |-
