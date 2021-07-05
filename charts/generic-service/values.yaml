@@ -8,7 +8,7 @@ replicaCount: 4
 image:
   repository: example_repo/example_image
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # image tag is overridden at deployment time using helm "--set" option
   tag: "example_app_version"
 
 imagePullSecrets: []
