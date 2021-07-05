@@ -4,9 +4,8 @@
 replicaCount: 2
 
 image:
-  repository: quay.io/hmpps/hmpps-clamav
+  repository: ghcr.io/ministryofjustice/hmpps-clamav-freshclam-daily
   tag: latest
-  pullPolicy: IfNotPresent
   port: 3310
 
 refresh_clamav_db_cron: "0 12 * * *"
