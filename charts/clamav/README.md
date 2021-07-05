@@ -6,7 +6,7 @@ This helm chart installs the following kubernetes resources:
 
 ***Deployment***: includes an _initContainer_ which runs `freshclam` prior to starting the main _clamd_ container, this ensures antivirus database is up-to-date. The antivirus DB is saved to an emptyDir volume, which is mounted by all containers in the pod.
 
-***CronJob***: The job re-deploys the above deployment on the schedule specified.  This pulls the latest image, which includes an up-to-date antivirus database. Note: requires service account with necessary permissions to restart.
+***CronJob***: The job re-deploys the above deployment on the schedule specified.  This pulls the latest image, which includes an up-to-date antivirus database. Note: requires service account with necessary permissions to restart. The ClamAV image repo is here: <https://github.com/ministryofjustice/hmpps-utility-container-images>
 
 ## Issues
 
