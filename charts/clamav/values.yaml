@@ -8,7 +8,7 @@ image:
   tag: daily
   port: 3310
 
-# Refreshed image is available from 6am daily
+# Refreshed image is available from 6am daily
 refresh_clamav_db_cron: "0 7 * * *"
 
 # This is the group ID of the container USER, this sets the correct permissions
