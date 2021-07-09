@@ -111,6 +111,7 @@ Example of `helm_deploy/values-[environment].yaml` file:
 
 ```yaml
 ---
+generic-service:
   replicaCount: 2
 
   ingress:
