@@ -99,6 +99,29 @@ generic-service:
   namespace_secrets:
     project-name:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+
+  # Pre-existing kubernetes secrets to load as mounted file(s) within pod/container
+  # namespace_secrets_to_file:
+  #   [name of kubernetes secret]:
+  #     [path of directory used by volume mount]:
+  #       - [key of kubernetes secret - also name of the mounted file]
+  # E.g.
+  namespace_secrets_to_file:
+    secret-name:
+      /some/dir:
+        - config.yaml
+        - key.pem
+```
+
+When loading secrets as mounted volumes inside a container the pre-existing kubernetes secret should look like the following, as per example above:
+
+```yaml
+kind: Secret
+type: Opaque
+apiVersion: v1
+data:
+  config.yaml: [base64 encoded file contents]
+  key.pem: [base64 encoded file contents]
 ```
 
 ### Setting environment specific values
