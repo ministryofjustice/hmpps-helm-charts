@@ -108,7 +108,7 @@ generic-service:
   # E.g.
   namespace_secrets_to_file:
     secret-name:
-      /some/dir:
+      /app/secrets:
         - config.yaml
         - key.pem
 ```
@@ -122,6 +122,13 @@ apiVersion: v1
 data:
   config.yaml: [base64 encoded file contents]
   key.pem: [base64 encoded file contents]
+```
+
+The result of the above secret, along with the example `namespace_secrets_to_file` value would mean running containers be able read/load file contents from:
+
+```sh
+/app/secrets/config.yaml
+/app/secrets/key.pem
 ```
 
 ### Setting environment specific values
