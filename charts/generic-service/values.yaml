@@ -15,6 +15,12 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+# override docker image CMD
+containerArgs: []
+
+# override docker image ENTRYPOINT
+containerCommand: []
+
 serviceAccountName: ""
 
 podAnnotations: {}
