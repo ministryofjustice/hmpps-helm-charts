@@ -1,0 +1,57 @@
+{{- if eq .Values.ingress.enabled false -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "generic-service.fullname" . }}-traefik
+  labels:
+    {{- include "generic-service.labels" . | nindent 4 }}
+data:
+  traefik.yaml: |
+    ---
+    global:
+      checkNewVersion: false
+      sendAnonymousUsage: false
+
+    entryPoints:
+      web:
+        address: :{{ include "generic-service.traefikProxyPort" . }}
+      metrics:
+        address: :{{ include "generic-service.traefikProxyMetricsPort" . }}
+      ping:
+        address: :{{ include "generic-service.traefikProxyPingPort" . }}
+
+    log:
+      level: DEBUG
+      format: common
+
+    accessLog:
+      format: common
+
+    metrics:
+      prometheus:
+        entryPoint: metrics
+
+    ping:
+      entrypoint: ping
+
+    providers:
+      file:
+        filename: /etc/traefik/traefik-conf.yaml
+        watch: true
+
+  traefik-conf.yaml: |
+    ---
+    http:
+      routers:
+        {{ include "generic-service.fullname" . }}:
+          entryPoints:
+            - web
+          rule: PathPrefix(`/`)
+          service: {{ include "generic-service.fullname" . }}
+
+      services:
+        {{ include "generic-service.fullname" . }}:
+          loadBalancer:
+            servers:
+              - url: http://127.0.0.1:{{ .Values.image.port }}
+{{- end -}}

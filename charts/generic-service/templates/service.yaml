@@ -8,10 +8,21 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
+    {{ if eq .Values.ingress.enabled false -}}
+    - port: {{ .Values.service.port }}
+      targetPort: proxy-http
+      protocol: TCP
+      name: http
+    - port: {{ include "generic-service.traefikProxyMetricsPort" . }}
+      targetPort: proxy-metrics
+      protocol: TCP
+      name: proxy-metrics
+    {{- else -}}
     - port: {{ .Values.service.port }}
       targetPort: http
       protocol: TCP
       name: http
+    {{- end }}
   selector:
     {{- include "generic-service.selectorLabels" . | nindent 4 }}
 {{- end }}

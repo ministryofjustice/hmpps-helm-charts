@@ -56,7 +56,7 @@ version: 0.1.0
 
 dependencies:
   - name: generic-service
-    version: 1.0.5
+    version: 1.1.0
     repository: https://ministryofjustice.github.io/hmpps-helm-charts
 ```
 
@@ -78,6 +78,8 @@ generic-service:
   image:
     repository: quay.io/hmpps/project-name
     port: 8080
+
+  extraDashboardTags: []
 
   ingress:
     enabled: true

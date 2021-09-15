@@ -36,6 +36,52 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+        {{- if eq .Values.ingress.enabled false }}
+        - name: traefik
+          image: traefik:v2.5.2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: proxy-http
+              containerPort: {{ include "generic-service.traefikProxyPort" . }}
+              protocol: TCP
+            - name: proxy-metrics
+              containerPort: {{ include "generic-service.traefikProxyMetricsPort" . }}
+              protocol: TCP
+            - name: proxy-ping
+              containerPort: {{ include "generic-service.traefikProxyPingPort" . }}
+              protocol: TCP
+          securityContext:
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /ping
+              port: proxy-ping
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /ping
+              port: proxy-ping
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          volumeMounts:
+            - name: traefik-config
+              mountPath: /etc/traefik
+              readOnly: true
+        {{- end }}
         - name: {{ include "generic-service.name" . }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}

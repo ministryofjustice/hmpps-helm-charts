@@ -10,6 +10,7 @@ image:
   pullPolicy: IfNotPresent
   # image tag is overridden at deployment time using helm "--set" option
   tag: "example_app_version"
+  port: 80
 
 imagePullSecrets: []
 nameOverride: ""
@@ -35,6 +36,10 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
+
+# Additional tags to add to your grafana dashboards - i.e. your project name
+# Your dashboards will already be tagged with your application/release name.
+extraDashboardTags: []
 
 service:
   enabled: true
