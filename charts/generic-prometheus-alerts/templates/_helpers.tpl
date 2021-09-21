@@ -50,3 +50,25 @@ Selector labels
 app.kubernetes.io/name: {{ include "generic-prometheus-alerts.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Tags for the grafana dashboards
+*/}}
+{{- define "generic-prometheus-alerts.dashboardTags" -}}
+{{- .Release.Name | append .Values.extraDashboardTags | toJson -}}
+{{- end }}
+
+{{/*
+Labels for the grafana dashboard configmaps
+*/}}
+{{- define "generic-prometheus-alerts.dashboardLabels" -}}
+grafana_dashboard: ""
+{{ include "generic-prometheus-alerts.labels" . }}
+{{- end }}
+
+{{/*
+Generate a UID prefix for the dashboards
+*/}}
+{{- define "generic-prometheus-alerts.dashboardUIDPrefix" -}}
+{{- cat .Release.Namespace .Release.Name | b64enc | trunc 30 | trimSuffix "=" }}
+{{- end }}

@@ -1,10 +1,10 @@
 # generic-prometheus-alerts chart
 
-This chart creates a standard set of prometheus alerts for a given application.
+This chart creates a standard set of prometheus alerts for a given application, and a companion grafana dashboard showing HTTP request metrics (via the NGINX ingress) and application resource (CPU/Memory) usage.
 
-You must provide it with a value for `targetApplication`, this is used within the alert queries to filter results.
+You must provide it with a value for `targetApplication`, this is used within the queries to filter results.
 
-To receive the alerts via slack you must also set a value for `alertSeverity`.  This value determines how alerts get routed to a slack channel. This is a process defined by the CloudPlatform team, see [CloudPlatform User Guide](<https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts>)
+To receive the alerts via slack you must also set a value for `alertSeverity`. This value determines how alerts get routed to a slack channel. This is a process defined by the CloudPlatform team, see [CloudPlatform User Guide](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts)
 
 ## Quick start
 

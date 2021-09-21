@@ -41,3 +41,10 @@ extraLabels:
   prometheus: cloud-platform
 
 additionalRuleLabels: {}
+
+# To disable the inclusion of grafana dashboards, set to false, defaults true
+dashboardsEnabled: true
+
+# Additional tags to add to your grafana dashboards - i.e. your project name
+# Your dashboards will already be tagged with your application/release name.
+extraDashboardTags: []
