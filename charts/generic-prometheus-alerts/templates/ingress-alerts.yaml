@@ -16,28 +16,28 @@ spec:
       rules:
         - alert: 5xxErrorResponses
           annotations:
-            message: Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}} is serving 5xx responses
-            runbook_url: {{ .Values.runbookUrl }}5xxErrorResponses
+            message: Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}} is serving 5xx responses.
+            runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
           expr: |-
-            avg(rate(nginx_ingress_controller_request_duration_seconds_count{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status=~"5.*"}[1m]) * 60 > 0) by (ingress,exported_namespace)
+            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status=~"5.*"}[1m]) * 60 > 0) by (ingress, exported_namespace)
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
         - alert: RatelimitBlocking
           annotations:
-            message: Rate limit is being applied on ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}
-            runbook_url: {{ .Values.runbookUrl }}rate-limiting
+            message: Rate limit is being applied on ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
+            runbook_url: {{ .Values.runbookUrl }}ingress-rate-limiting
           expr: |-
-            avg(rate(nginx_ingress_controller_request_duration_seconds_count{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status="429"}[1m]) * 60 > 0) by (ingress,exported_namespace)
+            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status="429"}[1m]) * 60 > 0) by (ingress, exported_namespace)
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
         - alert: ModSecurityBlocking
           annotations:
             message: Mod_Security is blocking ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}. Blocking http requests at rate of {{`{{`}} printf "%0.0f" $value {{`}}`}} per minute.
-            runbook_url: {{ .Values.runbookUrl }}mod-security-blocking
+            runbook_url: {{ .Values.runbookUrl }}ingress-modsecurity-blocking
           expr: |-
-            avg(rate(nginx_ingress_controller_request_duration_seconds_count{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status="{{ $modSecBlockingStatusCode }}"}[1m]) * 60 > 20) by (ingress,exported_namespace)
+            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status="{{ $modSecBlockingStatusCode }}"}[1m]) * 60 > 20) by (ingress, exported_namespace)
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
