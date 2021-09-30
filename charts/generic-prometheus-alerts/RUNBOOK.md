@@ -2,6 +2,8 @@
 
 This page contains notes detailing what the alerts contained in this chart mean and what you can (and should) do to follow up on them should they fire in your project...
 
+**IF YOU FIND THIS PAGE HELPFUL, BUT YOU USE OTHER WAYS TO FOLLOW UP ON THESE ALERTS, PLEASE UPDATE OR ADD TO THE NOTES.**
+
 ## Ingress Alerts
 
 ### ingress-5xx-error-responses
