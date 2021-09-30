@@ -11,7 +11,7 @@ ingressAlertsEnabled: true
 # The alert severity label is used within Alert Manager and determines which slack channel alerts are sent to.
 alertSeverity: digital-prison-service-dev
 
-runbookUrl: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#
+runbookUrl: https://github.com/ministryofjustice/hmpps-helm-charts/blob/main/charts/generic-prometheus-alerts/RUNBOOK.md#
 
 # Alert by default will target resources uses a regex and the application name (.Values.targetApplication).
 # To be more or less specific with promql queries set these overrides in the parent chart, examples:
