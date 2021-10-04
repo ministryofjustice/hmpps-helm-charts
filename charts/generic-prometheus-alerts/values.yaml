@@ -55,6 +55,6 @@ extraDashboardTags: []
 #   - "queue-name-2"
 
 # To monitor AWS SNS Topic queues, add the name of the topic in a list like this:
-#snsAlertsTopicNames:
-#  - "topic-name-1"
-#  - "topic-name-2"
+# snsAlertsTopicNames:
+#   - "topic-name-1"
+#   - "topic-name-2"
