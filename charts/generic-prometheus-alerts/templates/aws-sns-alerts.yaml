@@ -14,7 +14,7 @@ spec:
 {{- range $.Values.snsAlertsTopicNames }}
         - alert: SNS-no-messages-published
           annotations:
-            message: "SNS topic for Prison Offender Events - {{`{{`}} $labels.topic_name {{`}}`}} - no messages published in last 20 mins, check offender-events app is healthy."
+            message: "SNS topic {{`{{`}} $labels.topic_name {{`}}`}} - no messages published in last 20 mins, check the producer app is healthy."
             runbook_url: {{ $.Values.runbookUrl }}sns-no-messages-published
             dashboard_url: https://grafana.live-1.cloud-platform.service.justice.gov.uk/d/AWSSNS000/dps-aws-sns?orgId=1&var-topic={{ . }}&from=now-6h&to=now
           expr: |-
