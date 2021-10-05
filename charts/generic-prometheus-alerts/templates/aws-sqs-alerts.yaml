@@ -1,0 +1,36 @@
+{{- if .Values.sqsAlertsQueueNames -}}
+{{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ $targetApplication }}-sqs
+  labels:
+    {{- include "generic-prometheus-alerts.labels" . | nindent 4 }}
+spec:
+  groups:
+    - name: {{ $targetApplication }}-sqs
+      rules:
+{{- range $.Values.sqsAlertsQueueNames }}
+        - alert: SQS-oldest-message
+          annotations:
+            message: SQS - {{`{{`}}  $labels.queue_name {{`}}`}} has message older than 30mins, check consumers are healthy.
+            runbook_url: {{ $.Values.runbookUrl }}sqs-oldest-message
+            dashboard_url: https://grafana.live-1.cloud-platform.service.justice.gov.uk/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue={{ . }}&from=now-6h&to=now
+          expr: |-
+            sum(aws_sqs_approximate_age_of_oldest_message_maximum{queue_name="{{ . }}"} offset 5m) by (queue_name) > 30 * 60
+          for: 10m
+          labels:
+            severity: {{ $.Values.alertSeverity }}
+        - alert: SQS-number-of-messages
+          annotations:
+            message: SQS - {{`{{`}}  $labels.queue_name {{`}}`}} - number of messages={{`{{`}} $value {{`}}`}} (exceeds 100), check consumers are healthy.
+            runbook_url: {{ $.Values.runbookUrl }}sqs-number-of-messages
+            dashboard_url: https://grafana.live-1.cloud-platform.service.justice.gov.uk/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue={{ . }}&from=now-6h&to=now
+          expr: |-
+            sum(aws_sqs_approximate_number_of_messages_visible_maximum{queue_name="{{ . }}"} offset 5m) by (queue_name) > 100
+          for: 10m
+          labels:
+            severity: {{ $.Values.alertSeverity }}
+{{- end }}
+{{- end }}
