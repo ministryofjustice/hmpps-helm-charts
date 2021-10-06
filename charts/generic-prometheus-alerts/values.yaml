@@ -54,7 +54,10 @@ extraDashboardTags: []
 #   - "queue-name"
 #   - "queue-name-2"
 
-# To monitor AWS SNS Topic queues, add the name of the topic in a list like this:
+# To monitor AWS SNS Topic queues, add the name of the topic in a list.
+# Note: This is a regex based search for the topic name. Cloud-platform's terraform
+# assigns a long random ID to the name of the topic. Just supply the last 8 digits
+# from the topic names random ID.
 # snsAlertsTopicNames:
-#   - "topic-name-1"
-#   - "topic-name-2"
+#   - "xxxxxxxx"
+#   - "zzzzzzzz"
