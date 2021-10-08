@@ -19,7 +19,6 @@ metadata:
     nginx.ingress.kubernetes.io/whitelist-source-range: {{ include "app.joinListWithComma" .Values.allowlist | quote }}
   {{- end }}
     external-dns.alpha.kubernetes.io/set-identifier: {{ $fullName }}-{{ .Release.Namespace }}-{{ default "blue" .Values.ingress.contextColour }}
-    external-dns.alpha.kubernetes.io/aws-weight: {{ default "100" .Values.ingress.awsWeight }}
 spec:
   tls:
   - hosts:
