@@ -50,6 +50,8 @@ ingress:
   host: chart-example.local
   path: /
   tlsSecretName: chart-example-tls
+  # live-1 is blue, live is green
+  contextColour: blue
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
