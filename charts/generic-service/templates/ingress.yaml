@@ -8,7 +8,6 @@ metadata:
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
   annotations:
-    kubernetes.io/ingress.class: {{ .Values.ingress.class | default "nginx" | quote }}
   {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -16,7 +15,8 @@ metadata:
     nginx.ingress.kubernetes.io/whitelist-source-range: {{ include "app.joinListWithComma" .Values.allowlist | quote }}
   {{- end }}
     external-dns.alpha.kubernetes.io/set-identifier: {{ $fullName }}-{{ .Release.Namespace }}-{{ .Values.ingress.contextColour }}
-  {{ - if .Values.ingress.modsecurity_enabled }}
+  {{- if .Values.ingress.modsecurity_enabled }}
+    kubernetes.io/ingress.class: "modsec01"
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
@@ -34,7 +34,9 @@ metadata:
          pass,\
          t:none,\
          setvar:tx.paranoia_level=2"
-  {{ - end }}
+  {{- else }}
+    kubernetes.io/ingress.class: "nginx"
+  {{- end }}
 spec:
   tls:
   - hosts:
