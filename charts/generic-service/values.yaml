@@ -102,10 +102,3 @@ strategy:
   rollingUpdate:
     maxSurge: 100%
     maxUnavailable: 0
-
-env:
-  "NED": "FRED"
-
-namespace_secrets:
-  ted:
-    "BOB": "boss"
