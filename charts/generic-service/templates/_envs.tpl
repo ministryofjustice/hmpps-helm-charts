@@ -19,5 +19,9 @@ env:
   - name: {{ $key }}
     value: "{{ $val }}"
 {{- end }}
+{{- range $key, $val := .Values.env_comma_joined_from_list }}
+  - name: {{ $key }}
+    value: {{ include "app.joinListWithComma" $val | quote }}
+{{- end }}
 {{- end -}}
 {{- end -}}
