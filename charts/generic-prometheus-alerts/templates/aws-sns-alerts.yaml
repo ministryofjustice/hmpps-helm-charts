@@ -1,7 +1,7 @@
 {{- if .Values.snsAlertsTopicNames -}}
 {{- $targetNamespace := .Release.Namespace }}
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
-{{- $snsAlertsNoMessagesThreshold := default "30" .Values.snsAlertsNoMessagesThreshold }}
+{{- $snsAlertsNoMessagesThresholdMinutes := default "30" .Values.snsAlertsNoMessagesThresholdMinutes }}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
@@ -16,12 +16,12 @@ spec:
 {{- range $key, $val := $.Values.snsAlertsTopicNames }}
         - alert: SNS-no-messages-published
           annotations:
-            message: "SNS topic {{ $val }} - no messages published in last {{ $snsAlertsNoMessagesThreshold }} mins, check the producer(s). This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}."
+            message: "SNS topic {{ $val }} - no messages published in last {{ $snsAlertsNoMessagesThresholdMinutes }} mins, check the producer(s). This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}."
             runbook_url: {{ $.Values.runbookUrl }}sns-no-messages-published
             dashboard_url: https://grafana.live-1.cloud-platform.service.justice.gov.uk/d/AWSSNS001/aws-sns?orgId=1&var-datasource=Cloudwatch&var-region=default&var-topic={{ $key }}&from=now-6h&to=now
           expr: |-
             absent(aws_sns_number_of_messages_published_sum{topic_name="{{ $key }}"} offset 5m) == 1
-          for: {{ $snsAlertsNoMessagesThreshold }}m
+          for: {{ $snsAlertsNoMessagesThresholdMinutes }}m
           labels:
             severity: {{ $.Values.alertSeverity }}
 {{- end }}
