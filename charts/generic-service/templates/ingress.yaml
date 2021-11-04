@@ -19,21 +19,7 @@ metadata:
     kubernetes.io/ingress.class: "modsec01"
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
-      SecRuleEngine On
-      {{ if .Values.ingress.modsecurity_audit_enabled -}}
-      SecAuditEngine RelevantOnly
-      SecAuditLog /var/log/nginx/error.log
-      SecAuditLogType Serial
-      {{ end -}}
-      SecRuleUpdateActionById 949110 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
-      SecRuleUpdateActionById 959100 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
-      SecAction \
-        "id:900000,\
-         phase:1,\
-         nolog,\
-         pass,\
-         t:none,\
-         setvar:tx.paranoia_level=2"
+{{ .Values.ingress.modsecurity_snippet | indent 6 }}
   {{- else }}
     kubernetes.io/ingress.class: "nginx"
   {{- end }}

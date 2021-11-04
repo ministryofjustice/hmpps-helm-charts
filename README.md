@@ -49,3 +49,7 @@ Then can run a dry-run upgrade to see the effect:
 ```bash
 helm upgrade --dry-run <release-name> <directory-containing-project-chart> --values <values-file>
 ```
+You can also compare the template yaml by running the following both before and after your changes, saving the output to files:
+```bash
+helm -n my-namespace template <release-name> <directory-containing-project-chart> --values=<values-file>
+```
