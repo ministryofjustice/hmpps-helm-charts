@@ -63,7 +63,7 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-{{- include "deployment.envs" . | nindent 10 }}
+{{- include "deployment.envs" .Values | nindent 10 }}
 {{- include "deployment.volume_mounts" . | nindent 10 }}
 {{- include "deployment.volumes" . | nindent 6 }}
       {{- with .Values.nodeSelector }}

@@ -99,6 +99,7 @@ generic-service:
   namespace_secrets:
     project-name:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+      AP_ARN: "arn?" # optional
 
   # Pre-existing kubernetes secrets to load as mounted file(s) within pod/container
   # namespace_secrets_to_file:
@@ -130,6 +131,12 @@ The result of the above secret, along with the example `namespace_secrets_to_fil
 /app/secrets/config.yaml
 /app/secrets/key.pem
 ```
+
+### Injecting env into batch yamls
+
+You can inject the set of environment variables defined for the pods into other application yamls such as batch jobs:
+
+`{{- include "deployment.envs" (index .Values "generic-service") | nindent 12 }}`
 
 ### Setting environment specific values
 

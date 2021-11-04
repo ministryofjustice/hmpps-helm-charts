@@ -3,23 +3,22 @@
 Environment variables for web and worker containers
 */}}
 {{- define "deployment.envs" -}}
-{{- $appName := include "generic-service.name" . -}}
-{{- if or (or .Values.namespace_secrets .Values.env) .Values.env_comma_joined_from_list  -}}
+{{- if or (or .namespace_secrets .env) .env_comma_joined_from_list -}}
 env:
-{{- range $secret, $envs := .Values.namespace_secrets }}
+{{- range $secret, $envs := .namespace_secrets }}
   {{- range $key, $val := $envs }}
   - name: {{ $key }}
     valueFrom:
       secretKeyRef:
-        key: {{ $val }}
-        name: {{ $secret }}
-  {{- end }}
+        key: {{ trimSuffix "?" $val }}
+        name: {{ $secret }}{{ if hasSuffix "?" $val }}
+        optional: true{{ end }}  {{- end }}
 {{- end }}
-{{- range $key, $val := .Values.env }}
+{{- range $key, $val := .env }}
   - name: {{ $key }}
     value: "{{ $val }}"
 {{- end }}
-{{- range $key, $val := .Values.env_comma_joined_from_list }}
+{{- range $key, $val := .env_comma_joined_from_list }}
   - name: {{ $key }}
     value: {{ include "app.joinListWithComma" $val | quote }}
 {{- end }}
