@@ -65,3 +65,6 @@ extraDashboardTags: []
 # snsAlertsTopicNames:
 #   topic-name-id: "Topic nice display name"
 #   topic-name-2-id: "Topic nice display name 2"
+
+# Set the alert threshold for no SNS messages published to topic (minutes).
+# snsAlertsNoMessagesThresholdMinutes: 30
