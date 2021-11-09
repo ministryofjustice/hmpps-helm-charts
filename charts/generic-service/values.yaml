@@ -89,6 +89,10 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+poddisruptionbudget:
+  enabled: true
+  minAvailable: 1
+
 nodeSelector: {}
 
 tolerations: []
