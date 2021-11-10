@@ -3,6 +3,8 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: {{ include "generic-service.fullname" . }}-monitoring
+  labels:
+    {{- include "generic-service.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
