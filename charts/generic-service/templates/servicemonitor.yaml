@@ -1,0 +1,14 @@
+{{- if .Values.custommetrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "generic-service.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "generic-service.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http
+      interval: {{ .Values.custommetrics.scrapeInterval }}
+      path: {{ .Values.custommetrics.metricsPath }}
+{{- end }}

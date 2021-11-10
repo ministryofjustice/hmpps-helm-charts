@@ -122,3 +122,8 @@ strategy:
   rollingUpdate:
     maxSurge: 100%
     maxUnavailable: 0
+
+custommetrics:
+  enabled: false
+  scrapeInterval: 15s
+  metricsPath: /metrics
