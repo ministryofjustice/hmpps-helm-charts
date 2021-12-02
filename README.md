@@ -1,6 +1,7 @@
 # HMPPS Helm Charts
 
 Here you will find a common place for helm charts used by HMPPS projects/services.
+([Click here][version_list] to see which services use them.)
 
 The charts are built and published via github actions and github pages, see <https://github.com/helm/chart-releaser>
 
@@ -59,3 +60,5 @@ You can also compare the template yaml by running the following both before and 
 ```bash
 helm -n my-namespace template <release-name> <directory-containing-project-chart> --values=<values-file>
 ```
+
+[version_list]: https://structurizr.com/share/56937/documentation/*#2
