@@ -70,6 +70,6 @@ grafana_dashboard: ""
 Generate a UID prefix for the dashboards
 */}}
 {{- define "generic-prometheus-alerts.dashboardUIDPrefix" -}}
-{{- $longUID := cat .Release.Namespace .Release.Name | replace " " "" | b64enc | replace "=" "" }}
-{{- regexSplit "" $longUID -1 | reverse | join "" | trunc 30 -}}
+{{- $longUID := cat .Release.Namespace .Release.Name | replace " " "" | b32enc | replace "=" "" }}
+{{- regexSplit "" $longUID -1 | reverse | join "" | trunc 36 -}}
 {{- end }}
