@@ -1,0 +1,37 @@
+---
+rule_files:
+  - ../application-alerts.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # KubeJobFailed - check that we get an alert on failure
+  - interval: 1m
+    # Series data.
+    input_series:
+      - series: 'up{job="prometheus", instance="localhost:9090"}'
+        values: '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
+      - series: 'up{job="node_exporter", instance="localhost:9100"}'
+        values: '1+0x6 0 0 0 0 0 0 0 0' # 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0
+      - series: 'go_goroutines{job="prometheus", instance="localhost:9090"}'
+        values: '10+10x2 30+20x5' # 10 20 30 30 50 70 90 110 130
+      - series: 'go_goroutines{job="node_exporter", instance="localhost:9100"}'
+        values: '10+10x7 10+30x4' # 10 20 30 40 50 60 70 80 10 40 70 100 130
+
+    # Unit test for alerting rules.
+    alert_rule_test:
+      # Unit test 1.
+      - eval_time: 10m
+        alertname: InstanceDown
+        exp_alerts:
+          # Alert 1.
+          - exp_labels:
+              severity: page
+              instance: localhost:9090
+              job: prometheus
+            exp_annotations:
+              summary: "Instance localhost:9090 down"
+              description: "localhost:9090 of job prometheus has been down for more than 5 minutes."
+
+
+  # KubeJobFailed - check that alert is cleared after successful run

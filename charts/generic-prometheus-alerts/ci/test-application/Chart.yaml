@@ -1,0 +1,10 @@
+apiVersion: v2
+appVersion: "1.0"
+description: A Helm chart for Kubernetes
+name: test-application
+version: 0.2.0
+
+dependencies:
+  - name: generic-prometheus-alerts
+    version: 0.2.8 # TODO: make this automatically update with actual chart version (use envsubst or something)
+    repository: file://../../
