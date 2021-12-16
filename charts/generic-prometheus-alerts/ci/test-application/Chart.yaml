@@ -6,5 +6,5 @@ version: 0.2.0
 
 dependencies:
   - name: generic-prometheus-alerts
-    version: 0.2.8 # TODO: make this automatically update with actual chart version (use envsubst or something)
+    version: 0.3.0 # TODO: make this automatically update with actual chart version (use envsubst or something)
     repository: file://../../
