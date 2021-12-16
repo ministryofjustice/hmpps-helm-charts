@@ -7,8 +7,8 @@ evaluation_interval: 5m
 tests:
   ##
   ## recording rules:
-  ##   - job:kube_job_status_start_time:max (last start time of a cronjob run)
-  ##   - job:kube_job_status_failed:sum (did the last job - in a cronjob - fail?)
+  ##   - job:kube_job_status_start_time_<namespace>:max (last start time of a cronjob run)
+  ##   - job:kube_job_status_failed_<namespace>:sum (did the last job - in a cronjob - fail?)
   ## alert:
   ##   - CronJobStatusFailed - did the last run of a cronjob fail?
   ##
@@ -36,17 +36,17 @@ tests:
 
     promql_expr_test:
       # assert we're getting the timestamp of the last ran job...
-      - expr: job:kube_job_status_start_time:max
+      - expr: job:kube_job_status_start_time_test_application_dev:max
         eval_time: 0m
         exp_samples:
-          - labels: 'job:kube_job_status_start_time:max{cronjob="test-application-cronjob", job="test-application-cronjob-2", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+          - labels: 'job:kube_job_status_start_time_test_application_dev:max{cronjob="test-application-cronjob", job="test-application-cronjob-2", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_name="test-application-cronjob"}'
             value: 900
 
       # assert that the last ran job failed
-      - expr: job:kube_job_status_failed:sum
+      - expr: job:kube_job_status_failed_test_application_dev:sum
         eval_time: 0m
         exp_samples:
-          - labels: 'job:kube_job_status_failed:sum{cronjob="test-application-cronjob", job="test-application-cronjob-2", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+          - labels: 'job:kube_job_status_failed_test_application_dev:sum{cronjob="test-application-cronjob", job="test-application-cronjob-2", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_name="test-application-cronjob"}'
             value: 1
 
     alert_rule_test:
@@ -65,7 +65,6 @@ tests:
               message: CronJob test-application-dev/test-application-cronjob is failing.
               runbook_url: https://runbook.com/application-cronjob-failed
               summary: CronJob is failing.
-
 
   # example two - three jobs (from the same cronjob) have run, the first two failed, the last one succeeded
   - interval: 5m
@@ -99,14 +98,14 @@ tests:
 
     promql_expr_test:
       # assert we're getting the timestamp of the last ran job...
-      - expr: job:kube_job_status_start_time:max
+      - expr: job:kube_job_status_start_time_test_application_dev:max
         eval_time: 0m
         exp_samples:
-          - labels: 'job:kube_job_status_start_time:max{cronjob="test-application-cronjob", job="test-application-cronjob-3", job_name="test-application-cronjob-3", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+          - labels: 'job:kube_job_status_start_time_test_application_dev:max{cronjob="test-application-cronjob", job="test-application-cronjob-3", job_name="test-application-cronjob-3", namespace="test-application-dev", owner_name="test-application-cronjob"}'
             value: 1800
 
       # assert that the last ran job did not fail (we expect nil from the rule)
-      - expr: job:kube_job_status_failed:sum
+      - expr: job:kube_job_status_failed_test_application_dev:sum
         eval_time: 0m
         exp_samples: []
 
