@@ -99,17 +99,6 @@ pod=$(kubectl -n <namespace> get pods --selector=job-name=<job> --sort-by=.metad
 kubectl -n <namespace> logs $pod
 ```
 
-### application-job-failed
-
-> Job `<namespace>`/`<job>` failed to complete.
-
-You'll need to look at the logs from the pods which this job was running to investigate the issues. You can do this using the logging service or with a couple of commands like so (substituting in the namespace and job name):
-
-```
-pods=$(kubectl -n <namespace> get pods --selector=job-name=<job> --output=jsonpath='{.items[*].metadata.name}')
-kubectl -n <namespace> logs $pods
-```
-
 ### application-cronjob-failed
 
 > CronJob `<namespace>`/`<cronjob>` failed to complete.

@@ -139,16 +139,6 @@ spec:
           labels:
             severity: {{ .Values.alertSeverity }}
 
-        - alert: KubeJobFailed
-          annotations:
-            message: Job {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.job_name {{`}}`}} failed to complete.
-            runbook_url: {{ .Values.runbookUrl }}application-job-failed
-            summary: Job failed to complete.
-          expr: kube_job_status_failed{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", job_name=~"{{ $targetJobName }}"} > 0
-          for: 15m
-          labels:
-            severity: {{ .Values.alertSeverity }}
-
         - alert: KubeHpaReplicasMismatch
           annotations:
             description: HPA {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.hpa {{`}}`}} has not matched the desired number of replicas for longer than 15 minutes.
