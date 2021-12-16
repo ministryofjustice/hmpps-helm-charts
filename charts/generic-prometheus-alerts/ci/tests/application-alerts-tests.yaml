@@ -2,36 +2,116 @@
 rule_files:
   - ../application-alerts.yaml
 
-evaluation_interval: 1m
+evaluation_interval: 5m
 
 tests:
-  # KubeJobFailed - check that we get an alert on failure
-  - interval: 1m
-    # Series data.
+  ##
+  ## recording rules:
+  ##   - job:kube_job_status_start_time:max (last start time of a cronjob run)
+  ##   - job:kube_job_status_failed:sum (did the last job - in a cronjob - fail?)
+  ## alert:
+  ##   - CronJobStatusFailed - did the last run of a cronjob fail?
+  ##
+
+  # example one - two jobs (from the same cronjob) have run and failed
+  - interval: 5m
     input_series:
-      - series: 'up{job="prometheus", instance="localhost:9090"}'
-        values: '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
-      - series: 'up{job="node_exporter", instance="localhost:9100"}'
-        values: '1+0x6 0 0 0 0 0 0 0 0' # 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0
-      - series: 'go_goroutines{job="prometheus", instance="localhost:9090"}'
-        values: '10+10x2 30+20x5' # 10 20 30 30 50 70 90 110 130
-      - series: 'go_goroutines{job="node_exporter", instance="localhost:9100"}'
-        values: '10+10x7 10+30x4' # 10 20 30 40 50 60 70 80 10 40 70 100 130
+      - series: 'kube_job_status_failed{job="kube-state-metrics", job_name="test-application-cronjob-1", namespace="test-application-dev", reason="BackoffLimitExceeded"}'
+        values: '1+0x12'
+      - series: 'kube_job_status_start_time{job="kube-state-metrics", job_name="test-application-cronjob-1", namespace="test-application-dev"}'
+        values: '0+0x12'
+      - series: 'kube_job_owner{job="kube-state-metrics", job_name="test-application-cronjob-1", namespace="test-application-dev", owner_kind="CronJob", owner_name="test-application-cronjob"}'
+        values: '1+1x12'
+      - series: 'kube_cronjob_spec_suspend{cronjob="test-application-cronjob", job="kube-state-metrics", namespace="test-application-dev"}'
+        values: '0+0x12'
 
-    # Unit test for alerting rules.
+      - series: 'kube_job_status_failed{job="kube-state-metrics", job_name="test-application-cronjob-2", namespace="test-application-dev", reason="DeadLineExceeded"}'
+        values: '1+0x12'
+      - series: 'kube_job_status_start_time{job="kube-state-metrics", job_name="test-application-cronjob-2", namespace="test-application-dev"}'
+        values: '900+0x12'
+      - series: 'kube_job_owner{job="kube-state-metrics", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_kind="CronJob", owner_name="test-application-cronjob"}'
+        values: '1+1x12'
+      - series: 'kube_cronjob_spec_suspend{cronjob="test-application-cronjob", job="kube-state-metrics", namespace="test-application-dev"}'
+        values: '0+0x12'
+
+    promql_expr_test:
+      # assert we're getting the timestamp of the last ran job...
+      - expr: job:kube_job_status_start_time:max
+        eval_time: 0m
+        exp_samples:
+          - labels: 'job:kube_job_status_start_time:max{cronjob="test-application-cronjob", job="test-application-cronjob-2", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+            value: 900
+
+      # assert that the last ran job failed
+      - expr: job:kube_job_status_failed:sum
+        eval_time: 0m
+        exp_samples:
+          - labels: 'job:kube_job_status_failed:sum{cronjob="test-application-cronjob", job="test-application-cronjob-2", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+            value: 1
+
     alert_rule_test:
-      # Unit test 1.
-      - eval_time: 10m
-        alertname: InstanceDown
+      # assert that the CronJobStatusFailed alert is firing
+      - eval_time: 35m
+        alertname: CronJobStatusFailed
         exp_alerts:
-          # Alert 1.
           - exp_labels:
-              severity: page
-              instance: localhost:9090
-              job: prometheus
+              cronjob: test-application-cronjob
+              job: test-application-cronjob-2
+              job_name: test-application-cronjob-2
+              namespace: test-application-dev
+              owner_name: test-application-cronjob
+              severity: alert-severity-tag
             exp_annotations:
-              summary: "Instance localhost:9090 down"
-              description: "localhost:9090 of job prometheus has been down for more than 5 minutes."
+              message: CronJob test-application-dev/test-application-cronjob is failing.
+              runbook_url: https://runbook.com/application-cronjob-failed
+              summary: CronJob is failing.
 
 
-  # KubeJobFailed - check that alert is cleared after successful run
+  # example two - three jobs (from the same cronjob) have run, the first two failed, the last one succeeded
+  - interval: 5m
+    input_series:
+      - series: 'kube_job_status_failed{job="kube-state-metrics", job_name="test-application-cronjob-1", namespace="test-application-dev", reason="BackoffLimitExceeded"}'
+        values: '1+0x12'
+      - series: 'kube_job_status_start_time{job="kube-state-metrics", job_name="test-application-cronjob-1", namespace="test-application-dev"}'
+        values: '0+0x12'
+      - series: 'kube_job_owner{job="kube-state-metrics", job_name="test-application-cronjob-1", namespace="test-application-dev", owner_kind="CronJob", owner_name="test-application-cronjob"}'
+        values: '1+0x12'
+      - series: 'kube_cronjob_spec_suspend{cronjob="test-application-cronjob", job="kube-state-metrics", namespace="test-application-dev"}'
+        values: '0+0x12'
+
+      - series: 'kube_job_status_failed{job="kube-state-metrics", job_name="test-application-cronjob-2", namespace="test-application-dev", reason="DeadLineExceeded"}'
+        values: '1+0x12'
+      - series: 'kube_job_status_start_time{job="kube-state-metrics", job_name="test-application-cronjob-2", namespace="test-application-dev"}'
+        values: '900+0x12'
+      - series: 'kube_job_owner{job="kube-state-metrics", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_kind="CronJob", owner_name="test-application-cronjob"}'
+        values: '1+0x12'
+      - series: 'kube_cronjob_spec_suspend{cronjob="test-application-cronjob", job="kube-state-metrics", namespace="test-application-dev"}'
+        values: '0+0x12'
+
+      - series: 'kube_job_status_failed{job="kube-state-metrics", job_name="test-application-cronjob-3", namespace="test-application-dev"}'
+        values: '0+0x12'
+      - series: 'kube_job_status_start_time{job="kube-state-metrics", job_name="test-application-cronjob-3", namespace="test-application-dev"}'
+        values: '1800+0x12'
+      - series: 'kube_job_owner{job="kube-state-metrics", job_name="test-application-cronjob-3", namespace="test-application-dev", owner_kind="CronJob", owner_name="test-application-cronjob"}'
+        values: '1+0x12'
+      - series: 'kube_cronjob_spec_suspend{cronjob="test-application-cronjob", job="kube-state-metrics", namespace="test-application-dev"}'
+        values: '0+0x12'
+
+    promql_expr_test:
+      # assert we're getting the timestamp of the last ran job...
+      - expr: job:kube_job_status_start_time:max
+        eval_time: 0m
+        exp_samples:
+          - labels: 'job:kube_job_status_start_time:max{cronjob="test-application-cronjob", job="test-application-cronjob-3", job_name="test-application-cronjob-3", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+            value: 1800
+
+      # assert that the last ran job did not fail (we expect nil from the rule)
+      - expr: job:kube_job_status_failed:sum
+        eval_time: 0m
+        exp_samples: []
+
+    alert_rule_test:
+      # check that the CronJobStatusFailed alert is NOT firing
+      - eval_time: 60m
+        alertname: CronJobStatusFailed
+        exp_alerts: []

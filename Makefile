@@ -13,7 +13,7 @@ charts/generic-prometheus-alerts/ci/ingress-alerts.yaml: charts/generic-promethe
 charts/generic-prometheus-alerts/ci/compiled-yaml.yaml:
 	@echo "Compiling Chart YAML ..."
 	@cd charts/generic-prometheus-alerts/ci/test-application && helm dependency update
-	@cd charts/generic-prometheus-alerts/ci && helm template test-application test-application --dry-run > compiled-yaml.yaml
+	@cd charts/generic-prometheus-alerts/ci && helm template test-application test-application --dry-run --namespace test-application-dev > compiled-yaml.yaml
 
 build: charts/generic-prometheus-alerts/ci/application-alerts.yaml charts/generic-prometheus-alerts/ci/ingress-alerts.yaml
 

@@ -110,6 +110,17 @@ pods=$(kubectl -n <namespace> get pods --selector=job-name=<job> --output=jsonpa
 kubectl -n <namespace> logs $pods
 ```
 
+### application-cronjob-failed
+
+> CronJob `<namespace>`/`<cronjob>` failed to complete.
+
+You'll need to look at the logs from the (job) pods which this cronjob was running to investigate the issues. You can do this using the logging service or with a couple of commands like so (substituting in the namespace and cronjob name):
+
+```
+pods=$(kubectl -n <namespace> get pods --selector=job-name=<cronjob> --output=jsonpath='{.items[*].metadata.name}')
+kubectl -n <namespace> logs $pods
+```
+
 ### application-hpa-replicas-mismatch
 
 > HPA `<namespace>`/`<hpa>` has not matched the desired number of replicas for longer than 15 minutes.
