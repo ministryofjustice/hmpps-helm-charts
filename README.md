@@ -63,10 +63,10 @@ helm -n my-namespace template <release-name> <directory-containing-project-chart
 
 ## Unit Testing Prometheus Alerts
 
-To run the unit tests you will need both [yq] and promtool installed, these can be installed on a mac via homebrew:
+To run the unit tests you will need both [yq], envsubst and promtool installed, these can be installed on a mac via homebrew:
 
 ```shell
-brew install yq prometheus
+brew install yq prometheus gettext
 ```
 
 Then simply run the following to run the unit tests:
