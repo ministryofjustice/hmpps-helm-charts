@@ -61,4 +61,23 @@ You can also compare the template yaml by running the following both before and 
 helm -n my-namespace template <release-name> <directory-containing-project-chart> --values=<values-file>
 ```
 
+## Unit Testing Prometheus Alerts
+
+To run the unit tests you will need both [yq], envsubst and promtool installed, these can be installed on a mac via homebrew:
+
+```shell
+brew install yq prometheus gettext
+```
+
+Then simply run the following to run the unit tests:
+
+```shell
+make test
+```
+
+More information on how to write a prometheus rule unit test can be found on the prometheus website:
+
+https://www.prometheus.io/docs/prometheus/latest/configuration/unit_testing_rules/
+
 [version_list]: https://structurizr.com/share/56937/documentation/*#2
+[yq]: http://mikefarah.github.io/yq/

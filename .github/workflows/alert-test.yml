@@ -1,0 +1,45 @@
+---
+name: Alert Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  alert-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.4.0
+
+      - name: Install yq
+        uses: chrisdickinson/setup-yq@latest
+        with:
+          yq-version: v4.16.1
+
+      - name: Install promtool
+        run: |
+          echo "Checking the latest version of Promtool"
+          promtoolVersion=$(git ls-remote --tags --refs --sort="v:refname"  git://github.com/prometheus/prometheus | grep -v '[-].*' | tail -n1 | sed 's/.*\///' | cut -c 2-)
+
+          url="https://github.com/prometheus/prometheus/releases/download/v${promtoolVersion}/prometheus-${promtoolVersion}.linux-amd64.tar.gz"
+
+          echo "Downloading Promtool v${promtoolVersion}"
+          curl -s -S -L -o /tmp/promtool_${promtoolVersion} ${url}
+
+          echo "Unzipping Promtool v${promtoolVersion}"
+          tar -zxf /tmp/promtool_${promtoolVersion} --strip-components=1 --directory /usr/local/bin &> /dev/null
+
+      - name: Test Alert Rules
+        run: make test

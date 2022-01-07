@@ -1,4 +1,5 @@
 {{- $targetNamespace := .Release.Namespace }}
+{{- $targetNamespaceUnderscore := .Release.Namespace | replace "-" "_" }}
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
 {{- $targetApplicationRegex := printf "%s.*" .Values.targetApplication }}
 {{- $targetPod := default $targetApplicationRegex .Values.podTargetOverride }}
@@ -27,6 +28,7 @@ spec:
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
+
         - alert: KubePodNotReady
           annotations:
             message: Pod {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.pod {{`}}`}} has been in a non-ready state for longer than 15 minutes.
@@ -36,6 +38,7 @@ spec:
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
+
         - alert: KubeDeploymentGenerationMismatch
           annotations:
             message: Deployment generation for {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.deployment {{`}}`}} does not match, this indicates that the Deployment has failed but has not been rolled back.
@@ -48,6 +51,7 @@ spec:
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
+
         - alert: KubeDeploymentReplicasMismatch
           annotations:
             message: Deployment {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.deployment {{`}}`}} has not matched the expected number of replicas for longer 15 minutes.
@@ -60,6 +64,7 @@ spec:
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
+
         - alert: KubeContainerWaiting
           annotations:
             description: Pod {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.pod {{`}}`}} container {{`{{`}} $labels.container {{`}}`}} has been in waiting state for longer than 1 hour.
@@ -70,6 +75,7 @@ spec:
           for: 1h
           labels:
             severity: {{ .Values.alertSeverity }}
+
         - alert: KubeCronJobRunning
           annotations:
             message: CronJob {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.cronjob {{`}}`}} is taking more than 1h to complete.
@@ -79,6 +85,7 @@ spec:
           for: 1h
           labels:
             severity: {{ .Values.alertSeverity }}
+
         - alert: KubeJobCompletion
           annotations:
             message: Job {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.job_name {{`}}`}} is taking more than six hours to complete.
@@ -89,15 +96,49 @@ spec:
           for: 6h
           labels:
             severity: {{ .Values.alertSeverity }}
-        - alert: KubeJobFailed
+
+        - record: job:kube_job_status_start_time_{{ $targetNamespaceUnderscore }}:max
+          expr: |
+            label_replace(
+              label_replace(
+                max(
+                  kube_job_status_start_time{namespace=~"{{ $targetNamespace }}"}
+                  * ON(job_name,namespace) GROUP_RIGHT()
+                  kube_job_owner{owner_name!="", namespace=~"{{ $targetNamespace }}"}
+                )
+                BY (job_name, owner_name, namespace)
+                == ON(owner_name) GROUP_LEFT()
+                max(
+                  kube_job_status_start_time{namespace=~"{{ $targetNamespace }}"}
+                  * ON(job_name,namespace) GROUP_RIGHT()
+                  kube_job_owner{owner_name!="", namespace=~"{{ $targetNamespace }}"}
+                )
+                BY (owner_name),
+              "job", "$1", "job_name", "(.+)"),
+            "cronjob", "$1", "owner_name", "(.+)")
+
+        - record: job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}:sum
+          expr: |
+            clamp_max(job:kube_job_status_start_time_{{ $targetNamespaceUnderscore }}:max,1)
+              * ON(job) GROUP_LEFT()
+              label_replace(
+                label_replace(
+                  (kube_job_status_failed{namespace=~"{{ $targetNamespace }}"} != 0),
+                  "job", "$1", "job_name", "(.+)"),
+                "cronjob", "$1", "owner_name", "(.+)")
+
+        - alert: CronJobStatusFailed
           annotations:
-            message: Job {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.job_name {{`}}`}} failed to complete.
-            runbook_url: {{ .Values.runbookUrl }}application-job-failed
-            summary: Job failed to complete.
-          expr: kube_job_status_failed{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", job_name=~"{{ $targetJobName }}"} > 0
-          for: 15m
+            message: CronJob {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.cronjob {{`}}`}} is failing.
+            runbook_url: {{ .Values.runbookUrl }}application-cronjob-failed
+            summary: CronJob is failing.
+          expr: |
+            job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}:sum
+            * ON(cronjob,namespace) GROUP_LEFT()
+            (kube_cronjob_spec_suspend == 0)
           labels:
             severity: {{ .Values.alertSeverity }}
+
         - alert: KubeHpaReplicasMismatch
           annotations:
             description: HPA {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.hpa {{`}}`}} has not matched the desired number of replicas for longer than 15 minutes.
@@ -120,6 +161,7 @@ spec:
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
+
         - alert: KubeHpaMaxedOut
           annotations:
             description: HPA {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.hpa {{`}}`}} has been running at max replicas for longer than 15 minutes.
@@ -132,6 +174,7 @@ spec:
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
+
         - alert: KubeQuotaExceeded
           annotations:
             message: Namespace {{`{{`}} $labels.namespace {{`}}`}} is using {{`{{`}} printf "%0.0f" $value {{`}}`}}% of its {{`{{`}} $labels.resource {{`}}`}} quota.
@@ -145,6 +188,7 @@ spec:
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
+
         - alert: KubeContainerOOMKilled
           annotations:
             message: "Container {{`{{`}} $labels.container {{`}}`}} in pod {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.pod {{`}}`}} has been OOM Killed (out of memory) {{`{{`}} $value {{`}}`}} times in the last 10 minutes."
