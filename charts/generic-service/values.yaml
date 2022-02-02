@@ -127,3 +127,4 @@ custommetrics:
   enabled: false
   scrapeInterval: 15s
   metricsPath: /metrics
+  metricsPort: http

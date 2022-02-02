@@ -10,7 +10,11 @@ spec:
     matchLabels:
       {{- include "generic-service.selectorLabels" . | nindent 6 }}
   endpoints:
+    {{- if not (eq (toString .Values.custommetrics.metricsPort) "http") }}
+    - port: metrics
+    {{- else }}
     - port: http
+    {{- end }}
       interval: {{ .Values.custommetrics.scrapeInterval }}
       path: {{ .Values.custommetrics.metricsPath }}
 {{- end }}
