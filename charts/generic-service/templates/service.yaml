@@ -12,6 +12,12 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    {{- if not (eq (toString .Values.custommetrics.metricsPort) "http") }}
+    - port: {{ .Values.service.port | add1 }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+    {{- end }}
   selector:
     {{- include "generic-service.selectorLabels" . | nindent 4 }}
 {{- end }}
