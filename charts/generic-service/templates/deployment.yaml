@@ -53,6 +53,11 @@ spec:
             - name: http
               containerPort: {{ .Values.image.port }}
               protocol: TCP
+            {{- if not (eq (toString .Values.custommetrics.metricsPort) "http") }}
+            - name: metrics
+              containerPort: {{ .Values.custommetrics.metricsPort }}
+              protocol: TCP
+            {{- end }}
           {{- if .Values.livenessProbe }}
           livenessProbe:
 {{ toYaml .Values.livenessProbe | indent 12 }}
