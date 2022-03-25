@@ -31,7 +31,7 @@ jobs:
       - name: Install promtool
         run: |
           echo "Checking the latest version of Promtool"
-          promtoolVersion=$(git ls-remote --tags --refs --sort="v:refname"  git://github.com/prometheus/prometheus | grep -v '[-].*' | tail -n1 | sed 's/.*\///' | cut -c 2-)
+          promtoolVersion=$(git ls-remote --tags --refs --sort="v:refname" https://github.com/prometheus/prometheus.git | grep -v '[-].*' | tail -n1 | sed 's/.*\///' | cut -c 2-)
 
           url="https://github.com/prometheus/prometheus/releases/download/v${promtoolVersion}/prometheus-${promtoolVersion}.linux-amd64.tar.gz"
 
