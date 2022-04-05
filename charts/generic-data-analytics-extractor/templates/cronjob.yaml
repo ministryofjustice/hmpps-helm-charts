@@ -30,37 +30,37 @@ spec:
                 - name: PGHOST
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.databaseSecret }}
+                      name: {{ .Values.databaseSecretName }}
                       key: rds_instance_address
                 - name: PGDATABASE
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.databaseSecret }}
+                      name: {{ .Values.databaseSecretName }}
                       key: database_name
                 - name: PGUSER
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.databaseSecret }}
+                      name: {{ .Values.databaseSecretName }}
                       key: database_username
                 - name: PGPASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.databaseSecret }}
+                      name: {{ .Values.databaseSecretName }}
                       key: database_password
                 - name: S3_DESTINATION
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.analyticalPlatformSecret }}
+                      name: {{ .Values.analyticalPlatformSecretName }}
                       key: destination_bucket
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.analyticalPlatformSecret }}
+                      name: {{ .Values.analyticalPlatformSecretName }}
                       key: access_key_id
                 - name: AWS_SECRET_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.analyticalPlatformSecret }}
+                      name: {{ .Values.analyticalPlatformSecretName }}
                       key: secret_access_key
                 - name: AWS_DEFAULT_REGION
                   value: {{ .Values.awsDefaultRegion }}
