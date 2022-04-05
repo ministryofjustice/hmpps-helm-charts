@@ -1,0 +1,11 @@
+# Declare variables to be passed into your templates.
+
+image:
+  repository: ministryofjustice/data-engineering-data-extractor
+  tag: v1
+
+# Run once daily at 1am
+cronJobSchedule: "0 1 * * *"
+awsDefaultRegion: eu-west-2
+saveEventsLog: "true"
+enabled: false

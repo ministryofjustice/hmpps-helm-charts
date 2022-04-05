@@ -1,0 +1,69 @@
+{{- if .Values.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-data-analytics-extractor
+  labels:
+    app: {{ template "app.fullname" . }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ .Values.cronJobSchedule }}
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  # Check if we fail to create jobs within this 2 minute window and count as a missed schedule
+  # The Cron controller will stop creating jobs after 100 consecutive missed schedules
+  # https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-job-limitations
+  startingDeadlineSeconds: 120
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          restartPolicy: "Never"
+          containers:
+            - name: {{ template "app.fullname" . }}
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: Always
+              args: ["extract_table_names.py && extract_pg_jsonl_snapshot.py && transfer_local_to_s3.sh"]
+              env:
+                - name: PGHOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.databaseSecret }}
+                      key: rds_instance_address
+                - name: PGDATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.databaseSecret }}
+                      key: database_name
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.databaseSecret }}
+                      key: database_username
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.databaseSecret }}
+                      key: database_password
+                - name: S3_DESTINATION
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.analyticalPlatformSecret }}
+                      key: destination_bucket
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.analyticalPlatformSecret }}
+                      key: access_key_id
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.analyticalPlatformSecret }}
+                      key: secret_access_key
+                - name: AWS_DEFAULT_REGION
+                  value: {{ .Values.awsDefaultRegion }}
+                - name: SAVE_EVENTS_LOG
+                  value: {{ .Values.saveEventsLog }}
+{{- end }}
