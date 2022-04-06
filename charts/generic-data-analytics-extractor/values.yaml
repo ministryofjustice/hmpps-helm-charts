@@ -7,5 +7,5 @@ image:
 # Run once daily at 1am
 cronJobSchedule: "0 1 * * *"
 awsDefaultRegion: eu-west-2
-saveEventsLog: "true"
+saveEventsLog: true
 enabled: false
