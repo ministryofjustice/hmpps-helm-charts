@@ -22,7 +22,7 @@ Add this to your project as a dependency, in your `Chart.yaml`:
 ```yaml
 dependencies:
   - name: generic-data-analytics-extractor
-    version: 0.1.0
+    version: 0.1.1
     repository: https://ministryofjustice.github.io/hmpps-helm-charts
 ```
 
