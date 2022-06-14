@@ -25,7 +25,7 @@ spec:
             - name: {{ template "app.fullname" . }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
               imagePullPolicy: Always
-              args: ["extract_table_names.py && extract_pg_jsonl_snapshot.py && transfer_local_to_s3.sh"]
+              args: ["extract_psql_all_tables_to_jsonl.sh && transfer_local_to_s3.sh"]
               env:
                 - name: PGHOST
                   valueFrom:
