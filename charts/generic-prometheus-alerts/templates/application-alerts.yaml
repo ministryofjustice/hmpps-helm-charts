@@ -92,18 +92,6 @@ spec:
           labels:
             severity: {{ .Values.alertSeverity }}
 
-        - alert: KubeJobCompletion
-          annotations:
-            message: Job {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.job_name {{`}}`}} is taking more than six hours to complete.
-            runbook_url: {{ .Values.runbookUrl }}application-job-completion
-            dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
-          expr: |
-            kube_job_spec_completions{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", job_name=~"{{ $targetJobName }}"}
-            - kube_job_status_succeeded{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", job_name=~"{{ $targetJobName }}"} > 0
-          for: 6h
-          labels:
-            severity: {{ .Values.alertSeverity }}
-
         - record: job:kube_job_status_start_time_{{ $targetNamespaceUnderscore }}:max
           expr: |
             label_replace(
