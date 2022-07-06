@@ -3,3 +3,5 @@ generic-prometheus-alerts:
   targetApplication: "test-application"
   runbookUrl: "https://runbook.com/"
   alertSeverity: "alert-severity-tag"
+  rdsAlertsDatabases:
+    cloud-platform-uuid: "test rds"
