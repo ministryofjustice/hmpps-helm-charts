@@ -62,3 +62,25 @@ additionalRuleLabels: {}
 
 # Set the alert threshold for no SNS messages published to topic (minutes).
 # snsAlertsNoMessagesThresholdMinutes: 30
+
+# To monitor AWS RDS instances, add the name of the rds instance in a list.
+# This can be obtained from the instance address in the rds secret in the namespace
+# and should be the first part of the address e.g. cloud-platform-13962204fd879828
+# rdsAlertsDatabases:
+#   database-name-id: "Database nice display name"
+#   database-name-2-id: "Database nice display name 2"
+
+# Set the alert CPU threshold - value between 0 and 100.
+rdsAlertsCPUThreshold: 80
+# Set the alert CPU threshold (minutes).
+rdsAlertsCPUThresholdMinutes: 5
+# Set the alert number of connections threshold.
+# AWS cloudwatch doesn't expose the maximum number of connections, so this needs to be calculated.
+# https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html contains information on how
+# much memory each instance class has e.g. db.t3.small is 2Gib, db.t3.medium is 4GiB.
+# https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections then provides
+# calculations for each database on the maximum number of database connections so for a db.t3.small database it will be
+# LEAST({2Gib/9531392}, 5000) = LEAST({2 * 1024 * 1024 * 1024/9531392}, 5000) = LEAST(225, 5000) = 225.
+rdsAlertsConnectionThreshold: 150
+# Set the alert CPU threshold (minutes).
+rdsAlertsConnectionThresholdMinutes: 5
