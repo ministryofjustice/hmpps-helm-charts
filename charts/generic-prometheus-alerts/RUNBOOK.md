@@ -167,7 +167,7 @@ LEAST({2Gib/9531392}, 5000) = LEAST({2 * 1024 * 1024 * 1024/9531392}, 5000) = LE
 So if you're running a `db.t3.small` postgres database and if you're configured 8 pods, each allowing 30 connections 
 = 240 connections then you'll run out.
 
-The alert should be configured so that it alerts for about 90% utilisation, so it could be that you need to set
+The alert should be configured so that it alerts for about 80% utilisation, so it could be that you need to set
 `rdsAlertsConnectionThreshold` to a more suitable value.
 
 Other reasons why you could run out is if perhaps you're running r2dbc and you've got a connection leak caused by a

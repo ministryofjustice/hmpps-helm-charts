@@ -72,8 +72,10 @@ additionalRuleLabels: {}
 
 # Set the alert CPU threshold - value between 0 and 100.
 rdsAlertsCPUThreshold: 80
+
 # Set the alert CPU threshold (minutes).
 rdsAlertsCPUThresholdMinutes: 5
+
 # Set the alert number of connections threshold.
 # AWS cloudwatch doesn't expose the maximum number of connections, so this needs to be calculated.
 # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html contains information on how
@@ -81,6 +83,7 @@ rdsAlertsCPUThresholdMinutes: 5
 # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections then provides
 # calculations for each database on the maximum number of database connections so for a db.t3.small database it will be
 # LEAST({2Gib/9531392}, 5000) = LEAST({2 * 1024 * 1024 * 1024/9531392}, 5000) = LEAST(225, 5000) = 225.
-rdsAlertsConnectionThreshold: 150
-# Set the alert CPU threshold (minutes).
+rdsAlertsConnectionThreshold: 180
+
+# Set the alert number of connections threshold (minutes).
 rdsAlertsConnectionThresholdMinutes: 5
