@@ -22,7 +22,7 @@ in your applications helm chart `values.yaml` add:
 ```yaml
 generic-prometheus-alerts:
   targetApplication: YOUR-APP-NAME-HERE
-  alertSeverity: AS-GIVEN-BY-CLOUDPLATFORMS
+  alertSeverity: AS-GIVEN-BY-CLOUD-PLATFORM
 ```
 
 Also set any other non-default values or overrides. See available options here:

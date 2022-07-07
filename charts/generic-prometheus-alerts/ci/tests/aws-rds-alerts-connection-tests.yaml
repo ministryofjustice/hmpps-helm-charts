@@ -1,0 +1,35 @@
+---
+rule_files:
+  - ../aws-rds-alerts.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'aws_rds_database_connections_average{dbinstance_identifier="cloud-platform-uuid"}'
+        values: '181 190 181 181 181 190 170'
+
+    alert_rule_test:
+      # assert that the cpu utilisation alert is firing
+      - eval_time: 5m
+        alertname: rds-connection-count
+        exp_alerts:
+          - exp_labels:
+              dbinstance_identifier: cloud-platform-uuid
+              severity: alert-severity-tag
+            exp_annotations:
+              message: RDS database test rds in test-application-dev - there are 190 connections which is over threshold of 180 for last 5 mins. This alert configured by app test-application-dev/test-application.
+              runbook_url: https://runbook.com/rds-connection-count
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/VR46pmwWk/aws-rds?orgId=1&var-datasource=Cloudwatch&var-region=default&var-dbinstanceidentifier=cloud-platform-uuid&from=now-6h&to=now
+              summary: Too many RDS connections
+
+  - interval: 1m
+    input_series:
+      - series: 'aws_rds_database_connections_average{dbinstance_identifier="cloud-platform-uuid"}'
+        values: '180 170 180 190 182 181 170 180'
+
+    alert_rule_test:
+      # assert that the cpu utilisation alert isn't firing as value is on threshold
+      - eval_time: 5m
+        alertname: rds-connection-count
