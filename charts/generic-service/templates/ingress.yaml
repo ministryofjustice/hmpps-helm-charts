@@ -15,7 +15,7 @@ metadata:
     nginx.ingress.kubernetes.io/whitelist-source-range: {{ include "app.joinListWithComma" .Values.allowlist | quote }}
   {{- end }}
     external-dns.alpha.kubernetes.io/set-identifier: {{ $fullName }}-{{ .Release.Namespace }}-green
-  {{- if .Values.ingress.v0_47_enabled }}
+  {{- if not .Values.ingress.v1_2_enabled }}
     kubernetes.io/ingress.class: {{- if .Values.ingress.modsecurity_enabled }} "modsec01" {{- else }} "nginx" {{- end }}
   {{- end }}
   {{- if .Values.ingress.modsecurity_enabled }}
@@ -23,7 +23,7 @@ metadata:
     nginx.ingress.kubernetes.io/modsecurity-snippet: {{ tpl (toYaml .Values.ingress.modsecurity_snippet) . | nindent 6 }}
   {{- end }}
 spec:
-  {{- if not .Values.ingress.v0_47_enabled }}
+  {{- if .Values.ingress.v1_2_enabled }}
   ingressClassName: {{- if .Values.ingress.modsecurity_enabled }} "modsec" {{- else }} "default" {{- end }}
   {{- end }}
   tls:
