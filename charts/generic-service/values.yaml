@@ -43,14 +43,16 @@ service:
 
 ingress:
   enabled: false
+  # v1.2 is the new ingress controller, replacing the existing 0.47 ones
+  # instructions on advised upgrade process - https://mojdt.slack.com/archives/CH6D099DF/p1657794137979789
+  # switching this to true with perform a big bang ingress switch with possible downtime as dns changes
+  v1_2_enabled: false
   annotations:
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
     external-dns.alpha.kubernetes.io/aws-weight: "100"
   host: chart-example.local
   path: /
   tlsSecretName: chart-example-tls
-  # live-1 is blue, live is green
-  contextColour: blue
   modsecurity_enabled: false
   modsecurity_audit_enabled: false
   modsecurity_snippet: |
