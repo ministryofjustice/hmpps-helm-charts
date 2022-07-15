@@ -43,14 +43,13 @@ service:
 
 ingress:
   enabled: false
+  v0_47_enabled: true
   annotations:
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
     external-dns.alpha.kubernetes.io/aws-weight: "100"
   host: chart-example.local
   path: /
   tlsSecretName: chart-example-tls
-  # live-1 is blue, live is green
-  contextColour: blue
   modsecurity_enabled: false
   modsecurity_audit_enabled: false
   modsecurity_snippet: |
