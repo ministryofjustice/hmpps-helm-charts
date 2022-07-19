@@ -47,9 +47,9 @@ ingress:
   # instructions on advised upgrade process - https://mojdt.slack.com/archives/CH6D099DF/p1657794137979789
   # switching this to true with perform a big bang ingress switch with possible downtime as dns changes
   v1_2_enabled: false
+  v0_47_enabled: true
   annotations:
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
-    external-dns.alpha.kubernetes.io/aws-weight: "100"
   host: chart-example.local
   path: /
   tlsSecretName: chart-example-tls
