@@ -1,0 +1,59 @@
+{{- if .Values.postgresDatabaseRestore.enabled -}}
+{{- /*
+This template creates a shell script config map and a cronjob (running every 4 hours).  It should only be enabled in
+the production namespace in order to copy the production database to pre-production.  This is so that the production
+secrets aren't exposed outside the production namespace.  The pre-production secrets should be injected by the cloud
+platform environments repo into the production namespace instead.
+
+The script calls Prison API in pre-production to determine the last NOMIS database restore and if it was more recent
+than the saved restore date then a new backup is created.
+*/}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-restore-script
+  labels:
+    {{- include "generic-service.labels" . | nindent 4 }}
+data:
+  entrypoint.sh: |-
+{{ .Files.Get "postgres-restore.sh" | indent 4 }}
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "generic-service.fullname" . }}-postgres-restore
+  labels:
+    {{- include "generic-service.labels" . | nindent 4 }}
+spec:
+  schedule: "30 */4 * * *"
+  concurrencyPolicy: "Forbid"
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      # Tidy up all jobs after 4 days
+      ttlSecondsAfterFinished: 345600
+      backoffLimit: 0
+      activeDeadlineSeconds: 2400
+      template:
+        spec:
+          containers:
+            - name: postgres-restore
+              image: "ghcr.io/ministryofjustice/hmpps-devops-tools:latest"
+              command:
+                - /bin/entrypoint.sh
+              volumeMounts:
+                - name: postgres-restore-script
+                  mountPath: /bin/entrypoint.sh
+                  readOnly: true
+                  subPath: entrypoint.sh
+    {{- include "postgresRestore.envs" .Values | nindent 14 }}
+          restartPolicy: "Never"
+          volumes:
+            - name: postgres-restore-script
+              configMap:
+                name: postgres-restore-script
+                defaultMode: 0755
+{{- end }}

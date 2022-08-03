@@ -154,3 +154,29 @@ generic-service:
   ingress:
     host: project-name-dev.hmpps.service.justice.gov.uk
 ```
+
+### Postgres database restore cronjob
+Setting 
+```yaml
+---
+postgresDatabaseRestore:
+   enabled: true
+```
+in your `values-prod.yaml`
+will create a scheduled job runs every four hours in production only.  This checks to see if there is a newer version of 
+the NOMIS database since the last database restore and if so then does another restore.  The pre-production credentials
+should be injected into the production namespace and all should then be added as a `namespace_secrets:` section,
+see the `values.yaml` in this repository for an example.
+
+#### Manually running the database restore cronjob
+The restore cronjob script only runs if there is a newer NOMIS database so we need to override the configuration to ensure to force the run.
+We do that by using `jq` to amend the json and adding in the `FORCE_RUN=true` parameter.
+
+```shell
+kubectl create job --dry-run=client --from=cronjob/hmpps-nomis-visits-mapping-service-postgres-restore hmpps-nomis-visits-mapping-service-postgres-restore-<user> -o "json" | jq ".spec.template.spec.containers[0].env += [{ \"name\": \"FORCE_RUN\", \"value\": \"true\"}]" | kubectl apply -f -
+```
+will trigger the job to dump the production database and import into pre-production.
+Job progress can then be seen by running `kubectl logs -f` on the newly created pod.
+
+The last successful restore information is stored in a `restore_status` table in pre-production.
+To find out when the last restore ran connect to the pre-production database and view the contents of the table.
