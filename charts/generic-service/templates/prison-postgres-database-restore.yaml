@@ -17,7 +17,7 @@ metadata:
     {{- include "generic-service.labels" . | nindent 4 }}
 data:
   entrypoint.sh: |-
-{{ .Files.Get "postgres-restore.sh" | indent 4 }}
+{{ .Files.Get "prison-postgres-restore.sh" | indent 4 }}
 
 ---
 apiVersion: batch/v1

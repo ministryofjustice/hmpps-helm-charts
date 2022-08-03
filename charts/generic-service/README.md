@@ -155,7 +155,9 @@ generic-service:
     host: project-name-dev.hmpps.service.justice.gov.uk
 ```
 
-### Postgres database restore cronjob
+### Prison Postgres database restore cronjob
+The NOMIS pre-production database gets refreshed from production approximately every two weeks.  It is normally a good
+idea to copy the other Prison databases at the same time so that the pre-production environment is in sync.
 Setting 
 ```yaml
 ---
@@ -165,8 +167,9 @@ postgresDatabaseRestore:
 in your `values-prod.yaml`
 will create a scheduled job runs every four hours in production only.  This checks to see if there is a newer version of 
 the NOMIS database since the last database restore and if so then does another restore.  The pre-production credentials
-should be injected into the production namespace and all should then be added as a `namespace_secrets:` section,
-see the `values.yaml` in this repository for an example.
+should be injected into the production namespace, see https://github.com/ministryofjustice/cloud-platform-environments/pull/8325
+for an example PR. Both production and pre-production credentials should then be added as a `namespace_secrets:` section,
+see the `values.yaml` in this repository for an example of the secrets.
 
 #### Manually running the database restore cronjob
 The restore cronjob script only runs if there is a newer NOMIS database so we need to override the configuration to ensure to force the run.
