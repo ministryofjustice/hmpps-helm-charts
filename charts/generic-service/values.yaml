@@ -130,3 +130,18 @@ custommetrics:
   scrapeInterval: 15s
   metricsPath: /metrics
   metricsPort: http
+
+postgresDatabaseRestore:
+  enabled: false
+# Required environment secrets for the restore script:
+#  namespace_secrets:
+#    dps-rds-instance-output:
+#      DB_NAME: "database_name"
+#      DB_USER: "database_username"
+#      DB_PASS: "database_password"
+#      DB_HOST: "rds_instance_address"
+#    dps-rds-instance-output-preprod:
+#      DB_NAME_PREPROD: "database_name"
+#      DB_USER_PREPROD: "database_username"
+#      DB_PASS_PREPROD: "database_password"
+#      DB_HOST_PREPROD: "rds_instance_address"
