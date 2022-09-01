@@ -50,7 +50,7 @@ ingress:
   v0_47_enabled: true
   annotations:
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
-  hosts: 
+  hosts:
     - chart-example.local
   path: /
   tlsSecretName: chart-example-tls
