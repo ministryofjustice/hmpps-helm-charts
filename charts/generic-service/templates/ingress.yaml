@@ -24,10 +24,13 @@ metadata:
 spec:
   tls:
   - hosts:
-    - {{ .Values.ingress.host }}
+    {{- range .Values.ingress.hosts }}
+    - {{ . }}
+    {{- end }}  
     {{ if .Values.ingress.tlsSecretName }}secretName: {{ .Values.ingress.tlsSecretName }}{{ end }}
   rules:
-    - host: {{ .Values.ingress.host }}
+    {{- range .Values.ingress.hosts }}
+    - host: {{ . }}
       http:
         paths:
           - path: {{ .Values.ingress.path }}
@@ -37,4 +40,5 @@ spec:
                 name: {{ $fullName }}
                 port:
                   number: {{ .Values.service.port }}
+    {{- end }}
 {{- end }}
