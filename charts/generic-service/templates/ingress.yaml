@@ -26,7 +26,7 @@ spec:
   - hosts:
     {{- range .Values.ingress.hosts }}
     - {{ . }}
-    {{- end }}  
+    {{- end }}
     {{ if .Values.ingress.tlsSecretName }}secretName: {{ .Values.ingress.tlsSecretName }}{{ end }}
   rules:
     {{- range .Values.ingress.hosts }}
