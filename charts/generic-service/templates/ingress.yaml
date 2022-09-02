@@ -25,12 +25,8 @@ metadata:
 spec:
   tls:
   - hosts:
-      - https-example.foo.com
-    secretName: testsecret-tls
-  tls:
-  - hosts:
     {{- range .Values.ingress.hosts }}
-    - {{ . }}
+      - {{ . }}
     {{- end }}
     {{ if .Values.ingress.tlsSecretName }}secretName: {{ .Values.ingress.tlsSecretName }}{{ end }}
   rules:
