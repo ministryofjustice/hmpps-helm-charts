@@ -152,7 +152,8 @@ generic-service:
   replicaCount: 2
 
   ingress:
-    host: project-name-dev.hmpps.service.justice.gov.uk
+    hosts:
+      - project-name-dev.hmpps.service.justice.gov.uk
 ```
 
 ### Prison Postgres database restore cronjob
