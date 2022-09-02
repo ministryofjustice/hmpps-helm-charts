@@ -3,6 +3,7 @@
 {{- $ingressName := print $fullName "-v1-2" }}
 {{- $svcPort := .Values.service.port -}}
 {{- $ingressPath  := .Values.ingress.path -}}
+{{- $hosts := or .Values.ingress.hosts (list .Values.ingress.host) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -26,12 +27,12 @@ spec:
   ingressClassName: {{- if .Values.ingress.modsecurity_enabled }} "modsec" {{- else }} "default" {{- end }}
   tls:
   - hosts:
-    {{- range .Values.ingress.hosts }}
-    - {{ . }}
+    {{- range $hosts }}
+      - {{ . }}
     {{- end }}
     {{ if .Values.ingress.tlsSecretName }}secretName: {{ .Values.ingress.tlsSecretName }}{{ end }}
   rules:
-    {{- range .Values.ingress.hosts }}
+    {{- range $hosts }}
     - host: {{ . }}
       http:
         paths:
