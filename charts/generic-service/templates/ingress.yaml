@@ -25,7 +25,7 @@ metadata:
   {{- end }}
 spec:
   tls:
-  - hosts: 
+  - hosts:
     {{- range $hosts }}
       - {{ . }}
     {{- end }}

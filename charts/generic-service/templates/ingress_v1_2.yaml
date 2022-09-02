@@ -26,7 +26,7 @@ metadata:
 spec:
   ingressClassName: {{- if .Values.ingress.modsecurity_enabled }} "modsec" {{- else }} "default" {{- end }}
   tls:
-  - hosts: 
+  - hosts:
     {{- range $hosts }}
       - {{ . }}
     {{- end }}
