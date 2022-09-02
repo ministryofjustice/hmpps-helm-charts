@@ -2,6 +2,7 @@
 {{- $fullName := include "generic-service.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 {{- $ingressPath  := .Values.ingress.path -}}
+{{- $hosts := or .Values.ingress.hosts (list .Values.ingress.host) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -24,13 +25,13 @@ metadata:
   {{- end }}
 spec:
   tls:
-  - hosts:
-    {{- range .Values.ingress.hosts }}
+  - hosts: 
+    {{- range $hosts }}
       - {{ . }}
     {{- end }}
     {{ if .Values.ingress.tlsSecretName }}secretName: {{ .Values.ingress.tlsSecretName }}{{ end }}
   rules:
-    {{- range .Values.ingress.hosts }}
+    {{- range $hosts }}
     - host: {{ . }}
       http:
         paths:
