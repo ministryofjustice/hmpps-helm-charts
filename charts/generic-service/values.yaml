@@ -52,7 +52,7 @@ ingress:
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
   # 'host' only remains for backwards compatibility. 'hosts' should be used instead
   # One entry in 'hosts'/'host' needs to be no larger than 64 chars if you want a functioning cert.
-  # that entry will be used as the CN for the cert, the others will be SANs. This allows you to have 
+  # that entry will be used as the CN for the cert, the others will be SANs. This allows you to have
   # long, intelligible DNS names (SANs).
   host: chart-example.local
   hosts: []
