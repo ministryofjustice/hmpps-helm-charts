@@ -5,3 +5,4 @@ charts/generic-prometheus-alerts/ci/aws-rds-alerts.yaml
 charts/generic-prometheus-alerts/ci/test-application/Chart.lock
 charts/generic-prometheus-alerts/ci/test-application/Chart.yaml
 charts/generic-prometheus-alerts/ci/test-application/charts
+charts/generic-prometheus-alerts/ci/aws-sqs-alerts.yaml

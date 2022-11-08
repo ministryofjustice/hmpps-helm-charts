@@ -5,3 +5,10 @@ generic-prometheus-alerts:
   alertSeverity: "alert-severity-tag"
   rdsAlertsDatabases:
     cloud-platform-uuid: "test rds"
+  sqsOldestAlertQueueNames:
+    - "oldest-queue"
+    - "other-oldest-queue"
+  sqsNumberAlertQueueNames:
+    - "number-queue"
+    - "other-number-queue"
+  sqsAlertsOldestThreshold: 2
