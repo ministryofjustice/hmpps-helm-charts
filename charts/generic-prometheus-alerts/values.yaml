@@ -44,10 +44,17 @@ extraLabels:
 
 additionalRuleLabels: {}
 
-# To monitor AWS SQS queues, add the name of the queue in a list like this:
+# To monitor AWS SQS queues with oldest message and number of messages alerts, either add the name of the queue in a list like this:
 # sqsAlertsQueueNames:
 #   - "queue-name"
 #   - "queue-name-2"
+# this will add the queues listed to both alerts. If you want to supply different queues to the alerts use:
+# sqsOldestAlertQueueNames:
+#   - "queue-name"
+#   - "queue-name-2"
+# sqsNumberAlertQueueNames:
+#   - "other-queue-name"
+#   - "other-queue-name-2"
 
 # Set the alert threshold for SQS oldest message in the queue (minutes).
 # sqsAlertsOldestThreshold: 30
