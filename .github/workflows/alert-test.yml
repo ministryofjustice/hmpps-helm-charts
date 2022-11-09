@@ -32,7 +32,6 @@ jobs:
         run: |
           echo "Checking the latest version of Promtool"
           promtoolVersion=$(git ls-remote --tags --refs --sort="v:refname" https://github.com/prometheus/prometheus.git | grep -v '[-].*' | tail -n1 | sed 's/.*\///' | cut -c 2-)
-
           url="https://github.com/prometheus/prometheus/releases/download/v${promtoolVersion}/prometheus-${promtoolVersion}.linux-amd64.tar.gz"
 
           echo "Downloading Promtool v${promtoolVersion}"
