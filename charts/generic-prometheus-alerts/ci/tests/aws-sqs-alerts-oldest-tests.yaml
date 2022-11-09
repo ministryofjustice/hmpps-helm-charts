@@ -2,22 +2,22 @@
 rule_files:
   - ../aws-sqs-alerts.yaml
 
-evaluation_interval: 10m
+evaluation_interval: 15m
 
 tests:
   - interval: 1m
     input_series:
       - series: 'aws_sqs_approximate_age_of_oldest_message_maximum{queue_name="oldest-queue"}'
-        values: '150+0x10'
+        values: '150+0x15'
 
     alert_rule_test:
-      # assert that the cpu utilisation alert is firing
-      - eval_time: 10m
+      # assert that the sqs alert is firing
+      - eval_time: 15m
         alertname: SQS-oldest-message
         exp_alerts:
           - exp_labels:
               severity: alert-severity-tag
             exp_annotations:
-              message: "SQS - oldest-queue has message older than 2 mins, check consumers are healthy. This alert configured by app test-application-dev/test-application."
+              message: "SQS - {{ $labels.queue_name }} has message older than 2 mins, check consumers are healthy. This alert configured by app test-application-dev/test-application."
               runbook_url: https://runbook.com/sqs-oldest-message
-              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue=oldest-queue&from=now-6h&to=now
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue={{ $labels.queue_name }}&from=now-6h&to=now
