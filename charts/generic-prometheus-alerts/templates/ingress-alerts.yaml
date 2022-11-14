@@ -1,7 +1,8 @@
 {{- if .Values.ingressAlertsEnabled -}}
 {{- $targetNamespace := .Release.Namespace }}
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
-{{- $targetIngress := default .Values.targetApplication .Values.ingressTargetOverride }}
+{{- $defaultTargetIngress := print .Values.targetApplication ".*" }}
+{{- $targetIngress := default $defaultTargetIngress .Values.ingressTargetOverride }}
 {{- $modSecBlockingStatusCode := default "406" .Values.modSecBlockingStatusCodeOverride }}
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -20,7 +21,7 @@ spec:
             runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
             dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
           expr: |-
-            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status=~"5.*"}[1m]) * 60 > 0) by (ingress, exported_namespace)
+            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}|{{ $targetIngress}}-v1-2", status=~"5.*"}[1m]) * 60 > 0) by (ingress, exported_namespace)
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
