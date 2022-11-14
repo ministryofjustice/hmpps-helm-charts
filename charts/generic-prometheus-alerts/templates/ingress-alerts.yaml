@@ -1,7 +1,8 @@
 {{- if .Values.ingressAlertsEnabled -}}
 {{- $targetNamespace := .Release.Namespace }}
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
-{{- $targetIngress := default .Values.targetApplication .Values.ingressTargetOverride }}
+{{- $defaultTargetIngress := print .Values.targetApplication ".*" }}
+{{- $targetIngress := default $defaultTargetIngress .Values.ingressTargetOverride }}
 {{- $modSecBlockingStatusCode := default "406" .Values.modSecBlockingStatusCodeOverride }}
 ---
 apiVersion: monitoring.coreos.com/v1
