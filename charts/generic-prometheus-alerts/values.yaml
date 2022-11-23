@@ -94,3 +94,6 @@ rdsAlertsConnectionThreshold: 180
 
 # Set the alert number of connections threshold (minutes).
 rdsAlertsConnectionThresholdMinutes: 5
+
+# Set the error window minutes for 5xx ingress
+ingress5xxErrorWindowMinutes: 1
