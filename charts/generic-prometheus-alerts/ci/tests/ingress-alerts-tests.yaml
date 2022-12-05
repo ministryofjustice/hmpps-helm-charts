@@ -120,20 +120,20 @@ tests:
   - interval: 1m
     input_series:
       - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status="406"}'
-        values: '0 21 42'
+        values: '0 21 43'
 
     name: ModSecurityBlocking alert fired as request rate is greater than 20 over the duration of the 1 minute time range window
 
     promql_expr_test:
       # assert that
-      #   at 2m the rate (increase per second) in the last minute: 0.35 ((42 - 21) / 60)
+      #   at 2m the rate (increase per second) in the last minute: 0.35 ((43 - 21) / 60)
       #   which multiplied by 60 is greater than 20
-      #   the average is 21
+      #   the average is 22
       - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"406"}[1m]) * 60 > 20) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples:
           - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
-            value: 21
+            value: 22
 
     alert_rule_test:
       # assert that the ModSecurityBlocking alert is firing
@@ -146,7 +146,7 @@ tests:
               ingress: test-application-ingress
               severity: alert-severity-tag
             exp_annotations:
-              message: "Mod_Security is blocking ingress test-application-dev/test-application-ingress. Blocking http requests at rate of 21 per minute."
+              message: "Mod_Security is blocking ingress test-application-dev/test-application-ingress. Blocking http requests at rate of 22 per minute."
               runbook_url: https://runbook.com/ingress-modsecurity-blocking
               dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application
 
