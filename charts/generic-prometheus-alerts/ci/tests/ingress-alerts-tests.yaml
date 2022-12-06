@@ -14,11 +14,12 @@ tests:
 
     name: 5xxErrorResponses alert fired as request rate increases over the duration of the 1 minute time range window
 
+    # this is here to help folks better understand the promql expression
+    # assert that
+    #   at 2m the rate (increase per second) in the last minute: for 500 requests it's 0.03 ((3 - 1) / 60), for 501 requests it's 0.05 ((5 - 2) / 60)
+    #   which is greater than 0
+    #   the average of those is 0.041
     promql_expr_test:
-      # assert that
-      #   at 2m the rate (increase per second) in the last minute: for 500 requests it's 0.03 ((3 - 1) / 60), for 501 requests it's 0.05 ((5 - 2) / 60)
-      #   which is greater than 0
-      #   the average of those is 0.041
       - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples:
@@ -47,8 +48,9 @@ tests:
 
     name: 5xxErrorResponses alert not fired as request rate decreases over the duration of the 1 minute time range window
 
+    # this is here to help folks better understand the promql expression
+    # at 2m the rate (increase per second) in the last minute: 0 which is not greater than 0, assert nothing is returned
     promql_expr_test:
-      # at 2m the rate (increase per second) in the last minute: 0 which is not greater than 0, assert nothing is returned
       - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples: []
@@ -69,11 +71,12 @@ tests:
 
     name: RatelimitBlocking alert fired as request rate increases over the duration of the 1 minute time range window
 
+    # this is here to help folks better understand the promql expression
+    # assert that
+    #   at 2m the rate (increase per second) in the last minute: 0.03 ((3 - 1) / 60)
+    #   which is greater than 0
+    #   the average is 0.03
     promql_expr_test:
-      # assert that
-      #   at 2m the rate (increase per second) in the last minute: 0.03 ((3 - 1) / 60)
-      #   which is greater than 0
-      #   the average is 0.03
       - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"429"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples:
@@ -102,8 +105,9 @@ tests:
 
     name: RatelimitBlocking alert not fired as request rate decreases over the duration of the 1 minute time range window
 
+    # this is here to help folks better understand the promql expression
+    # at 2m the rate (increase per second) in the last minute: 0 which is not greater than 0, assert nothing is returned
     promql_expr_test:
-      # at 2m the rate (increase per second) in the last minute: 0 which is not greater than 0, assert nothing is returned
       - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"429"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples: []
@@ -124,12 +128,13 @@ tests:
 
     name: ModSecurityBlocking alert fired as request rate is greater than 20 over the duration of the 1 minute time range window
 
+    # this is here to help folks better understand the promql expression
+    # assert that
+    #   at 2m the rate (increase per second) in the last minute: 0.35 ((43 - 21) / 60)
+    #   which is greater than 0.33
+    #   the average is 0.36
     promql_expr_test:
-      # assert that
-      #   at 2m the rate (increase per second) in the last minute: 0.35 ((43 - 21) / 60)
-      #   which multiplied by 60 is greater than 20
-      #   the average is 22
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"406"}[1m]) > 0.333) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"406"}[1m]) > 0.33) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples:
           - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
@@ -157,8 +162,9 @@ tests:
 
     name: ModSecurityBlocking alert not fired as request rate is equal to the threshold over the duration of the 1 minute time range window
 
+    # this is here to help folks better understand the promql expression
+    # at 2m the rate (increase per second) in the last minute: 0.3 ((38 - 20) / 60) which not greater than 0.33, assert nothing is returned
     promql_expr_test:
-      # at 2m the rate (increase per second) in the last minute: 0.3 ((38 - 20) / 60) which not greater than 0.33, assert nothing is returned
       - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"406"}[1m]) > 0.33) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples: []
