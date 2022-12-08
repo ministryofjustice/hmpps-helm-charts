@@ -22,7 +22,7 @@ spec:
             runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
             dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
           expr: |-
-            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutes }}m]) * 60 > 0) by (ingress, exported_namespace)
+            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutes }}m]) > 0) by (ingress, exported_namespace)
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -32,17 +32,17 @@ spec:
             runbook_url: {{ .Values.runbookUrl }}ingress-rate-limiting
             dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
           expr: |-
-            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status="429"}[1m]) * 60 > 0) by (ingress, exported_namespace)
+            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status="429"}[1m]) > 0) by (ingress, exported_namespace)
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
         - alert: ModSecurityBlocking
           annotations:
-            message: Mod_Security is blocking ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}. Blocking http requests at rate of {{`{{`}} printf "%0.0f" $value {{`}}`}} per minute.
+            message: Mod_Security is blocking ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}. Blocking http requests at rate of {{`{{`}} printf "%.2f" $value {{`}}`}} per second.
             runbook_url: {{ .Values.runbookUrl }}ingress-modsecurity-blocking
             dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
           expr: |-
-            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status="{{ $modSecBlockingStatusCode }}"}[1m]) * 60 > 20) by (ingress, exported_namespace)
+            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status="{{ $modSecBlockingStatusCode }}"}[1m]) > 0.33) by (ingress, exported_namespace)
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
