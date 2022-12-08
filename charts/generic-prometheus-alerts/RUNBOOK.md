@@ -24,7 +24,7 @@ The best course of action is to check the application and ingress logs and inves
 
 ### ingress-modsecurity-blocking
 
-> Mod_Security is blocking ingress `<namespace>`/`<service>`. Blocking http requests at rate of `<rate>` per minute.
+> Mod_Security is blocking ingress `<namespace>`/`<service>`. Blocking http requests at rate of `<rate>` per second.
 
 The modsecurity module (part of the NGINX ingress) has been blocking requests to your application at an elevated rate for over 1 minute. This is most likely due to the modsecurity rules detecting what it deem malicious requests.
 
@@ -140,6 +140,8 @@ Your application container is using more memory than it's currently configured t
 
 If your application genuinely needs more memory you can either set memory requests and limits in your application helm chart - this will affect only your container/pod - or you can also increase the default requests and limits for all pods in your namespace by editing the `limitrange` in your namespace (via [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments)).
 
+## RDS Alerts
+
 ### rds-cpu-utilisation
 
 > RDS database `<database>` in `<namespace>` - CPU utilisation at `XX` which is over threshold of `YY` for last 5 mins.
@@ -173,9 +175,11 @@ The alert should be configured so that it alerts for about 80% utilisation, so i
 Other reasons why you could run out is if perhaps you're running r2dbc and you've got a connection leak caused by a
 [bug](https://github.com/r2dbc/r2dbc-pool/issues/165).
 
+## SQS Alerts
+
 ### sqs-oldest-message
 
-> SQS - {{ $sqsLabelQueueName }} has message older than {{ $sqsAlertsOldestThreshold }}mins, check consumers are healthy. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
+> SQS - {{ $sqsLabelQueueName }} has message older than {{ $sqsAlertsOldestThreshold }} mins, check consumers are healthy. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
 
 ### sqs-number-of-messages
 

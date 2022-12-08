@@ -3,7 +3,7 @@
 Here you will find a common place for helm charts used by HMPPS projects/services.
 ([Click here][version_list] to see which services use them.)
 
-The charts are built and published via github actions and github pages, see <https://github.com/helm/chart-releaser>
+The charts are built and published via GitHub Actions and GitHub pages, see <https://github.com/helm/chart-releaser>
 
 ## Quick start
 
@@ -63,7 +63,7 @@ helm -n my-namespace template <release-name> <directory-containing-project-chart
 
 ## Unit Testing Prometheus Alerts
 
-To run the unit tests you will need both [yq], envsubst and promtool installed, these can be installed on a mac via homebrew:
+To run the unit tests you will need [yq], envsubst, and promtool installed, these can be installed on a Mac via homebrew:
 
 ```shell
 brew install yq prometheus gettext
@@ -75,9 +75,7 @@ Then simply run the following to run the unit tests:
 make test
 ```
 
-More information on how to write a prometheus rule unit test can be found on the prometheus website:
-
-https://www.prometheus.io/docs/prometheus/latest/configuration/unit_testing_rules/
+More information on how to write a Prometheus rule unit test can be found on the Prometheus docs, see <https://www.prometheus.io/docs/prometheus/latest/configuration/unit_testing_rules/>
 
 [version_list]: https://structurizr.com/share/56937/documentation/*#2
-[yq]: http://mikefarah.github.io/yq/
+[yq]: https://mikefarah.gitbook.io/yq/
