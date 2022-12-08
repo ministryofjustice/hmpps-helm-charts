@@ -23,11 +23,6 @@ jobs:
         with:
           version: v3.10.2
 
-      - name: Install yq
-        uses: chrisdickinson/setup-yq@latest
-        with:
-          yq-version: v4.16.1
-
       - name: Install promtool
         run: |
           echo "Checking the latest version of Promtool"
