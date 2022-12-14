@@ -1,4 +1,4 @@
-{{- if and .Values.ingress.enabled .Values.ingress.v1_2_enabled -}}
+{{- if .Values.ingress.enabled -}}
 {{- $fullName := include "generic-service.fullname" . -}}
 {{- $ingressName := print $fullName "-v1-2" }}
 {{- $svcPort := .Values.service.port -}}
