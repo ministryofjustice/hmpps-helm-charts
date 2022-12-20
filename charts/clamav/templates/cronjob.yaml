@@ -1,4 +1,4 @@
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ template "app.fullname" . }}
@@ -12,6 +12,7 @@ spec:
   startingDeadlineSeconds: 200
   jobTemplate:
     spec:
+      # Tidy up all jobs after 1 day
       ttlSecondsAfterFinished: 86400
       template:
         spec:
