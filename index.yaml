@@ -3,6 +3,15 @@ entries:
   clamav:
   - apiVersion: v1
     appVersion: "1.0"
+    created: "2022-12-21T08:32:59.386144866Z"
+    description: A Helm chart for Kubernetes
+    digest: 1424ec920c55e92a59cdc67cb75ba8d253baf2613217f3688b267b989939e628
+    name: clamav
+    urls:
+    - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/clamav-0.1.7/clamav-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v1
+    appVersion: "1.0"
     created: "2021-07-07T15:23:35.65170696Z"
     description: A Helm chart for Kubernetes
     digest: 48744f1e50da3b2d88191ee30992c295da88b808b91f62ddfce8987e58a50389
@@ -660,4 +669,4 @@ entries:
     urls:
     - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-service-1.0.0/generic-service-1.0.0.tgz
     version: 1.0.0
-generated: "2022-12-14T14:00:17.109106925Z"
+generated: "2022-12-21T08:32:59.386703871Z"
