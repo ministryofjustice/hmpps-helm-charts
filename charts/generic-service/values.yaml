@@ -43,6 +43,12 @@ service:
 
 ingress:
   enabled: false
+  # v1.2 is the ingress controller for Cloud Platform
+  v1_2_enabled: true
+  # if not hosted in Cloud Platform (e.g. digital studio hosting) then you might need to use
+  # the legacy controller with deprecated ingress class annotation instead.
+  # see https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#deprecating-the-ingress-class-annotation
+  legacy_enabled: false
   annotations:
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
   # 'host' only remains for backwards compatibility. 'hosts' should be used instead
