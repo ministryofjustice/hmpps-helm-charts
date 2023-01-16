@@ -3,6 +3,8 @@
 Here you will find a common place for helm charts used by HMPPS projects/services.
 ([Click here][version_list] to see which services use them.)
 
+**Worth bearing in mind when making changes** - these charts can be used by services running in clusters hosted on CloudPlatform (#ask-cloud-platform) or Digital Studio Ops (#ask-digital-studio-ops), and they may have different configuration. The paramter `dso_enabled` was introduced to toggle features for services running in the DSO cluster.
+
 The charts are built and published via GitHub Actions and GitHub pages, see <https://github.com/helm/chart-releaser>
 
 ## Quick start
