@@ -15,14 +15,14 @@ generic-data-analytics-extractor:
   enabled: true
 ```
 
-## Quick start
+## Quick Start
 
 Add this to your project as a dependency, in your `Chart.yaml`:
 
 ```yaml
 dependencies:
   - name: generic-data-analytics-extractor
-    version: 0.1.3
+    version: 0.2.0
     repository: https://ministryofjustice.github.io/hmpps-helm-charts
 ```
 
@@ -37,3 +37,14 @@ generic-data-analytics-extractor:
 Also set any other non-default values or overrides. See available options here:
 
 [generic-data-analytics-extractor/values.yaml](./values.yaml)
+
+## Modifying Extractor Scripts
+
+To modify the scripts run during the cron job you can pass in an optional `args` command e.g.:
+
+```yaml
+generic-data-analytics-extractor:
+  args: YOUR-ARGS-HERE
+```
+
+Available scripts provided by the docker image can ber found in the [ministryofjustice/data-engineering-data-extractor](https://github.com/ministryofjustice/data-engineering-data-extractor) repo.

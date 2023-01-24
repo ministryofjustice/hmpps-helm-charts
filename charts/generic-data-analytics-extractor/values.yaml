@@ -9,3 +9,4 @@ cronJobSchedule: "0 0 * * *"
 awsDefaultRegion: eu-west-2
 saveEventsLog: true
 enabled: false
+args: "extract_table_names.py && extract_pg_jsonl_snapshot.py && transfer_local_to_s3.sh"
