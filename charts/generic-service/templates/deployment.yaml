@@ -66,6 +66,10 @@ spec:
           readinessProbe:
 {{ toYaml .Values.readinessProbe | indent 12 }}
           {{- end }}
+          {{- if .Values.startupProbe }}
+          startupProbe:
+{{ toYaml .Values.startupProbe | indent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 {{- include "deployment.envs" .Values | nindent 10 }}
