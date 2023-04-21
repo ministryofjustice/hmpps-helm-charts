@@ -1,0 +1,56 @@
+{{- if .Values.scheduledDowntime.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "generic-service.fullname" . | trunc 43 }}-shutdown
+  labels:
+    {{- include "generic-service.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.scheduledDowntime.shutdown }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 345600 # 4 days
+      template:
+        spec:
+          containers:
+            - name: kubectl
+              image: bitnami/kubectl:latest
+              args:
+                - scale
+                - deploy
+                - {{ include "generic-service.fullname" . }}
+                - --replicas=0
+          restartPolicy: OnFailure
+          serviceAccountName: {{ .Values.scheduledDowntime.serviceAccountName }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "generic-service.fullname" . | trunc 43 }}-startup
+  labels:
+    {{- include "generic-service.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.scheduledDowntime.startup }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 345600 # 4 days
+      template:
+        spec:
+          containers:
+            - name: kubectl
+              image: bitnami/kubectl:latest
+              args:
+                - scale
+                - deploy
+                - {{ include "generic-service.fullname" . }}
+                - --current-replicas=0
+                - --replicas={{ .Values.replicaCount }}
+          restartPolicy: OnFailure
+          serviceAccountName: {{ .Values.scheduledDowntime.serviceAccountName }}
+{{- end }}

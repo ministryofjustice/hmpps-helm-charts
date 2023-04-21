@@ -148,3 +148,11 @@ postgresDatabaseRestore:
 #      DB_USER_PREPROD: "database_username"
 #      DB_PASS_PREPROD: "database_password"
 #      DB_HOST_PREPROD: "rds_instance_address"
+
+scheduledDowntime:
+  enabled: false
+  # Start at 6am UTC Monday-Friday
+  startup: '0 6 * * 1-5'
+  # Stop at 10pm UTC Monday-Friday
+  shutdown: '0 22 * * 1-5'
+  serviceAccountName: scheduled-downtime-serviceaccount
