@@ -159,14 +159,14 @@ generic-service:
 ### Prison Postgres database restore cronjob
 The NOMIS pre-production database gets refreshed from production approximately every two weeks.  It is normally a good
 idea to copy the other Prison databases at the same time so that the pre-production environment is in sync.
-Setting 
+Setting
 ```yaml
 ---
 postgresDatabaseRestore:
-   enabled: true
+  enabled: true
 ```
 in your `values-prod.yaml`
-will create a scheduled job runs every four hours in production only.  This checks to see if there is a newer version of 
+will create a scheduled job runs every four hours in production only.  This checks to see if there is a newer version of
 the NOMIS database since the last database restore and if so then does another restore.  The pre-production credentials
 should be injected into the production namespace, see https://github.com/ministryofjustice/cloud-platform-environments/pull/8325
 for an example PR. Both production and pre-production credentials should then be added as a `namespace_secrets:` section,
@@ -184,3 +184,65 @@ Job progress can then be seen by running `kubectl logs -f` on the newly created 
 
 The last successful restore information is stored in a `restore_status` table in pre-production.
 To find out when the last restore ran connect to the pre-production database and view the contents of the table.
+
+### Scheduled downtime
+
+For cost saving purposes, MOJ Cloud Platform provides an option to shut down RDS databases overnight in non-production
+environment.
+[Check the user guide for more information](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/relational-databases/create.html#non-production).
+
+In addition to shutting down the database, this chart also provides an option to schedule shutdown and startup of pods.
+
+#### Service Account
+
+To enable this feature, you first need to add a `scheduled-downtime-serviceaccount` Service Account to your namespace,
+with permissions to scale your deployment.
+
+Example: [scheduled-downtime.tf](https://github.com/ministryofjustice/cloud-platform-environments/blob/23fdd1a1b13e1ede43f778b7be6c8765939f27a0/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-probation-integration-services-dev/resources/scheduled-downtime.tf)
+
+```terraform
+module "scheduled_downtime_service_account" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-serviceaccount?ref=0.8.1"
+
+  namespace          = var.namespace
+  kubernetes_cluster = var.kubernetes_cluster
+
+  serviceaccount_name  = "scheduled-downtime-serviceaccount"
+  role_name            = "scheduled-downtime-serviceaccount-role"
+  rolebinding_name     = "scheduled-downtime-serviceaccount-rolebinding"
+  serviceaccount_rules = [
+    {
+      api_groups = ["apps"]
+      resources  = ["deployments"]
+      verbs      = ["get"]
+    },
+    {
+      api_groups = ["apps"]
+      resources  = ["deployments/scale"]
+      verbs      = ["get", "update", "patch"]
+    }
+  ]
+}
+```
+
+#### Configuration values
+
+Once you have a service account, add the following to your `values-dev.yaml` and `values-preprod.yaml` to enable the
+cron jobs:
+
+```yaml
+scheduledDowntime:
+  enabled: true
+```
+
+By default, this will shut down pods between 10pm-6am UTC on weekdays and all day on weekends.
+To change this schedule, update the `startup` and `shutdown` values:
+
+```yaml
+---
+scheduledDowntime:
+  enabled: true
+  startup: '0 6 * * 1-5' # Start at 6am UTC Monday-Friday
+  shutdown: '0 22 * * 1-5' # Stop at 10pm UTC Monday-Friday
+  serviceAccountName: scheduled-downtime-serviceaccount # This must match the service account name in the Terraform module
+```
