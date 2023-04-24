@@ -16,9 +16,10 @@ spec:
       template:
         spec:
           containers:
-            - name: kubectl
-              image: bitnami/kubectl:latest
+            - name: hmpps-devops-tools
+              image: ghcr.io/ministryofjustice/hmpps-devops-tools:latest
               args:
+                - kubectl
                 - scale
                 - deploy
                 - {{ include "generic-service.fullname" . }}
@@ -43,9 +44,10 @@ spec:
       template:
         spec:
           containers:
-            - name: kubectl
-              image: bitnami/kubectl:latest
+            - name: hmpps-devops-tools
+              image: ghcr.io/ministryofjustice/hmpps-devops-tools:latest
               args:
+                - kubectl
                 - scale
                 - deploy
                 - {{ include "generic-service.fullname" . }}
