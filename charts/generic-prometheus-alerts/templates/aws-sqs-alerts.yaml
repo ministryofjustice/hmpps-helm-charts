@@ -7,6 +7,7 @@
   {{- $sqsAlertsOldestThreshold := default "30" .Values.sqsAlertsOldestThreshold }}
   {{- $sqsAlertsTotalMessagesThreshold := default "100" .Values.sqsAlertsTotalMessagesThreshold }}
   {{- $sqsLabelQueueName := printf "{{ $labels.queue_name }}"}}
+  {{- $businessOrAllHoursExpression := ternary "and ON() business_hours" "" .Values.businessHoursOnly}}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
@@ -18,6 +19,12 @@ spec:
   groups:
     - name: {{ $targetApplication }}-sqs
       rules:
+        - record: business_day
+          expr: 0 < day_of_week() < 6
+        - record: business_hour
+          expr: 7= < hour() < 18
+        - record: business_hours
+          expr: business_day and business_hour
 {{ if $sqsOldestAlertQueueNames }}
         - alert: SQS-oldest-message
           annotations:
@@ -25,7 +32,8 @@ spec:
             runbook_url: {{ $.Values.runbookUrl }}sqs-oldest-message
             dashboard_url: {{ $.Values.grafanaUrl }}/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue={{ $sqsLabelQueueName }}&from=now-6h&to=now
           expr: |-
-            sum(aws_sqs_approximate_age_of_oldest_message_maximum{queue_name=~"{{ join "|" $sqsOldestAlertQueueNames }}"} offset 5m) by (queue_name) > {{ $sqsAlertsOldestThreshold }} * 60
+            (sum(aws_sqs_approximate_age_of_oldest_message_maximum{queue_name=~"{{ join "|" $sqsOldestAlertQueueNames }}"} offset 5m) by (queue_name) > {{ $sqsAlertsOldestThreshold }} * 60)
+            {{ $businessOrAllHoursExpression }}
           for: 10m
           labels:
             severity: {{ $.Values.alertSeverity }}
@@ -37,7 +45,8 @@ spec:
             runbook_url: {{ $.Values.runbookUrl }}sqs-number-of-messages
             dashboard_url: {{ $.Values.grafanaUrl }}/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue={{ $sqsLabelQueueName }}&from=now-6h&to=now
           expr: |-
-            sum(aws_sqs_approximate_number_of_messages_visible_maximum{queue_name=~"{{ join "|" $sqsNumberAlertQueueNames }}"} offset 5m) by (queue_name) > {{ $sqsAlertsTotalMessagesThreshold }}
+            (sum(aws_sqs_approximate_number_of_messages_visible_maximum{queue_name=~"{{ join "|" $sqsNumberAlertQueueNames }}"} offset 5m) by (queue_name) > {{ $sqsAlertsTotalMessagesThreshold }})
+            {{ $businessOrAllHoursExpression }}
           for: 10m
           labels:
             severity: {{ $.Values.alertSeverity }}

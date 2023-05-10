@@ -97,3 +97,6 @@ rdsAlertsConnectionThresholdMinutes: 5
 
 # Set the error window minutes for 5xx ingress
 ingress5xxErrorWindowMinutes: 1
+
+# Alert for business hours only - 7am to 6pm UTC (8am to 7pm BST) on week days (Monday to Friday)
+businessHoursOnly: false

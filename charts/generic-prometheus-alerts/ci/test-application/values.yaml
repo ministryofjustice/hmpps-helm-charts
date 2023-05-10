@@ -5,3 +5,5 @@ generic-prometheus-alerts:
   alertSeverity: "alert-severity-tag"
   rdsAlertsDatabases:
     cloud-platform-uuid: "test rds"
+  sqsAlertsQueueNames:
+    - "queue-name"
