@@ -94,7 +94,9 @@ spec:
             runbook_url: {{ .Values.runbookUrl }}application-cronjob-running
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: CronJob taking a long time to complete.
-          expr: time() - kube_cronjob_next_schedule_time{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", cronjob=~"{{ $targetCronjob }}"} > 3600
+          expr: |-
+            time() - kube_cronjob_next_schedule_time{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", cronjob=~"{{ $targetCronjob }}"} > 3600
+            {{ $businessOrAllHoursExpression }}
           for: 1h
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -118,7 +120,7 @@ spec:
                 BY (owner_name),
               "job", "$1", "job_name", "(.+)"),
             "cronjob", "$1", "owner_name", "(.+)")
-
+            {{ $businessOrAllHoursExpression }}
         - record: job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}:sum
           expr: |
             clamp_max(job:kube_job_status_start_time_{{ $targetNamespaceUnderscore }}:max,1)
@@ -128,7 +130,7 @@ spec:
                   (kube_job_status_failed{namespace=~"{{ $targetNamespace }}"} != 0),
                   "job", "$1", "job_name", "(.+)"),
                 "cronjob", "$1", "owner_name", "(.+)")
-
+            {{ $businessOrAllHoursExpression }}
         - alert: CronJobStatusFailed
           annotations:
             message: CronJob {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.cronjob {{`}}`}} is failing.
@@ -136,9 +138,10 @@ spec:
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: CronJob is failing.
           expr: |
-            job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}:sum
+            (job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}:sum
             * ON(cronjob,namespace) GROUP_LEFT()
-            (kube_cronjob_spec_suspend == 0)
+            (kube_cronjob_spec_suspend == 0))
+            {{ $businessOrAllHoursExpression }}
           labels:
             severity: {{ .Values.alertSeverity }}
 
