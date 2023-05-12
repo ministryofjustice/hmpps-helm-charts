@@ -5,6 +5,7 @@
 {{- $rdsAlertsCPUThresholdMinutes := .Values.rdsAlertsCPUThresholdMinutes }}
 {{- $rdsAlertsConnectionThreshold := .Values.rdsAlertsConnectionThreshold }}
 {{- $rdsAlertsConnectionThresholdMinutes := .Values.rdsAlertsConnectionThresholdMinutes }}
+{{- $businessOrAllHoursExpression := ternary "and ON() hmpps_business_hours" "" .Values.businessHoursOnly}}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
@@ -25,6 +26,7 @@ spec:
             summary: RDS CPU usage too high
           expr: |-
             aws_rds_cpuutilization_average{dbinstance_identifier='{{ $key }}'} > {{ $rdsAlertsCPUThreshold }}
+            {{ $businessOrAllHoursExpression }}
           for: {{ $rdsAlertsCPUThresholdMinutes }}m
           labels:
             severity: {{ $.Values.alertSeverity }}
@@ -36,6 +38,7 @@ spec:
             summary: Too many RDS connections
           expr: |-
             aws_rds_database_connections_average{dbinstance_identifier='{{ $key }}'} > {{ $rdsAlertsConnectionThreshold }}
+            {{ $businessOrAllHoursExpression }}
           for: {{ $rdsAlertsConnectionThresholdMinutes }}m
           labels:
             severity: {{ $.Values.alertSeverity }}
