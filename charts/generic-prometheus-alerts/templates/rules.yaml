@@ -1,4 +1,5 @@
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
+{{- $targetApplicationUnderscore := .Values.targetApplication | replace "-" "_" }}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
@@ -10,7 +11,7 @@ spec:
   groups:
     - name: {{ $targetApplication }}-rules
       rules:
-        - record: summer_time_offset
+        - record: {{ $targetApplicationUnderscore }}:summer_time_offset
           expr: |
             (vector(1) and (month() > 3 and month() < 10))
             or
@@ -21,11 +22,11 @@ spec:
             (vector(1) and ((month() == 10 and hour() < 1) or (month() == 3 and hour() > 0)) and ((day_of_month() >= 25) and (day_of_week() == 0)))
             or
             vector(0)
-        - record: british_time
-          expr: time() + 3600 * summer_time_offset
-        - record: hmpps_business_day
-          expr: 0 < day_of_week(british_time) < 6
-        - record: hmpps_business_hour
-          expr: 8 <= hour(british_time) < 18
-        - record: hmpps_business_hours
-          expr: hmpps_business_hour and hmpps_business_day
+        - record: {{ $targetApplicationUnderscore }}:british_time
+          expr: time() + 3600 * {{ $targetApplicationUnderscore }}:summer_time_offset
+        - record: {{ $targetApplicationUnderscore }}:business_day
+          expr: 0 < day_of_week({{ $targetApplicationUnderscore }}:british_time) < 6
+        - record: {{ $targetApplicationUnderscore }}:business_hour
+          expr: 8 <= hour({{ $targetApplicationUnderscore }}:british_time) < 18
+        - record: {{ $targetApplicationUnderscore }}:business_hours
+          expr: {{ $targetApplicationUnderscore }}:business_hour and {{ $targetApplicationUnderscore }}:business_day

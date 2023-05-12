@@ -8,26 +8,26 @@ tests:
   - interval: 1h
     promql_expr_test:
       # 1970-01-02T07:00 UTC is Friday, not working hour
-      - expr: hmpps_business_hours
+      - expr: test_application:business_hours
         eval_time: 31h
       # 1970-01-02T08:00 UTC is Friday, working hour
-      - expr: hmpps_business_hours
+      - expr: test_application:business_hours
         eval_time: 32h
         exp_samples:
-          - labels: '{__name__="hmpps_business_hours"}'
+          - labels: '{__name__="test_application:business_hours"}'
             value: 8
       # 1970-01-03T08:00 UTC is Saturday, not working day
-      - expr: hmpps_business_hours
+      - expr: test_application:business_hours
         eval_time: 56h
       # 1970-01-05T09:00 UTC is Monday, working hour
-      - expr: hmpps_business_hours
+      - expr: test_application:business_hours
         eval_time: 105h
         exp_samples:
-          - labels: '{__name__="hmpps_business_hours"}'
+          - labels: '{__name__="test_application:business_hours"}'
             value: 9
       # 1970-04-01T07:00 UTC (08:00 BST) is Monday, working hour
-      - expr: hmpps_business_hours
+      - expr: test_application:business_hours
         eval_time: 2167h
         exp_samples:
-          - labels: '{__name__="hmpps_business_hours"}'
+          - labels: '{__name__="test_application:business_hours"}'
             value: 8

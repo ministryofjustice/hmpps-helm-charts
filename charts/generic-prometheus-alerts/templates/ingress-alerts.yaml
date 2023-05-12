@@ -4,7 +4,8 @@
 {{- $defaultTargetIngress := print .Values.targetApplication ".*" }}
 {{- $targetIngress := default $defaultTargetIngress .Values.ingressTargetOverride }}
 {{- $modSecBlockingStatusCode := default "406" .Values.modSecBlockingStatusCodeOverride }}
-{{- $businessOrAllHoursExpression := ternary "and ON() hmpps_business_hours" "" .Values.businessHoursOnly}}
+{{- $targetApplicationUnderscore := .Values.targetApplication | replace "-" "_" }}
+{{- $businessOrAllHoursExpression := ternary "and ON() {{ $targetApplicationUnderscore }}:business_hours" "" .Values.businessHoursOnly}}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
