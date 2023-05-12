@@ -7,6 +7,8 @@
 {{- $targetJobName := default $targetApplicationRegex .Values.jobTargetOverride }}
 {{- $targetCronjob := default $targetApplicationRegex .Values.cronjobTargetOverride }}
 {{- $targetHpa := default .Values.targetApplication .Values.hpaTargetOverride }}
+{{- $targetApplicationUnderscore := .Values.targetApplication | replace "-" "_" }}
+{{- $businessOrAllHoursExpression := ternary "and ON() {{ $targetApplicationUnderscore }}:business_hours" "" .Values.businessHoursOnly}}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
@@ -26,6 +28,7 @@ spec:
             summary: Pod is crash looping.
           expr: |
             rate(kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}"}[10m]) * 60 * 5 > 0
+            {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -36,7 +39,9 @@ spec:
             runbook_url: {{ .Values.runbookUrl }}application-pod-notready
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: Pod has been in a non-ready state for more than 15 minutes.
-          expr: sum by (namespace, pod) (kube_pod_status_phase{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}", phase=~"Pending|Unknown"}) > 0
+          expr: |-
+            sum by (namespace, pod) (kube_pod_status_phase{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}", phase=~"Pending|Unknown"}) > 0
+            {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -48,9 +53,10 @@ spec:
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: Deployment generation mismatch due to possible roll-back
           expr: |-
-            kube_deployment_status_observed_generation{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", deployment=~"{{ $targetDeployment }}"}
+            (kube_deployment_status_observed_generation{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", deployment=~"{{ $targetDeployment }}"}
               !=
-            kube_deployment_metadata_generation{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", deployment=~"{{ $targetDeployment }}"}
+            kube_deployment_metadata_generation{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", deployment=~"{{ $targetDeployment }}"})
+            {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -62,9 +68,10 @@ spec:
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: Deployment has not matched the expected number of replicas.
           expr: |-
-            kube_deployment_spec_replicas{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", deployment=~"{{ $targetDeployment }}"}
+            (kube_deployment_spec_replicas{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", deployment=~"{{ $targetDeployment }}"}
               !=
-            kube_deployment_status_replicas_available{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", deployment=~"{{ $targetDeployment }}"}
+            kube_deployment_status_replicas_available{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", deployment=~"{{ $targetDeployment }}"})
+            {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -77,6 +84,7 @@ spec:
             summary: Pod container waiting longer than 1 hour
           expr: |
             sum by (namespace, pod, container) (kube_pod_container_status_waiting_reason{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}"}) > 0
+            {{ $businessOrAllHoursExpression }}
           for: 1h
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -87,7 +95,9 @@ spec:
             runbook_url: {{ .Values.runbookUrl }}application-cronjob-running
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: CronJob taking a long time to complete.
-          expr: time() - kube_cronjob_next_schedule_time{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", cronjob=~"{{ $targetCronjob }}"} > 3600
+          expr: |-
+            time() - kube_cronjob_next_schedule_time{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", cronjob=~"{{ $targetCronjob }}"} > 3600
+            {{ $businessOrAllHoursExpression }}
           for: 1h
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -111,7 +121,7 @@ spec:
                 BY (owner_name),
               "job", "$1", "job_name", "(.+)"),
             "cronjob", "$1", "owner_name", "(.+)")
-
+            {{ $businessOrAllHoursExpression }}
         - record: job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}:sum
           expr: |
             clamp_max(job:kube_job_status_start_time_{{ $targetNamespaceUnderscore }}:max,1)
@@ -121,7 +131,7 @@ spec:
                   (kube_job_status_failed{namespace=~"{{ $targetNamespace }}"} != 0),
                   "job", "$1", "job_name", "(.+)"),
                 "cronjob", "$1", "owner_name", "(.+)")
-
+            {{ $businessOrAllHoursExpression }}
         - alert: CronJobStatusFailed
           annotations:
             message: CronJob {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.cronjob {{`}}`}} is failing.
@@ -129,9 +139,10 @@ spec:
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: CronJob is failing.
           expr: |
-            job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}:sum
+            (job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}:sum
             * ON(cronjob,namespace) GROUP_LEFT()
-            (kube_cronjob_spec_suspend == 0)
+            (kube_cronjob_spec_suspend == 0))
+            {{ $businessOrAllHoursExpression }}
           labels:
             severity: {{ .Values.alertSeverity }}
 
@@ -142,7 +153,7 @@ spec:
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: HPA has not matched desired number of replicas.
           expr: |
-            (kube_hpa_status_desired_replicas{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", hpa=~"{{ $targetHpa }}"}
+            ((kube_hpa_status_desired_replicas{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", hpa=~"{{ $targetHpa }}"}
               !=
             kube_hpa_status_current_replicas{job="kube-state-metrics"})
               and
@@ -154,7 +165,8 @@ spec:
               <
             kube_hpa_spec_max_replicas{job="kube-state-metrics"})
               and
-            changes(kube_hpa_status_current_replicas{job="kube-state-metrics"}[15m]) == 0
+            changes(kube_hpa_status_current_replicas{job="kube-state-metrics"}[15m]) == 0)
+            {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -166,9 +178,10 @@ spec:
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: HPA is running at max replicas
           expr: |
-            kube_hpa_status_current_replicas{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", hpa=~"{{ $targetHpa }}"}
+            (kube_hpa_status_current_replicas{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", hpa=~"{{ $targetHpa }}"}
               ==
-            kube_hpa_spec_max_replicas{job="kube-state-metrics"}
+            kube_hpa_spec_max_replicas{job="kube-state-metrics"})
+            {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -180,10 +193,11 @@ spec:
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: Namespace quota has exceeded the limits.
           expr: |-
-            100 * kube_resourcequota{namespace=~"{{ $targetNamespace }}", job="kube-state-metrics", type="used"}
+            (100 * kube_resourcequota{namespace=~"{{ $targetNamespace }}", job="kube-state-metrics", type="used"}
               / ignoring(instance, job, type)
             (kube_resourcequota{namespace=~"{{ $targetNamespace }}", job="kube-state-metrics", type="hard"} > 0)
-              > 90
+              > 90)
+            {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
             severity: {{ .Values.alertSeverity }}
@@ -195,9 +209,10 @@ spec:
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: Kubernetes container OOM killed (instance {{`{{`}} $labels.instance {{`}}`}})
           expr: |-
-            (kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}"}
+            ((kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}"}
              - kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}"} offset 10m >= 1)
-              and ignoring (reason) min_over_time(kube_pod_container_status_last_terminated_reason{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}", reason="OOMKilled"}[10m]) == 1
+              and ignoring (reason) min_over_time(kube_pod_container_status_last_terminated_reason{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}", reason="OOMKilled"}[10m]) == 1)
+            {{ $businessOrAllHoursExpression }}
           for: 0m
           labels:
             severity: {{ .Values.alertSeverity }}

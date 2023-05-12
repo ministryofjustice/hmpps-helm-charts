@@ -7,7 +7,8 @@
   {{- $sqsAlertsOldestThreshold := default "30" .Values.sqsAlertsOldestThreshold }}
   {{- $sqsAlertsTotalMessagesThreshold := default "100" .Values.sqsAlertsTotalMessagesThreshold }}
   {{- $sqsLabelQueueName := printf "{{ $labels.queue_name }}"}}
-  {{- $businessOrAllHoursExpression := ternary "and ON() business_hours" "" .Values.businessHoursOnly}}
+  {{- $targetApplicationUnderscore := .Values.targetApplication | replace "-" "_" }}
+  {{- $businessOrAllHoursExpression := ternary "and ON() {{ $targetApplicationUnderscore }}:business_hours" "" .Values.businessHoursOnly}}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
@@ -19,12 +20,6 @@ spec:
   groups:
     - name: {{ $targetApplication }}-sqs
       rules:
-        - record: business_day
-          expr: 0 < day_of_week() < 6
-        - record: business_hour
-          expr: 7 <= hour() < 18
-        - record: business_hours
-          expr: business_day and business_hour
 {{ if $sqsOldestAlertQueueNames }}
         - alert: SQS-oldest-message
           annotations:
