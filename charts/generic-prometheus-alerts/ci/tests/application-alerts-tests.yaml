@@ -1,6 +1,7 @@
 ---
 rule_files:
-  - ../application-alerts.yaml
+  - ../test-application-app.yaml
+  - ../test-business-hours-app.yaml
 
 evaluation_interval: 5m
 

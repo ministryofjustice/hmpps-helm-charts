@@ -7,9 +7,9 @@
   {{- $sqsAlertsOldestThreshold := default "30" .Values.sqsAlertsOldestThreshold }}
   {{- $sqsAlertsTotalMessagesThreshold := default "100" .Values.sqsAlertsTotalMessagesThreshold }}
   {{- $sqsLabelQueueName := printf "{{ $labels.queue_name }}"}}
-  {{- $targetApplicationUnderscore := .Values.targetApplication | replace "-" "_" }}
-  {{- $businessOrAllHoursExpression := ternary "and ON() {{ $targetApplicationUnderscore }}:business_hours" "" .Values.businessHoursOnly}}
----
+  {{- $targetApplicationBusinessHours := printf "and ON() %s:business_hours" .Values.targetApplication | replace "-" "_" }}
+  {{- $businessOrAllHoursExpression := ternary $targetApplicationBusinessHours "" .Values.businessHoursOnly}}
+  ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:

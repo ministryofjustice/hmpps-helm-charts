@@ -1,3 +1,5 @@
+{{- if .Values.businessHoursOnly -}}
+
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
 {{- $targetApplicationUnderscore := .Values.targetApplication | replace "-" "_" }}
 ---
@@ -30,3 +32,4 @@ spec:
           expr: 8 <= hour({{ $targetApplicationUnderscore }}:british_time) < 18
         - record: {{ $targetApplicationUnderscore }}:business_hours
           expr: {{ $targetApplicationUnderscore }}:business_hour and {{ $targetApplicationUnderscore }}:business_day
+{{- end }}
