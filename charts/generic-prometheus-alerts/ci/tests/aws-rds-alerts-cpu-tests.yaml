@@ -1,6 +1,7 @@
 ---
 rule_files:
-  - ../aws-rds-alerts.yaml
+  - ../test-application-rds.yaml
+  - ../test-business-hours-rds.yaml
 
 evaluation_interval: 5m
 

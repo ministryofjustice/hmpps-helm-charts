@@ -1,10 +1,5 @@
-charts/generic-prometheus-alerts/ci/compiled-yaml.yaml
-charts/generic-prometheus-alerts/ci/rules.yaml
-charts/generic-prometheus-alerts/ci/application-alerts.yaml
-charts/generic-prometheus-alerts/ci/ingress-alerts.yaml
-charts/generic-prometheus-alerts/ci/aws-rds-alerts.yaml
-charts/generic-prometheus-alerts/ci/aws-sns-alerts.yaml
-charts/generic-prometheus-alerts/ci/aws-sqs-alerts.yaml
-charts/generic-prometheus-alerts/ci/test-application/Chart.lock
-charts/generic-prometheus-alerts/ci/test-application/Chart.yaml
-charts/generic-prometheus-alerts/ci/test-application/charts
+charts/generic-prometheus-alerts/ci/test-*/Chart.lock
+charts/generic-prometheus-alerts/ci/test-*/Chart.yaml
+charts/generic-prometheus-alerts/ci/test-*/charts
+charts/generic-prometheus-alerts/ci/test-*.yaml
+charts/generic-prometheus-alerts/ci/compiled-*.yaml

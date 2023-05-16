@@ -2,17 +2,18 @@
 
 set -euo pipefail
 
-echo "Compiling Chart YAML ..."
+APPLICATION=${1?:No application specified}
+echo "Compiling Chart YAML for $APPLICATION..."
 
 CHART_VERSION=$(yq eval '.version' charts/generic-prometheus-alerts/Chart.yaml)
 export CHART_VERSION
 
 cd charts/generic-prometheus-alerts/ci
 
-cd test-application &&
+cd "$APPLICATION" &&
   envsubst <Chart.tpl.yaml >Chart.yaml &&
   helm dependency update
 
 cd ..
 
-helm template test-application test-application --dry-run --namespace test-application-dev >compiled-yaml.yaml
+helm template "$APPLICATION" "$APPLICATION" --dry-run --namespace "${APPLICATION}-dev" > "compiled-$APPLICATION.yaml"
