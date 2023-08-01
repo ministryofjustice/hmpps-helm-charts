@@ -3,8 +3,12 @@
 Environment variables for web and worker containers
 */}}
 {{- define "deployment.envs" -}}
-{{- if or (or .namespace_secrets .env) .env_comma_joined_from_list -}}
 env:
+{{- if .productId }}
+  - name: PRODUCT_ID
+    value: "{{ .productId }}"
+{{- end }}
+{{- if or (or .namespace_secrets .env) .env_comma_joined_from_list -}}
 {{- range $secret, $envs := .namespace_secrets }}
   {{- range $key, $val := $envs }}
   - name: {{ $key }}
@@ -23,8 +27,4 @@ env:
     value: {{ include "app.joinListWithComma" $val | quote }}
 {{- end }}
 {{- end -}}
-{{- if .Values.productId }}
-  - name: PRODUCT_ID
-    value: "{{ .Values.productId }}"
-{{- end }}
 {{- end -}}
