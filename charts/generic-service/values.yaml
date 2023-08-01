@@ -17,7 +17,6 @@ fullnameOverride: ""
 
 # Product ID as specified in the service catalogue
 # productId: "ID"
-productId: ""
 
 # override docker image CMD
 containerArgs: []
