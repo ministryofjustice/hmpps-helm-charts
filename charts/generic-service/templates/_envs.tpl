@@ -23,4 +23,8 @@ env:
     value: {{ include "app.joinListWithComma" $val | quote }}
 {{- end }}
 {{- end -}}
+{{- if .Values.productId }}
+  - name: PRODUCT_ID
+    value: "{{ .Values.productId }}"
+{{- end }}
 {{- end -}}
