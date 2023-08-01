@@ -41,6 +41,7 @@ helm.sh/chart: {{ include "generic-service.chart" . }}
 app.kubernetes.io/version: {{ .Values.image.tag | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+productId: {{ .Values.productId }}
 {{- end }}
 
 {{/*
@@ -49,7 +50,6 @@ Selector labels
 {{- define "generic-service.selectorLabels" -}}
 app: {{ include "generic-service.name" . }}
 release: {{ .Release.Name }}
-productId: {{ .Values.productId }}
 {{- end }}
 
 {{/*
