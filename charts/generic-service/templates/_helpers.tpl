@@ -41,7 +41,9 @@ helm.sh/chart: {{ include "generic-service.chart" . }}
 app.kubernetes.io/version: {{ .Values.image.tag | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.productId }}
 productId: {{ .Values.productId }}
+{{- end }}
 {{- end }}
 
 {{/*
