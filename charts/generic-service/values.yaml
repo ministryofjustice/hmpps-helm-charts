@@ -15,7 +15,8 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-# productId as specified in the service catalogue
+# Product ID as specified in the service catalogue
+# productId: "ID"
 productId: ""
 
 # override docker image CMD
