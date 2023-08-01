@@ -49,6 +49,7 @@ Selector labels
 {{- define "generic-service.selectorLabels" -}}
 app: {{ include "generic-service.name" . }}
 release: {{ .Release.Name }}
+productId: {{ .Values.productId }}
 {{- end }}
 
 {{/*
