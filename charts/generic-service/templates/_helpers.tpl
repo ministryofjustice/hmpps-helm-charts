@@ -41,6 +41,9 @@ helm.sh/chart: {{ include "generic-service.chart" . }}
 app.kubernetes.io/version: {{ .Values.image.tag | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.productId }}
+hmpps.justice.gov.uk/product-id: {{ .Values.productId }}
+{{- end }}
 {{- end }}
 
 {{/*

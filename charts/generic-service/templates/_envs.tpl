@@ -3,8 +3,12 @@
 Environment variables for web and worker containers
 */}}
 {{- define "deployment.envs" -}}
-{{- if or (or .namespace_secrets .env) .env_comma_joined_from_list -}}
+{{- if or (or .namespace_secrets .env) .env_comma_joined_from_list .productId -}}
 env:
+{{- if .productId }}
+  - name: PRODUCT_ID
+    value: "{{ .productId }}"
+{{- end }}
 {{- range $secret, $envs := .namespace_secrets }}
   {{- range $key, $val := $envs }}
   - name: {{ $key }}
