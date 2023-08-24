@@ -1,12 +1,30 @@
-# Declare variables to be passed into your templates.
+---
+# Enable/disable the cronjob, this sets the suspend field on the cronjob spec
+enabled: false
 
-image:
-  repository: ministryofjustice/data-engineering-data-extractor
-  tag: v1
+# Required: set to a service account configured with IRSA and
+# appropriate IAM role for access to Analytical Platforms S3 bucket.
+serviceAccountName: ""
 
 # Run once daily at midnight
 cronJobSchedule: "0 0 * * *"
 awsDefaultRegion: eu-west-2
 saveEventsLog: true
-enabled: false
 args: "extract_table_names.py && extract_pg_jsonl_snapshot.py && transfer_local_to_s3.sh"
+
+# Required: set to the name of the secret where S3 destination is stored.
+# Optionally set a value for destinationS3SecretKey if different from default.
+destinationS3SecretName: ""
+destinationS3SecretKey: destination_bucket
+
+# Required: set to the name of secret where DB creds are stored.
+# Optionally set the keys below if required.
+databaseSecretName: ""
+databaseAddressSecretKey: rds_instance_address
+databaseNameSecretKey: database_name 
+databaseUsernameSecretKey: database_username
+databasePasswordSecretKey: database_password
+
+image:
+  repository: ministryofjustice/data-engineering-data-extractor
+  tag: v1

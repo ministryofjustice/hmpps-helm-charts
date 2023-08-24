@@ -1,4 +1,6 @@
-{{- if .Values.enabled -}}
+{{- $databaseSecretName := .Values.databaseSecretName | required ".Values.databaseSecretName is required." -}}
+{{- $destinationS3SecretName := .Values.destinationS3SecretName | required ".Values.destinationS3SecretName is required." -}}
+{{- $serviceAccountName := .Values.serviceAccountName | required ".Values.serviceAccountName is required." -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -7,6 +9,9 @@ metadata:
     app: {{ template "app.fullname" . }}
     release: {{ .Release.Name }}
 spec:
+  {{- if not .Values.enabled }}
+  suspend: true
+  {{- end }}
   schedule: {{ .Values.cronJobSchedule }}
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
@@ -14,12 +19,13 @@ spec:
   # Check if we fail to create jobs within this 2 minute window and count as a missed schedule
   # The Cron controller will stop creating jobs after 100 consecutive missed schedules
   # https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-job-limitations
-  startingDeadlineSeconds: 120
+  startingDeadlineSeconds: 600
   jobTemplate:
     spec:
       backoffLimit: 3
       template:
         spec:
+          serviceAccountName: {{ $serviceAccountName }}
           restartPolicy: "Never"
           containers:
             - name: {{ template "app.fullname" . }}
@@ -30,40 +36,29 @@ spec:
                 - name: PGHOST
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.databaseSecretName }}
-                      key: rds_instance_address
+                      name: {{ $databaseSecretName }}
+                      key: {{ .Values.databaseAddressSecretKey }}
                 - name: PGDATABASE
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.databaseSecretName }}
-                      key: database_name
+                      name: {{ $databaseSecretName }}
+                      key: {{ .Values.databaseNameSecretKey }}
                 - name: PGUSER
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.databaseSecretName }}
-                      key: database_username
+                      name: {{ $databaseSecretName }}
+                      key: {{ .Values.databaseUsernameSecretKey }}
                 - name: PGPASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.databaseSecretName }}
-                      key: database_password
+                      name: {{ $databaseSecretName }}
+                      key: {{ .Values.databasePasswordSecretKey }}
                 - name: S3_DESTINATION
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.analyticalPlatformSecretName }}
-                      key: destination_bucket
-                - name: AWS_ACCESS_KEY_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ .Values.analyticalPlatformSecretName }}
-                      key: access_key_id
-                - name: AWS_SECRET_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ .Values.analyticalPlatformSecretName }}
-                      key: secret_access_key
+                      name: {{ $destinationS3SecretName }}
+                      key: {{ .Values.destinationS3SecretKey }}
                 - name: AWS_DEFAULT_REGION
                   value: "{{ .Values.awsDefaultRegion }}"
                 - name: SAVE_EVENTS_LOG
                   value: "{{ .Values.saveEventsLog }}"
-{{- end }}

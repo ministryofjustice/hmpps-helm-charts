@@ -1,0 +1,9 @@
+---
+# Required values
+enabled: true
+
+serviceAccountName: "test-service-account"
+
+destinationS3SecretName: "test-s3-secret"
+
+databaseSecretName: "test-db-secret"
