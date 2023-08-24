@@ -2,8 +2,8 @@
 # Enable/disable the cronjob, this sets the suspend field on the cronjob spec
 enabled: false
 
-# Required: set to a service account configured with IRSA and
-# appropriate IAM role for access to Analytical Platforms S3 bucket.
+# Required: set to a service account configured with IRSA and
+# appropriate IAM role for access to Analytical Platforms S3 bucket.
 serviceAccountName: ""
 
 # Run once daily at midnight
@@ -21,7 +21,7 @@ destinationS3SecretKey: destination_bucket
 # Optionally set the keys below if required.
 databaseSecretName: ""
 databaseAddressSecretKey: rds_instance_address
-databaseNameSecretKey: database_name 
+databaseNameSecretKey: database_name
 databaseUsernameSecretKey: database_username
 databasePasswordSecretKey: database_password
 
