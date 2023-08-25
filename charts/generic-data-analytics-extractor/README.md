@@ -33,7 +33,7 @@ In your applications helm chart `values.yaml` add:
 generic-data-analytics-extractor:
   serviceAccountName: YOUR-IRSA-ENABLED-SERVICE-ACCOUNT
   databaseSecretName: YOUR-DATABASE-SECRET-NAME-HERE
-  analyticalPlatformSecretName: YOUR-ANALYTICAL-PLATFORM-SECRET-NAME-HERE
+  destinationS3SecretName: YOUR-ANALYTICAL-PLATFORM-SECRET-NAME-HERE
   enabled: false
 ```
 
