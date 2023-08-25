@@ -23,7 +23,7 @@ Add this to your project as a dependency, in your `Chart.yaml`:
 ```yaml
 dependencies:
   - name: generic-data-analytics-extractor
-    version: 0.2.0
+    version: 1.0.0
     repository: https://ministryofjustice.github.io/hmpps-helm-charts
 ```
 
@@ -33,7 +33,7 @@ In your applications helm chart `values.yaml` add:
 generic-data-analytics-extractor:
   serviceAccountName: YOUR-IRSA-ENABLED-SERVICE-ACCOUNT
   databaseSecretName: YOUR-DATABASE-SECRET-NAME-HERE
-  analyticalPlatformSecretName: YOUR-ANALYTICAL-PLATFORM-SECRET-NAME-HERE
+  destinationS3SecretName: YOUR-ANALYTICAL-PLATFORM-SECRET-NAME-HERE
   enabled: false
 ```
 
