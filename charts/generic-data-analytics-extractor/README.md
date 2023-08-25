@@ -5,6 +5,7 @@ This chart creates a standard cron job to extract **all data** from a postgres d
 This is the final of three steps to set up daily transfers to the analytical platform as detailed in [this guide](https://dsdmoj.atlassian.net/wiki/spaces/PPDE/pages/3297050829/Steps+to+set+up+daily+transfers+to+the+analytical+platform).
 
 Before using this chart you will need to:
+- [Ensure you project is setup to use IRSA](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/access-cross-aws-resources-irsa-eks.html)
 - [prepare the name space](https://dsdmoj.atlassian.net/wiki/spaces/PPDE/pages/3297050829/Steps+to+set+up+daily+transfers+to+the+analytical+platform#Prepare-namespace).
 - [register data with the analytical platform](https://dsdmoj.atlassian.net/wiki/spaces/PPDE/pages/3297050829/Steps+to+set+up+daily+transfers+to+the+analytical+platform#Register-data-with-the-analytical-platform).
 
@@ -30,8 +31,10 @@ In your applications helm chart `values.yaml` add:
 
 ```yaml
 generic-data-analytics-extractor:
+  serviceAccountName: YOUR-IRSA-ENABLED-SERVICE-ACCOUNT
   databaseSecretName: YOUR-DATABASE-SECRET-NAME-HERE
   analyticalPlatformSecretName: YOUR-ANALYTICAL-PLATFORM-SECRET-NAME-HERE
+  enabled: false
 ```
 
 Also set any other non-default values or overrides. See available options here:
