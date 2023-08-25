@@ -75,6 +75,15 @@ entries:
     version: 0.1.0
   generic-data-analytics-extractor:
   - apiVersion: v1
+    created: "2023-08-25T09:56:26.729766911Z"
+    description: Runs a daily cron job which extracts and sends a database dump to
+      the analytical platform
+    digest: fb1a0a1cf451485975896c560e9bcfa1723726ed393e782693343dc39f579f4d
+    name: generic-data-analytics-extractor
+    urls:
+    - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-data-analytics-extractor-1.0.0/generic-data-analytics-extractor-1.0.0.tgz
+    version: 1.0.0
+  - apiVersion: v1
     created: "2023-01-24T12:00:31.843998164Z"
     description: Runs a daily cron job which extracts and sends a database dump to
       the analytical platform
@@ -789,4 +798,4 @@ entries:
     urls:
     - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-service-1.0.0/generic-service-1.0.0.tgz
     version: 1.0.0
-generated: "2023-08-02T09:06:49.846236912Z"
+generated: "2023-08-25T09:56:26.730015211Z"
