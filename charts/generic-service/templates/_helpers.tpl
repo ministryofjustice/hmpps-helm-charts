@@ -92,5 +92,8 @@ Create IP allow list annotation form nginx
 {{ if $allGroupItemNames -}}
   {{ cat "hmpps.justice.gov.uk/ip_allowlist_from_groups:" ($allGroupItemNames | join "," | quote) }}
 {{ end -}}
+{{ if $.Values.allowlist_version -}}
+  {{ cat "hmpps.justice.gov.uk/ip_allowlist_version:" $.Values.allowlist_version }}
+{{ end -}}
 {{ cat "nginx.ingress.kubernetes.io/whitelist-source-range:" ($allAllowlists | join "," | quote) }}
 {{- end -}}

@@ -9,6 +9,8 @@ allowlist:
     - example-group-1
     - example-group-2
 
+allowlist_version: "123-abc"
+
 allowlist_groups:
   example-group-1:
     item-1: "3.0.0.0/32"
