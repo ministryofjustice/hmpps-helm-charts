@@ -14,7 +14,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- if .Values.allowlist }}
-    nginx.ingress.kubernetes.io/whitelist-source-range: {{ include "app.joinListWithComma" .Values.allowlist | quote }}
+    {{- include "app.makeIpAllowList" . | nindent 4 }}
   {{- end }}
 spec:
   ingressClassName: "nginx"

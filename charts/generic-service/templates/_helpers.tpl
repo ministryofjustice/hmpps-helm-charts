@@ -55,9 +55,42 @@ release: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Create a string from a list of values joined by a comma
+Create IP allow list annotation form nginx
 */}}
-{{- define "app.joinListWithComma" -}}
-{{- $local := dict "first" true -}}
-{{- range $k, $v := . -}}{{- if not $local.first -}},{{- end -}}{{- $v -}}{{- $_ := set $local "first" false -}}{{- end -}}
+{{- define "app.makeIpAllowList" -}}
+{{- $allCustomItemNames := list -}}
+{{- $allGroups := list -}}
+{{- $allGroupItemNames := list -}}
+{{- $allAllowlists := list -}}
+  {{- range $k, $v := .Values.allowlist -}}
+    {{- if and (ne $k "groups") (kindIs "string" $v) -}}
+      {{- $allAllowlists = append $allAllowlists $v -}}
+      {{- $allCustomItemNames = append $allCustomItemNames $k -}}
+    {{- end -}}
+    {{- if eq $k "groups" -}}
+      {{- $_ := required "'groups' key found in 'allowlist' values, so 'allowlist_groups' is a required value but was not supplied." $.Values.allowlist_groups }}
+      {{- $groups := $v -}}
+      {{- range $group := $groups -}}
+        {{- if not (get $.Values.allowlist_groups $group) -}}
+          {{- required "Invalid group found in 'allowlist', check defined lists in 'allowlist_groups'." "" }}
+        {{- end -}}
+        {{- $groupList := get $.Values.allowlist_groups $group -}}
+        {{- $allGroups = append $allGroups $group -}}
+        {{- range $k, $v := $groupList -}}
+          {{- $allGroupItemNames = append $allGroupItemNames $k -}}
+          {{- $allAllowlists = append $allAllowlists $v -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{ if $allCustomItemNames -}}
+  {{ cat "hmpps.justice.gov.uk/ip_allowlist_from_values:" ($allCustomItemNames | join "," | quote) }}
+{{ end -}}
+{{ if $allGroups -}}
+  {{ cat "hmpps.justice.gov.uk/ip_allowlist_groups:" ($allGroups | join "," | quote) }}
+{{ end -}}
+{{ if $allGroupItemNames -}}
+  {{ cat "hmpps.justice.gov.uk/ip_allowlist_from_groups:" ($allGroupItemNames | join "," | quote) }}
+{{ end -}}
+{{ cat "nginx.ingress.kubernetes.io/whitelist-source-range:" ($allAllowlists | join "," | quote) }}
 {{- end -}}
