@@ -84,7 +84,7 @@ ingress:
 
 # IP allowlist to be applied via ingress-nginx.
 allowlist: {}
-# version of allowlist being applied (supplied by CI/CD)
+# Version of allowlist being applied (supplied by CI/CD)
 allowlist_version: ""
 # Example allowlist structure.
 # When using the 'groups' key, the value of 'allowlist_groups' must also exist, see below.
