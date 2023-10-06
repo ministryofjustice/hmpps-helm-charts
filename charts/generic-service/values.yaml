@@ -82,10 +82,10 @@ ingress:
        t:none,\
        setvar:tx.paranoia_level=2"
 
-# IP allowlist to be applied via ingress-nginx. 
+# IP allowlist to be applied via ingress-nginx.
 allowlist: {}
 # Example allowlist structure.
-# When using the 'groups' key, the value of 'allowlist_groups' must also exist, see below.
+# When using the 'groups' key, the value of 'allowlist_groups' must also exist, see below.
 
 # allowlist:
 #   custom-1: "1.1.1.1/32"
@@ -94,8 +94,8 @@ allowlist: {}
 #    - example-group-1
 #    - example-group-2
 
-# Example allowlist_groups data structure, contains all the possible predefined groups.
-# This will normally be added via CI/CD as an additional '--values' argument to helm,
+# Example allowlist_groups data structure, contains all the possible predefined groups.
+# This will normally be added via CI/CD as an additional '--values' argument to helm,
 # and the data coming from a centrally managed source. See the deploy_env job defined
 # in the hmpps circleci orb for example.
 
