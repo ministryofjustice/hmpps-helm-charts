@@ -24,7 +24,7 @@ env:
 {{- end }}
 {{- range $key, $val := .env_comma_joined_from_list }}
   - name: {{ $key }}
-    value: {{ include "app.joinListWithComma" $val | quote }}
+    value: {{ $val | join "," | quote }}
 {{- end }}
 {{- end -}}
 {{- end -}}

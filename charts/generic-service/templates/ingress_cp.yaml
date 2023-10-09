@@ -15,7 +15,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- if .Values.allowlist }}
-    nginx.ingress.kubernetes.io/whitelist-source-range: {{ include "app.joinListWithComma" .Values.allowlist | quote }}
+    {{- include "app.makeIpAllowList" . | nindent 4 }}
   {{- end }}
     external-dns.alpha.kubernetes.io/set-identifier: {{ $ingressName }}-{{ .Release.Namespace }}-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
