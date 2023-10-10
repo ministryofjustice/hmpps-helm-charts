@@ -67,8 +67,7 @@ Create IP allow list annotation form nginx
       {{- $allAllowlists = append $allAllowlists $v -}}
       {{- $allCustomItemNames = append $allCustomItemNames $k -}}
     {{- end -}}
-    {{- if eq $k "groups" -}}
-      {{- $_ := required "'groups' key found in 'allowlist' values, so 'allowlist_groups' is a required value but was not supplied." $.Values.allowlist_groups }}
+    {{- if and (eq $k "groups") ($.Values.allowlist_groups) -}}
       {{- $groups := $v -}}
       {{- range $group := $groups -}}
         {{- if not (get $.Values.allowlist_groups $group) -}}
