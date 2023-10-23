@@ -96,3 +96,11 @@ Create IP allow list annotation form nginx
 {{ end -}}
 {{ cat "nginx.ingress.kubernetes.io/whitelist-source-range:" ($allAllowlists | join "," | quote) }}
 {{- end -}}
+
+{{/*
+Create a string from a list of values joined by a comma
+*/}}
+{{- define "app.joinListWithComma" -}}
+{{- $local := dict "first" true -}}
+{{- range $k, $v := . -}}{{- if not $local.first -}},{{- end -}}{{- $v -}}{{- $_ := set $local "first" false -}}{{- end -}}
+{{- end -}}
