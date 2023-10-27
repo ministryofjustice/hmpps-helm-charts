@@ -5,6 +5,7 @@ PRISON_API_BASE_URL=https://api-preprod.prison.service.justice.gov.uk
 
 check_http() { http --stream --check-status --ignore-stdin --timeout=600 "$@"; }
 psql_preprod() { psql -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" -d "$DB_NAME_PREPROD" -At -c "$@"; }
+psql_prod() { psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -At -c "$@"; }
 
 # grab last restore date from Prison API
 if ! DATABASE_RESTORE_INFO=$(check_http GET "$PRISON_API_BASE_URL/api/restore-info"); then
@@ -29,6 +30,21 @@ if ! OUTPUT=$(psql_preprod "create table if not exists restore_status(restore_da
   echo -e "\nUnable to talk to postgres and create restore table"
   echo "$OUTPUT"
   exit 1
+fi
+
+# Grab flyway versions from preprod and prod.  If schema history different then restore won't really work
+# Only solution is to release to production before then doing the restore.
+FLYWAY_SQL="select count(version) from flyway_schema_history"
+PREPROD_FLYWAY_VERSION=$(psql_preprod "$FLYWAY_SQL")
+PROD_FLYWAY_VERSION=$(psql_prod "$FLYWAY_SQL")
+if [[ "$PREPROD_FLYWAY_VERSION" != "$PROD_FLYWAY_VERSION" ]]; then
+  echo -e "\nFound different number of flyway versions"
+  echo "Preprod has $PREPROD_FLYWAY_VERSION different versions"
+  echo "Prod has $PROD_FLYWAY_VERSION different versions"
+  echo "SQL used for comparison was $FLYWAY_SQL"
+  exit 1
+else
+  echo -e "\nFlyway version check passed, both schemas have $PROD_FLYWAY_VERSION flyway versions installed"
 fi
 
 # Grab last restore date from postgres
