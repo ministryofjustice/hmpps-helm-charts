@@ -98,9 +98,36 @@ Create IP allow list annotation form nginx
 {{- end -}}
 
 {{/*
-Create a string from a list of values joined by a comma
+Create IP allow list environment variables
 */}}
-{{- define "app.joinListWithComma" -}}
-{{- $local := dict "first" true -}}
-{{- range $k, $v := . -}}{{- if not $local.first -}},{{- end -}}{{- $v -}}{{- $_ := set $local "first" false -}}{{- end -}}
+{{- define "app.makeAllowListEnvs" -}}
+  {{- range $envVarName, $envVarValues := .allowlist_envs }}
+  {{- $allGroups := list -}}
+  {{- $allItemNames := list -}}
+  {{- $allAllowlists := list -}}
+    {{- range $k, $v := $envVarValues -}}
+      {{- if and (ne $k "groups") (kindIs "string" $v) -}}
+        {{- $allAllowlists = append $allAllowlists $v -}}
+        {{- $allItemNames = append $allItemNames $k -}}
+      {{- end -}}
+      {{- if and (eq $k "groups") ($.allowlist_groups) -}}
+        {{- $groups := $v -}}
+        {{- range $group := $groups -}}
+          {{- if not (get $.allowlist_groups $group) -}}
+            {{- required "Invalid group found in 'allowlist', check defined lists in 'allowlist_groups'." "" }}
+          {{- end -}}
+          {{- $groupList := get $.allowlist_groups $group -}}
+          {{- $allGroups = append $allGroups $group -}}
+          {{- range $k, $v := $groupList -}}
+            {{- $allItemNames = append $allItemNames $k -}}
+            {{- $allAllowlists = append $allAllowlists $v -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end }}
+- name: {{ $envVarName }}
+  value: {{ ($allAllowlists | join "," | quote) }}
+- name: {{ $envVarName }}_NAMES
+  value: {{ ($allItemNames | join "," | quote) }}
+  {{- end -}}
 {{- end -}}
