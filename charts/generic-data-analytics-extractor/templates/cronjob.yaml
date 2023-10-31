@@ -61,8 +61,8 @@ spec:
                 - name: API_AUTH
                   valueFrom:
                     secretKeyRef:
-                      name: {{ $dataPlatformApiAuthName }}
-                      key: {{ .Values.dataPlatformApiAuthKey }}
+                      name: {{ $dataPlatformApiAuthSecretName }}
+                      key: {{ .Values.dataPlatformApiAuthSecretKey }}
                 - name: AWS_DEFAULT_REGION
                   value: "{{ .Values.awsDefaultRegion }}"
                 - name: SAVE_EVENTS_LOG

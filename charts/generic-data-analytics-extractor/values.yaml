@@ -26,8 +26,8 @@ databaseUsernameSecretKey: database_username
 databasePasswordSecretKey: database_password
 
 # Required: set to the name of secret where API auth creds are stored.
-dataPlatformApiAuthName: ""
-dataPlatformApiAuthKey: auth-key
+dataPlatformApiAuthSecretName: ""
+dataPlatformApiAuthSecretKey: auth-key
 
 # If uploading to the data platform, the dataProductName needs to be set to
 # a registered data product
