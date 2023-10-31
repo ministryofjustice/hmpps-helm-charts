@@ -61,7 +61,7 @@ spec:
                 - name: API_AUTH
                   valueFrom:
                     secretKeyRef:
-                      name: {{ $dataPlatformApiAuthSecretName }}
+                      name: {{ .Values.dataPlatformApiAuthSecretName }}
                       key: {{ .Values.dataPlatformApiAuthSecretKey }}
                 - name: AWS_DEFAULT_REGION
                   value: "{{ .Values.awsDefaultRegion }}"
