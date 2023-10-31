@@ -35,4 +35,4 @@ dataProductName: ""
 
 image:
   repository: ministryofjustice/data-engineering-data-extractor
-  tag: v1
+  tag: v1.2.2
