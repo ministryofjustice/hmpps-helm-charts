@@ -58,7 +58,14 @@ spec:
                     secretKeyRef:
                       name: {{ $destinationS3SecretName }}
                       key: {{ .Values.destinationS3SecretKey }}
+                - name: API_AUTH
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.dataPlatformApiAuthSecretName }}
+                      key: {{ .Values.dataPlatformApiAuthSecretKey }}
                 - name: AWS_DEFAULT_REGION
                   value: "{{ .Values.awsDefaultRegion }}"
                 - name: SAVE_EVENTS_LOG
                   value: "{{ .Values.saveEventsLog }}"
+                - name: DATA_PRODUCT_NAME
+                  value: "{{ .Values.dataProductName }}"
