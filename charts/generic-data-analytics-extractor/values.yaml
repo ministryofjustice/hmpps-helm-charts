@@ -29,7 +29,7 @@ databasePasswordSecretKey: database_password
 dataPlatformApiAuthName: ""
 dataPlatformApiAuthKey: auth-key
 
-# If uploading to the data platform, the dataProductName needs to be set to 
+# If uploading to the data platform, the dataProductName needs to be set to
 # a registered data product
 dataProductName: ""
 
