@@ -8,6 +8,7 @@ replicaCount: 4
 image:
   repository: example_repo/example_image
   pullPolicy: IfNotPresent
+  port: 3000
   # image tag is overridden at deployment time using helm "--set" option
   tag: "example_app_version"
 
@@ -59,28 +60,29 @@ ingress:
   hosts: []
   path: /
   tlsSecretName: chart-example-tls
-  modsecurity_enabled: false
-  modsecurity_audit_enabled: false
-  modsecurity_github_team: ""
-  modsecurity_snippet: |
-    SecRuleEngine On
-    {{ if .Values.ingress.modsecurity_audit_enabled -}}
-    SecAuditEngine RelevantOnly
-    SecAuditLog /var/log/nginx/error.log
-    SecAuditLogType Serial
-    {{ end -}}
-    {{ if .Values.ingress.modsecurity_github_team -}}
-    SecDefaultAction "phase:2,pass,log,tag:github_team={{ .Values.ingress.modsecurity_github_team }}"
-    {{ end -}}
-    SecRuleUpdateActionById 949110 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
-    SecRuleUpdateActionById 959100 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
-    SecAction \
-      "id:900000,\
-       phase:1,\
-       nolog,\
-       pass,\
-       t:none,\
-       setvar:tx.paranoia_level=2"
+  # Example modsecurity configuration below:
+  # modsecurity_enabled: false
+  # modsecurity_audit_enabled: false
+  # modsecurity_github_team: ""
+  # modsecurity_snippet: |
+  #   SecRuleEngine On
+  #   {{ if .Values.ingress.modsecurity_audit_enabled -}}
+  #   SecAuditEngine RelevantOnly
+  #   SecAuditLog /var/log/nginx/error.log
+  #   SecAuditLogType Serial
+  #   {{ end -}}
+  #   {{ if .Values.ingress.modsecurity_github_team -}}
+  #   SecDefaultAction "phase:2,pass,log,tag:github_team={{ .Values.ingress.modsecurity_github_team }}"
+  #   {{ end -}}
+  #   SecRuleUpdateActionById 949110 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
+  #   SecRuleUpdateActionById 959100 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
+  #   SecAction \
+  #     "id:900000,\
+  #      phase:1,\
+  #      nolog,\
+  #      pass,\
+  #      t:none,\
+  #      setvar:tx.paranoia_level=2"
 
 # IP allowlist to be applied via ingress-nginx.
 allowlist: {}
@@ -120,6 +122,34 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
+
+envFrom: []
+  # - configMapRef:
+  #     name: example-config-map
+  # - secretRef:
+  #     name: example-secret
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+
+extraContainers: []
+  # - name: example-extra-container
+  #   image: "example_repo/example_image:example_app_version"
+  #   imagePullPolicy: IfNotPresent
+  #   ports:
+  #     - name: http
+  #       containerPort: 3000
+  #       protocol: TCP
 
 autoscaling:
   enabled: false
