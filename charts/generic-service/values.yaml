@@ -60,7 +60,7 @@ ingress:
   hosts: []
   path: /
   tlsSecretName: chart-example-tls
-  # Example modsecurity configuration below:
+  # Example modsecurity configuration below:
   # modsecurity_enabled: false
   # modsecurity_audit_enabled: false
   # modsecurity_github_team: ""
