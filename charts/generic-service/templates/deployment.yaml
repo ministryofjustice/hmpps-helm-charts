@@ -72,9 +72,20 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-{{- include "deployment.envs" .Values | nindent 10 }}
-{{- include "deployment.volume_mounts" . | nindent 10 }}
-{{- include "deployment.volumes" . | nindent 6 }}
+          {{- include "deployment.envs" .Values | nindent 10 }}
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- with .Values.extraContainers }}{{- toYaml . | nindent 8 }}{{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
