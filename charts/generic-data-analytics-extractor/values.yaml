@@ -25,7 +25,7 @@ databaseNameSecretKey: database_name
 databaseUsernameSecretKey: database_username
 databasePasswordSecretKey: database_password
 
-# Required: set to the name of secret where API auth creds are stored.
+# Optional: set to the name of secret where API auth creds are stored.
 dataPlatformApiAuthSecretName: ""
 dataPlatformApiAuthSecretKey: auth-key
 
@@ -33,7 +33,7 @@ dataPlatformApiAuthSecretKey: auth-key
 # a registered data product
 dataProductName: ""
 
-# Optional chart name override. The default is the release name (truncated to 27) followed by `-data-analytics-extractor`
+# Optional: chart name override. The default is the release name (truncated to 27) followed by `-data-analytics-extractor`
 nameOverride: ""
 
 fullnameOverride: ""
