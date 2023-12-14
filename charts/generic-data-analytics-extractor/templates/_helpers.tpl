@@ -17,3 +17,17 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Expand the name of the chart.
+The maximum length of the resource name is 52.
+If an overridden name is provided it will be truncated at 52
+If the default name is to be used it is made up of the release name (truncated to 27) and `-data-analytics-extractor` giving a maximum length of 52.
+*/}}
+{{- define "generic-data-analytics-extractor.name" -}}
+{{- if .Values.nameOverride -}}
+{{- .Values.nameOverride | trunc 52 -}}
+{{- else -}}
+{{ .Release.Name | trunc 27 -}}-data-analytics-extractor
+{{- end -}}
+{{- end -}}

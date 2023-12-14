@@ -4,7 +4,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-data-analytics-extractor
+  name: {{ include "generic-data-analytics-extractor.name" . }}
   labels:
     app: {{ template "app.fullname" . }}
     release: {{ .Release.Name }}

@@ -51,3 +51,11 @@ generic-data-analytics-extractor:
 ```
 
 Available scripts provided by the docker image can ber found in the [ministryofjustice/data-engineering-data-extractor](https://github.com/ministryofjustice/data-engineering-data-extractor) repo.
+
+## Support
+This helm chart was created by the HMPPS Dev teams as a convenience to make use of the Data Engineering tools to extract
+data and send to the Analytical Platform.  
+Whilst the docker image that the cron job uses was written by the Data Engineering team, this helm chart was created by
+the HMPPS Dev teams.  
+Any questions regarding the use and configuration of this helm chart should be posted on the [#hmpps_dev](https://moj.enterprise.slack.com/archives/C69NWE339)
+slack channel in the first instance.

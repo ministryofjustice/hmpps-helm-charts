@@ -33,6 +33,11 @@ dataPlatformApiAuthSecretKey: auth-key
 # a registered data product
 dataProductName: ""
 
+# Optional chart name override. The default is the release name (truncated to 27) followed by `-data-analytics-extractor`
+nameOverride: ""
+
+fullnameOverride: ""
+
 image:
   repository: ministryofjustice/data-engineering-data-extractor
   tag: v1.2.2
