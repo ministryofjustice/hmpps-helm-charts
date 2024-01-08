@@ -19,14 +19,15 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
-Expand the name of the chart.
-The maximum length of the resource name is 52.
-If an overridden name is provided it will be truncated at 52
-If the default name is to be used it is made up of the release name (truncated to 27) and `-data-analytics-extractor` giving a maximum length of 52.
+Returns the name of the cronjob resource.
+Cronjob resource names have a maximum length of 52 characters - see https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#:~:text=Even%20when%20the%20name%20is,no%20more%20than%2063%20characters
+
+The default behaviour is to use the release name (truncated to 27) appended with `-data-analytics-extractor` giving a maximum length of 52.
+This behaviour can be overriden by providing a `cronJobNameOverride`. If provided in the values it will be used, truncated at 52.
 */}}
-{{- define "generic-data-analytics-extractor.name" -}}
-{{- if .Values.nameOverride -}}
-{{- .Values.nameOverride | trunc 52 -}}
+{{- define "generic-data-analytics-extractor.cronjob-name" -}}
+{{- if .Values.cronJobNameOverride -}}
+{{- .Values.cronJobNameOverride | trunc 52 -}}
 {{- else -}}
 {{ .Release.Name | trunc 27 -}}-data-analytics-extractor
 {{- end -}}

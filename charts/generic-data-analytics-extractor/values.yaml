@@ -33,8 +33,8 @@ dataPlatformApiAuthSecretKey: auth-key
 # a registered data product
 dataProductName: ""
 
-# Optional: chart name override. The default is the release name (truncated to 27) followed by `-data-analytics-extractor`
-nameOverride: ""
+# Optional: Cronjob resource name override. The default cronjob name is the release name (truncated to 27) followed by `-data-analytics-extractor`
+cronJobNameOverride: ""
 
 fullnameOverride: ""
 
