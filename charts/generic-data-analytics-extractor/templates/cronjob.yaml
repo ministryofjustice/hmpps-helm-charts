@@ -4,7 +4,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-data-analytics-extractor
+  name: {{ include "generic-data-analytics-extractor.cronjob-name" . }}
   labels:
     app: {{ template "app.fullname" . }}
     release: {{ .Release.Name }}
@@ -58,14 +58,16 @@ spec:
                     secretKeyRef:
                       name: {{ $destinationS3SecretName }}
                       key: {{ .Values.destinationS3SecretKey }}
-                - name: API_AUTH
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ .Values.dataPlatformApiAuthSecretName }}
-                      key: {{ .Values.dataPlatformApiAuthSecretKey }}
                 - name: AWS_DEFAULT_REGION
                   value: "{{ .Values.awsDefaultRegion }}"
                 - name: SAVE_EVENTS_LOG
                   value: "{{ .Values.saveEventsLog }}"
                 - name: DATA_PRODUCT_NAME
                   value: "{{ .Values.dataProductName }}"
+{{- if .Values.dataPlatformApiAuthSecretName }}
+                - name: API_AUTH
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.dataPlatformApiAuthSecretName }}
+                      key: {{ .Values.dataPlatformApiAuthSecretKey }}
+{{- end }}

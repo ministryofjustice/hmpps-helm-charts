@@ -1,3 +1,5 @@
+.idea/
+
 charts/generic-prometheus-alerts/ci/test-*/Chart.lock
 charts/generic-prometheus-alerts/ci/test-*/Chart.yaml
 charts/generic-prometheus-alerts/ci/test-*/charts
