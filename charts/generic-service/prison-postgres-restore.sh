@@ -32,6 +32,19 @@ if ! OUTPUT=$(psql_preprod "create table if not exists restore_status(restore_da
   exit 1
 fi
 
+# Grab last restore date from postgres
+SAVED_RESTORE_DATE=$(psql_preprod "select restore_date from restore_status")
+
+# we've found a date, check to see if we've had a newer restore
+if [[ -n $SAVED_RESTORE_DATE && ! $DATABASE_RESTORE_DATE > $SAVED_RESTORE_DATE ]]; then
+  echo -e "\nExisting restore date of $SAVED_RESTORE_DATE no newer than $DATABASE_RESTORE_DATE"
+  if [[ -z "${FORCE_RUN+x}" ]]; then
+    echo -e "\nTo force a run set the FORCE_RUN environment variable when creating the job (see README.md in hmpps-helm-charts/generic-service)"
+    exit 0
+  fi
+  echo -e "\nRun forced"
+fi
+
 # Grab flyway versions from preprod and prod.  If schema history different then restore won't really work
 # Only solution is to release to production before then doing the restore.
 FLYWAY_SQL="select count(version) from flyway_schema_history"
@@ -45,19 +58,6 @@ if [[ "$PREPROD_FLYWAY_VERSION" != "$PROD_FLYWAY_VERSION" ]]; then
   exit 1
 else
   echo -e "\nFlyway version check passed, both schemas have $PROD_FLYWAY_VERSION flyway versions installed"
-fi
-
-# Grab last restore date from postgres
-SAVED_RESTORE_DATE=$(psql_preprod "select restore_date from restore_status")
-
-# we've found a date, check to see if we've had a newer restore
-if [[ -n $SAVED_RESTORE_DATE && ! $DATABASE_RESTORE_DATE > $SAVED_RESTORE_DATE ]]; then
-  echo -e "\nExisting restore date of $SAVED_RESTORE_DATE no newer than $DATABASE_RESTORE_DATE"
-  if [[ -z "${FORCE_RUN+x}" ]]; then
-    echo -e "\nTo force a run set the FORCE_RUN environment variable when creating the job (see README.md in hmpps-helm-charts/generic-service)"
-    exit 0
-  fi
-  echo -e "\nRun forced"
 fi
 
 # Dump postgres database from production
