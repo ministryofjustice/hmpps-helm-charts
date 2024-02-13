@@ -31,6 +31,8 @@ kubectl -n [namespace] exec -it clamav-7b9b698c77-cd9xh -c clamd -- clamd --vers
 
 ### Setup
 
+Prior to installation a service account must be created with the correct permissions, create a PR in cloud platform environments adding [this file](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-document-management-dev/resources/serviceaccount-refreshclamav.tf) to the namespace.
+
 Installation:
 
 ```bash
