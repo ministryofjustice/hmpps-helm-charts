@@ -70,6 +70,28 @@ additionalRuleLabels: {}
 # Set the alert threshold for no SNS messages published to topic (minutes).
 # snsAlertsNoMessagesThresholdMinutes: 30
 
+# To monitor AWS Elasticache, add the name of the clusterId in a list.
+# elastiCacheAlertsClusterIds:
+#   cacheClusterId: "Elasticache cluster Id"
+
+# Set the alert for Elasticache's CPU threshold - value between 0 and 1.
+elastiCacheAlertsEngineCPUThreshold: 0.85
+
+# Set the alert for Elasticache's CPU threshold (minutes).
+elastiCacheAlertsEngineCPUThresholdMinutes: 5
+
+# Set the alert for Elasticache's CPU threshold - value between 0 and 100.
+elastiCacheAlertsCPUThreshold: 90
+
+# Set the alert for Elasticache's CPU threshold (minutes).
+elastiCacheAlertsCPUThresholdMinutes: 5
+
+# Set the alert for Elasticache's FreeMemory threshold - value should be above 150MB.
+elastiCacheAlertsFreeMemoryThreshold: 150
+
+# Set the alert for Elasticache's FreeMemory threshold (minutes).
+elastiCacheAlertsFreeMemoryThresholdMinutes: 5
+
 # To monitor AWS RDS instances, add the name of the rds instance in a list.
 # This can be obtained from the instance address in the rds secret in the namespace
 # and should be the first part of the address e.g. cloud-platform-13962204fd879828
