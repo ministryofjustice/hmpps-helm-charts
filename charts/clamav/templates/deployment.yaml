@@ -53,3 +53,5 @@ spec:
               port: {{ .Values.image.port }}
             initialDelaySeconds: 30
             periodSeconds: 20
+          resources:
+            {{ toYaml .Values.resources | nindent 12 }}
