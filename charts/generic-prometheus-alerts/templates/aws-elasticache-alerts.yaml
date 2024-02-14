@@ -55,7 +55,7 @@ spec:
             dashboard_url: {{ $.Values.grafanaUrl }}/d/VR46pmwWk/aws-elasticache?orgId=1&var-datasource=Cloudwatch&var-region=default&var-elasticacheclusteid={{ $key }}&from=now-6h&to=now
             summary: elasticache cluster Memory usage too high
           expr: |-
-            aws_elasticache_freeable_memory_average{cache_cluster_id='{{ $key }}'} /1000000 < {{ $elastiCacheAlertsFreeMemoryThreshold }}
+            aws_elasticache_freeable_memory_average{cache_cluster_id='{{ $key }}'} / 10000000 < {{ $elastiCacheAlertsFreeMemoryThreshold }}
           {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsFreeMemoryThresholdMinutes }}m
           labels:
