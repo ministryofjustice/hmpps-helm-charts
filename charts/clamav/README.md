@@ -31,6 +31,10 @@ kubectl -n [namespace] exec -it clamav-7b9b698c77-cd9xh -c clamd -- clamd --vers
 
 ### Setup
 
+A service account must be created in order to use this chart. There are two options to achieve this:
+1. create a PR in cloud platform environments adding [this file](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-document-management-dev/resources/serviceaccount-refreshclamav.tf) to the namespace.
+2. The circleci service account in the namespace must have the permissions to handle reading/writing serviceaccounts and set the `createServiceAccount` value to true in the helm deploy
+
 Installation:
 
 ```bash
