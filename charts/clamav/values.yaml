@@ -25,8 +25,6 @@ resources: {}
   #   cpu: 100m
 #   memory: 128Mi
 
-
-
 # This is the group ID of the container USER, this sets the correct permissions
 # for the emptyDir{} volume used to stored the antivirus db.
 runasgroupid: 1000
