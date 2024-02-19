@@ -29,7 +29,7 @@ spec:
             dashboard_url: {{ $.Values.grafanaUrl }}/d/VR46pmwWk/aws-elasticache?orgId=1&var-datasource=Cloudwatch&var-region=default&var-elasticacheclusteid={{ $key }}&from=now-6h&to=now
             summary: elasticache cluster CPU usage too high
           expr: |-
-            aws_elasticache_engine_cpuutilization_maximum{cache_cluster_id='{{ $key }}'} > {{ $elastiCacheAlertsEngineCPUThreshold }}
+            (sum by (cache_cluster_id) (aws_elasticache_engine_cpuutilization_maximum{cache_cluster_id='{{ $key }}'} offset {{ $elastiCacheAlertsEngineCPUThresholdMinutes }}m) > {{ $elastiCacheAlertsEngineCPUThreshold }})
           {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsEngineCPUThresholdMinutes }}m
           labels:
