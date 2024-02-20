@@ -118,7 +118,7 @@ rdsAlertsConnectionThreshold: 180
 rdsAlertsConnectionThresholdMinutes: 5
 
 # Set the error window minutes for 5xx ingress
-ingress5xxErrorWindowMinutes: 1
+ingress5xxErrorWindowMinutes: 5
 
 # Set the error window minutes for 503 ingress High503ErrorRateOnHealthEndpoint
 ingress503ErrorWindowMinutes: 1
