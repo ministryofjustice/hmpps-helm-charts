@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "generic-service.fullname" . | trunc 26 }}-queue-housekeeping-cronjob
+  name: {{ include "generic-service.fullname" . | trunc 26 }}-retry-dlqs
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
