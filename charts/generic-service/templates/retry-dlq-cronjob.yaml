@@ -21,7 +21,7 @@ spec:
         spec:
           containers:
             - name: retry-all-dlqs
-              image: ghcr.io/ministryofjustice/hmpps-devops-tools
+              image: "{{ .Values.retryDlqCronjob.image }}:{{ .Values.retryDlqCronjob.tag }}"
               args:
                 - /bin/sh
                 - -c

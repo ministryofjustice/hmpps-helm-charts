@@ -226,3 +226,5 @@ retryDlqCronjob:
   enabled: false
   # every 10 minutes
   retryDlqSchedule: "*/10 * * * *"
+  image: ghcr.io/ministryofjustice/hmpps-devops-tools
+  tag: latest
