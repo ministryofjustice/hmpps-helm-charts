@@ -224,4 +224,5 @@ scheduledDowntime:
 
 retryDlqCronjob:
   enabled: false
-
+  # every 10 minutes
+  retryDlqSchedule: "*/10 * * * *"

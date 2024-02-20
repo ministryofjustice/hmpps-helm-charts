@@ -9,7 +9,7 @@ spec:
   {{- if .Values.scheduledDowntime.enabled }}
   schedule: "{{ .Values.scheduledDowntime.retryDlqSchedule }}"
   {{- else }}
-  schedule: "*/10 * * * *"
+  schedule: "{{ .Values.retryDlqCronjob.retryDlqSchedule }}"
   {{- end }}
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 5
