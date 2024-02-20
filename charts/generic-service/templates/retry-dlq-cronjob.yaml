@@ -20,7 +20,7 @@ spec:
       template:
         spec:
           containers:
-            - name: housekeeping
+            - name: retry-all-dlqs
               image: ghcr.io/ministryofjustice/hmpps-devops-tools
               args:
                 - /bin/sh
