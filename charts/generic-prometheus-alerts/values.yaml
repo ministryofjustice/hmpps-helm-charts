@@ -126,5 +126,8 @@ ingress503ErrorWindowMinutes: 1
 # Set the error
 nonProdNamespacePattern: ".*-(dev|preprod)$"
 
+# Set the observePath
+observePath: "/"
+
 # Alert for business hours only - 7am to 6pm UTC (8am to 7pm BST) on week days (Monday to Friday)
 businessHoursOnly: false
