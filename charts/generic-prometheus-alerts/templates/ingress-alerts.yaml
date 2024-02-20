@@ -28,6 +28,7 @@ spec:
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
+            path: "/"
         - alert: High503ErrorRateOnHealthEndpoint
           annotations:
             message: High rate of 503 errors detected on /health path in Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
