@@ -19,9 +19,6 @@ spec:
     spec:
       template:
         spec:
-          {{- if .Values.serviceAccountName }}
-          serviceAccountName: {{ .Values.serviceAccountName }}
-          {{- end }}
           containers:
             - name: housekeeping
               image: ghcr.io/ministryofjustice/hmpps-devops-tools
