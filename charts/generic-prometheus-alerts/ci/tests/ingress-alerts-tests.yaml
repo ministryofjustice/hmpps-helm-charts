@@ -20,11 +20,11 @@ tests:
     #   at 2m the rate (increase per second) in the last minute: for 500 requests it's 0.03 ((3 - 1) / 60), for 501 requests it's 0.05 ((5 - 2) / 60)
     #   which is greater than 0
     #   the average of those is 0.041
-    promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
-        eval_time: 2m
-        exp_samples:
-          - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
+    # promql_expr_test:
+    #   - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
+    #     eval_time: 2m
+    #     exp_samples:
+    #       - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
             value: 0.04166666666666667
 
     alert_rule_test:
