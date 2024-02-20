@@ -1,0 +1,33 @@
+{{- if .Values.retryDlqCronjob.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "generic-service.fullname" . | trunc 26 }}-queue-housekeeping-cronjob
+  labels:
+    {{- include "generic-service.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.scheduledDowntime.enabled }}
+  schedule: "{{ .Values.scheduledDowntime.retryDlqSchedule }}"
+  {{- else }}
+  schedule: "*/10 * * * *"
+  {{- end }}
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          {{- if .Values.serviceAccountName }}
+          serviceAccountName: {{ .Values.serviceAccountName }}
+          {{- end }}
+          containers:
+            - name: housekeeping
+              image: ghcr.io/ministryofjustice/hmpps-devops-tools
+              args:
+                - /bin/sh
+                - -c
+                - curl -XPUT --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 40 http://{{ include "generic-service.fullname" . }}/queue-admin/retry-all-dlqs
+          restartPolicy: Never
+  {{- end}}
