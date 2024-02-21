@@ -26,7 +26,6 @@ tests:
         exp_samples:
           - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
             value: 0.04166666666666667
-            # value: 1
 
     alert_rule_test:
       # assert that the 5xx alert is firing
