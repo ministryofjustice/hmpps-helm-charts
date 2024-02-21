@@ -21,7 +21,7 @@ tests:
     #   which is greater than 0
     #   the average of those is 0.041
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples:
           - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
@@ -52,7 +52,7 @@ tests:
     name: 5xxErrorResponses alert doesn't fire outside of business hours
 
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-business-hours-dev", ingress="test-business-hours-ingress", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-business-hours-dev", ingress="test-business-hours-ingress", path="/", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples:
           - labels: '{exported_namespace="test-business-hours-dev", ingress="test-business-hours-ingress"}'
@@ -74,7 +74,7 @@ tests:
     # this is here to help folks better understand the promql expression
     # at 2m the rate (increase per second) in the last minute: 0 which is not greater than 0, assert nothing is returned
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples: []
 
