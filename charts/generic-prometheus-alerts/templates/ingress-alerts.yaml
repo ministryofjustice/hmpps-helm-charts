@@ -23,13 +23,13 @@ spec:
             runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
             dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
           expr: |-
-            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}",  status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutes }}m]) > 0) by (ingress, exported_namespace)
+            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutes }}m]) > 0) by (ingress, exported_namespace)
             {{ $businessOrAllHoursExpression }}
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
             
-        - alert: High503ErrorRateOnHealthEndpoint
+        - alert: 503ErrorResponsesOnHealthEndpoint
           annotations:
             message: High rate of 503 errors detected on /health path in Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
             runbook_url: {{ .Values.runbookUrl }}ingress-503-error-responses
