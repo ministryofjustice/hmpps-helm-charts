@@ -6,41 +6,41 @@ rule_files:
 evaluation_interval: 1m
 
 tests:
-  # - interval: 1m
-  #   input_series:
-  #     - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status="500"}'
-  #       values: '0 1 3'
-  #     - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status="501"}'
-  #       values: '0 2 5'
+  - interval: 1m
+    input_series:
+      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status="500"}'
+        values: '0 1 3'
+      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status="501"}'
+        values: '0 2 5'
 
-  #   name: 5xxErrorResponses alert fired as request rate increases over the duration of the 1 minute time range window
+    name: 5xxErrorResponses alert fired as request rate increases over the duration of the 1 minute time range window
 
-  #   # this is here to help folks better understand the promql expression
-  #   # assert that
-  #   #   at 2m the rate (increase per second) in the last minute: for 500 requests it's 0.03 ((3 - 1) / 60), for 501 requests it's 0.05 ((5 - 2) / 60)
-  #   #   which is greater than 0
-  #   #   the average of those is 0.041
-  #   promql_expr_test:
-  #     - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
-  #       eval_time: 2m
-  #       exp_samples:
-  #         - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
-  #           value: 0.04166666666666667
+    # this is here to help folks better understand the promql expression
+    # assert that
+    #   at 2m the rate (increase per second) in the last minute: for 500 requests it's 0.03 ((3 - 1) / 60), for 501 requests it's 0.05 ((5 - 2) / 60)
+    #   which is greater than 0
+    #   the average of those is 0.041
+    promql_expr_test:
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
+        eval_time: 2m
+        exp_samples:
+          - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
+            value: 0.04166666666666667
 
-  #   alert_rule_test:
-  #     # assert that the 5xx alert is firing
-  #     - eval_time: 2m
-  #       alertname: 5xxErrorResponses
-  #       exp_alerts:
-  #         - exp_labels:
-  #             alertname: 5xxErrorResponses
-  #             exported_namespace: test-application-dev
-  #             ingress: test-application-ingress
-  #             severity: alert-severity-tag
-  #           exp_annotations:
-  #             message: "Ingress test-application-dev/test-application-ingress is serving 5xx responses."
-  #             runbook_url: https://runbook.com/ingress-5xx-error-responses
-  #             dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application
+    alert_rule_test:
+      # assert that the 5xx alert is firing
+      - eval_time: 2m
+        alertname: 5xxErrorResponses
+        exp_alerts:
+          - exp_labels:
+              alertname: 5xxErrorResponses
+              exported_namespace: test-application-dev
+              ingress: test-application-ingress
+              severity: alert-severity-tag
+            exp_annotations:
+              message: "Ingress test-application-dev/test-application-ingress is serving 5xx responses."
+              runbook_url: https://runbook.com/ingress-5xx-error-responses
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application
 
   - interval: 1m
     input_series:
