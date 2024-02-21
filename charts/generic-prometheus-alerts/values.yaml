@@ -121,7 +121,7 @@ rdsAlertsConnectionThresholdMinutes: 5
 ingress5xxErrorWindowMinutes: 1
 
 # Set the error window minutes for 503 ingress High503ErrorRateOnHealthEndpoint
-ingress503ErrorWindowMinutes: 1
+ingress503ErrorWindowMinutes: 5
 
 # Set the error
 nonProdNamespacePattern: ".*-(dev|preprod)$"
