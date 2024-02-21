@@ -1,0 +1,30 @@
+{{- if .Values.retryDlqCronjob.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "generic-service.fullname" . | trunc 26 }}-retry-dlqs
+  labels:
+    {{- include "generic-service.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.scheduledDowntime.enabled }}
+  schedule: "{{ .Values.scheduledDowntime.retryDlqSchedule }}"
+  {{- else }}
+  schedule: "{{ .Values.retryDlqCronjob.retryDlqSchedule }}"
+  {{- end }}
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: retry-all-dlqs
+              image: "{{ .Values.retryDlqCronjob.image }}:{{ .Values.retryDlqCronjob.tag }}"
+              args:
+                - /bin/sh
+                - -c
+                - curl -XPUT --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 40 http://{{ include "generic-service.fullname" . }}/queue-admin/retry-all-dlqs
+          restartPolicy: Never
+  {{- end}}

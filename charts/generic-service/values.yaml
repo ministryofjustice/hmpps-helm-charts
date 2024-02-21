@@ -221,3 +221,12 @@ scheduledDowntime:
   # Stop at 10pm UTC Monday-Friday
   shutdown: '0 22 * * 1-5'
   serviceAccountName: scheduled-downtime-serviceaccount
+  # every 10 minutes between 7am and 10pm UTC Monday-Friday
+  retryDlqSchedule: "*/10 7-21 * * 1-5"
+
+retryDlqCronjob:
+  enabled: false
+  # every 10 minutes
+  retryDlqSchedule: "*/10 * * * *"
+  image: ghcr.io/ministryofjustice/hmpps-devops-tools
+  tag: latest
