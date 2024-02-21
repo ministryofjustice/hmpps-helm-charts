@@ -21,7 +21,7 @@ tests:
     #   which is greater than 0
     #   the average of those is 0.041
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/health", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples:
           - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
