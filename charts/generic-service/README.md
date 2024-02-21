@@ -246,3 +246,23 @@ scheduledDowntime:
   shutdown: '0 22 * * 1-5' # Stop at 10pm UTC Monday-Friday
   serviceAccountName: scheduled-downtime-serviceaccount # This must match the service account name in the Terraform module
 ```
+
+### Retrying messages on a dead letter queue
+
+The [hmpps-spring-boot-sqs](https://github.com/ministryofjustice/hmpps-spring-boot-sqs/?tab=readme-ov-file#usage) project provides an endpoint for retrying all messages on all dead letter queues. Setting the following value will add a cronjob to your service which will call the retry endpoint every 10 minutes. 
+
+```yaml
+---
+retryDlqCronjob:
+  enabled: true
+  retryDlqSchedule: "*/20 * * * *" # only set this if you want to override the default schedule of every 10 minutes
+```
+
+If you have configured scheduled downtime, the cronjob will not run during the downtime
+Again, you can override the default cron schedule when scheduled downtime is enabled:
+
+```yaml
+---
+scheduledDowntime:
+  retryDlqSchedule: "*/45 * * * 1-3"
+```
