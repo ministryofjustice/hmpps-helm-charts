@@ -29,7 +29,7 @@ spec:
           labels:
             severity: {{ .Values.alertSeverity }}
             
-        - alert: 503ErrorResponsesOnHealthEndpoint
+        - alert: 5xxErrorResponsesOnHealthEndpoint
           annotations:
             message: High rate of 503 errors detected on /health path in Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
             runbook_url: {{ .Values.runbookUrl }}ingress-503-error-responses
