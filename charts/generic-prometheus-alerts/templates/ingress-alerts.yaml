@@ -21,7 +21,7 @@ spec:
           annotations:
             message: Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}} is serving 5xx responses.
             runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
-            dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-5&to=now                                                                                                                                                                             
           expr: |-
             avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", path="/", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutes }}m]) > 0) by (ingress, exported_namespace)
             {{ $businessOrAllHoursExpression }}
@@ -33,7 +33,7 @@ spec:
           annotations:
             message: High rate of 503 errors detected on /health path in Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
             runbook_url: {{ .Values.runbookUrl }}ingress-503-error-responses
-            dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-5&to=now
           expr: |-
             avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", path="/health", status=~"5.*"}[{{ .Values.ingress503ErrorWindowMinutes }}m]) > 0) by (ingress, exported_namespace)
             {{ $businessOrAllHoursExpression }}
