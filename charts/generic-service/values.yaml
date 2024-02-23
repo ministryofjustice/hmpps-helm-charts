@@ -59,6 +59,8 @@ ingress:
   host: chart-example.local
   hosts: []
   path: /
+  healthPath: /health
+  infoPath: /info
   tlsSecretName: chart-example-tls
   modsecurity_enabled: false
   modsecurity_audit_enabled: false

@@ -21,13 +21,25 @@ spec:
           annotations:
             message: Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}} is serving 5xx responses.
             runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
-            dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-5m&to=now                                                                                                                                                                             
           expr: |-
-            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutes }}m]) > 0) by (ingress, exported_namespace)
+            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", path="/", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutes }}m]) > 0) by (ingress, exported_namespace)
             {{ $businessOrAllHoursExpression }}
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
+            
+        - alert: 5xxErrorResponsesOnHealthEndpoint
+          annotations:
+            message: High rate of 5xx errors detected on /health path in Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
+            runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-5m&to=now
+          expr: |-
+            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", path="/health", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutesHealthEndpoint }}m]) > 0) by (ingress, exported_namespace)
+            {{ $businessOrAllHoursExpression }}
+          for: 5m
+          labels:
+            severity: {{ .Values.alertSeverity }}    
         - alert: RatelimitBlocking
           annotations:
             message: Rate limit is being applied on ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
