@@ -5,3 +5,4 @@ charts/generic-prometheus-alerts/ci/test-*/Chart.yaml
 charts/generic-prometheus-alerts/ci/test-*/charts
 charts/generic-prometheus-alerts/ci/test-*.yaml
 charts/generic-prometheus-alerts/ci/compiled-*.yaml
+.DS_Store
