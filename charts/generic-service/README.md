@@ -235,7 +235,8 @@ scheduledDowntime:
   enabled: true
 ```
 
-By default, this will shut down pods between 10pm-6am UTC on weekdays and all day on weekends.
+By default, this will shut down pods between 10pm - 6:30am UTC on weekdays and all day on weekends.
+6:30am was chosen as the RDS startup happens between 6am and 6:30am
 To change this schedule, update the `startup` and `shutdown` values:
 
 ```yaml
