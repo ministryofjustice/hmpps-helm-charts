@@ -3,11 +3,20 @@
 Here you will find a common place for helm charts used by HMPPS projects/services.
 ([Click here][version_list] to see which services use them.)
 
+The charts are built and published via GitHub Actions and GitHub pages, see <https://github.com/helm/chart-releaser>
+
+## Making changes
+Most projects will pin to a specific minor version. Patch releases should therefore be limited to bug fixes and other
+new functionality that will not affect deployments.
+
+It is important to test out any changes locally on a variety of projects prior to raising a PR.
+
 **Worth bearing in mind when making changes** - these charts can be used by services running in clusters hosted on
 CloudPlatform (#ask-cloud-platform) or Digital Studio Ops (#ask-digital-studio-ops), and they may have different
 #configuration. The parameter `dso_enabled` was introduced to toggle features for services running in the DSO cluster.
 
-The charts are built and published via GitHub Actions and GitHub pages, see <https://github.com/helm/chart-releaser>
+Once a PR has been merged and a release created please edit the latest
+[release](https://github.com/ministryofjustice/hmpps-helm-charts/releases) with information on what has changed.
 
 ## Quick start
 
@@ -59,10 +68,10 @@ Then can run a dry-run upgrade to see the effect:
 ```bash
 helm upgrade \
   --dry-run \
-  --namespace my-namespace \ 
+  --namespace my-namespace \
   --values=<values-file> \
   <release-name> \
-  <directory-containing-project-chart> 
+  <directory-containing-project-chart>
 ```
 for example:
 ```bash

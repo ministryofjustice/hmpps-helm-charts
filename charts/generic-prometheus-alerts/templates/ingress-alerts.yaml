@@ -23,7 +23,7 @@ spec:
             runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
             dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-5m&to=now                                                                                                                                                                             
           expr: |-
-            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutes }}m]) > 0) by (ingress, exported_namespace)
+            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", path="/", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutes }}m]) > 0) by (ingress, exported_namespace)
             {{ $businessOrAllHoursExpression }}
           for: 1m
           labels:
