@@ -114,7 +114,7 @@ rdsAlertsCPUThresholdMinutes: 2
 # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections then provides
 # calculations for each database on the maximum number of database connections so for a db.t3.small database it will be
 # LEAST({2Gib/9531392}, 5000) = LEAST({2 * 1024 * 1024 * 1024/9531392}, 5000) = LEAST(225, 5000) = 225.
-rdsAlertsConnectionThreshold: 5
+rdsAlertsConnectionThreshold: 180
 
 # Set the alert number of connections threshold (minutes).
 rdsAlertsConnectionThresholdMinutes: 2
