@@ -14,8 +14,6 @@ alertSeverity: digital-prison-service-dev
 
 runbookUrl: https://github.com/ministryofjustice/hmpps-helm-charts/blob/main/charts/generic-prometheus-alerts/RUNBOOK.md#
 grafanaUrl: https://grafana.live.cloud-platform.service.justice.gov.uk
-dashboardId: f1e13059dfd23fdcaf479f4fa833f92610c2dfa5
-orgId: 1
 
 # Alert by default will target resources uses a regex and the application name (.Values.targetApplication).
 # To be more or less specific with promql queries set these overrides in the parent chart, examples:
@@ -24,7 +22,7 @@ orgId: 1
 
 # deploymentTargetOverride: ".*"
 
-ingressTargetOverride: ".*"
+# ingressTargetOverride: ".*"
 
 # hpaTargetOverride: ".*"
 
@@ -102,10 +100,10 @@ elastiCacheAlertsFreeMemoryThresholdMinutes: 5
 #   database-name-2-id: "Database nice display name 2"
 
 # Set the alert CPU threshold - value between 0 and 100.
-rdsAlertsCPUThreshold: 80
+rdsAlertsCPUThreshold: 5
 
 # Set the alert CPU threshold (minutes).
-rdsAlertsCPUThresholdMinutes: 5
+rdsAlertsCPUThresholdMinutes: 2
 
 # Set the alert number of connections threshold.
 # AWS cloudwatch doesn't expose the maximum number of connections, so this needs to be calculated.
@@ -114,16 +112,13 @@ rdsAlertsCPUThresholdMinutes: 5
 # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections then provides
 # calculations for each database on the maximum number of database connections so for a db.t3.small database it will be
 # LEAST({2Gib/9531392}, 5000) = LEAST({2 * 1024 * 1024 * 1024/9531392}, 5000) = LEAST(225, 5000) = 225.
-rdsAlertsConnectionThreshold: 180
+rdsAlertsConnectionThreshold: 5
 
 # Set the alert number of connections threshold (minutes).
-rdsAlertsConnectionThresholdMinutes: 5
+rdsAlertsConnectionThresholdMinutes: 2
 
 # Set the error window minutes for 5xx ingress
 ingress5xxErrorWindowMinutes: 1
-
-# Set the error window minutes for 5xx ingress High5xxErrorRateOnHealthEndpoint
-ingress5xxErrorWindowMinutesHealthEndpoint: 5
 
 # Alert for business hours only - 7am to 6pm UTC (8am to 7pm BST) on week days (Monday to Friday)
 businessHoursOnly: false
