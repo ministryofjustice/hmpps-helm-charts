@@ -24,7 +24,7 @@ orgId: 1
 
 # deploymentTargetOverride: ".*"
 
-ingressTargetOverride: ".*"
+# ingressTargetOverride: ".*"
 
 # hpaTargetOverride: ".*"
 
