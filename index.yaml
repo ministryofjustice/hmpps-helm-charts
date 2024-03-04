@@ -93,6 +93,17 @@ entries:
     version: 0.1.0
   generic-aws-prometheus-alerts:
   - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2024-03-04T14:30:34.699982356Z"
+    description: Creates a set of standard aws prometheus alert rules for a given
+      application
+    digest: e67bf0e9dab02519b632c414a18c4c9fccb120afbc9b195979918a3a4d1ca778
+    name: generic-aws-prometheus-alerts
+    type: application
+    urls:
+    - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-aws-prometheus-alerts-1.0.1/generic-aws-prometheus-alerts-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v2
     appVersion: 1.0.0
     created: "2024-03-04T11:25:10.008318873Z"
     description: Creates a set of standard aws prometheus alert rules for a given
@@ -1109,4 +1120,4 @@ entries:
     urls:
     - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-service-1.0.0/generic-service-1.0.0.tgz
     version: 1.0.0
-generated: "2024-03-04T11:25:10.009093103Z"
+generated: "2024-03-04T14:30:34.700248994Z"
