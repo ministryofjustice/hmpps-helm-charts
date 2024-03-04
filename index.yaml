@@ -91,6 +91,18 @@ entries:
     urls:
     - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/clamav-0.1.0/clamav-0.1.0.tgz
     version: 0.1.0
+  generic-aws-prometheus-alerts:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2024-03-04T11:25:10.008318873Z"
+    description: Creates a set of standard aws prometheus alert rules for a given
+      application
+    digest: 8befbd346ce36c03ed055d8f97daecb46bdc0a4fc11c8041e74bfb7249ce8d30
+    name: generic-aws-prometheus-alerts
+    type: application
+    urls:
+    - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-aws-prometheus-alerts-1.0.0/generic-aws-prometheus-alerts-1.0.0.tgz
+    version: 1.0.0
   generic-data-analytics-extractor:
   - apiVersion: v1
     created: "2024-01-09T15:54:40.118695644Z"
@@ -1097,4 +1109,4 @@ entries:
     urls:
     - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-service-1.0.0/generic-service-1.0.0.tgz
     version: 1.0.0
-generated: "2024-02-29T10:50:04.457400218Z"
+generated: "2024-03-04T11:25:10.009093103Z"
