@@ -11,7 +11,7 @@ Add this to your project as a dependency chart, in your `Chart.yaml`:
 ```yaml
 dependencies:
   - name: generic-aws-prometheus-alerts
-    version: 1.0.0
+    version: 1.0.1
     repository: https://ministryofjustice.github.io/hmpps-helm-charts
 ```
 
