@@ -20,7 +20,7 @@ additionalRuleLabels: {}
 #   database-name-id: "Database nice display name"
 #   database-name-2-id: "Database nice display name 2"
 
-rdsAlertsCPUThreshold: 5
+rdsAlertsCPUThreshold: 1
 
 # Set the alert CPU threshold (minutes).
 rdsAlertsCPUThresholdMinutes: 2
@@ -32,10 +32,10 @@ rdsAlertsCPUThresholdMinutes: 2
 # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections then provides
 # calculations for each database on the maximum number of database connections so for a db.t3.small database it will be
 # LEAST({2Gib/9531392}, 5000) = LEAST({2 * 1024 * 1024 * 1024/9531392}, 5000) = LEAST(225, 5000) = 225.
-rdsAlertsConnectionThreshold: 180
+rdsAlertsConnectionThreshold: 5
 
 # Set the alert number of connections threshold (minutes).
-rdsAlertsConnectionThresholdMinutes: 2
+rdsAlertsConnectionThresholdMinutes: 1
 
 # Alert for business hours only - 7am to 6pm UTC (8am to 7pm BST) on week days (Monday to Friday)
 businessHoursOnly: false

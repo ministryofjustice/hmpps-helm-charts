@@ -1,4 +1,14 @@
-# Generic Prometheus Alerts for AWS RDS Runbook
+# This is a Proof of concept change. Please do not use it for any live environment.
+
+## Purpose of this chart
+
+This chart is a POC to enable AWS RDS alerts for a project during infrastruction provisioning. At present the RDS alerts can be enabled by 
+providing alert parameters from projects, that includes database identifier as well. To get DB identifier, one has to query secrets and 
+fetch the DB details to pass on to helm. With this POC these informatio will be passed to helm chart during infra provisioning and the 
+alerts will be enabled. This will also remove the dependency on project teams to enable alerts.
+
+
+## Generic Prometheus Alerts for AWS RDS Runbook
 
 This page contains notes detailing what the alerts contained in this chart mean and what you can (and should) do to follow up on them should they fire in your project...
 

@@ -1,4 +1,6 @@
-# generic-aws-prometheus-alerts chart
+# This is a Proof of concept change. Please do not use it for any live environment.
+
+## generic-aws-prometheus-alerts chart
 
 This chart creates a standard set of prometheus alerts for a given aws rds instance.
 
@@ -11,7 +13,7 @@ Add this to your project as a dependency chart, in your `Chart.yaml`:
 ```yaml
 dependencies:
   - name: generic-aws-prometheus-alerts
-    version: 1.0.0
+    version: 1.0.1
     repository: https://ministryofjustice.github.io/hmpps-helm-charts
 ```
 
