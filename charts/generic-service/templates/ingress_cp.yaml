@@ -3,6 +3,7 @@
 {{- $ingressName := print $fullName "-v1-2" }}
 {{- $svcPort := .Values.service.port -}}
 {{- $ingressPath  := .Values.ingress.path -}}
+{{- $ingressHealthPath := .Values.ingress.healthPath -}}
 {{- $hosts := or .Values.ingress.hosts (list .Values.ingress.host) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -43,5 +44,12 @@ spec:
                 name: {{ $fullName }}
                 port:
                   number: {{ $svcPort }}
+          - path: {{ $ingressHealthPath }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}        
     {{- end }}
 {{- end }}
