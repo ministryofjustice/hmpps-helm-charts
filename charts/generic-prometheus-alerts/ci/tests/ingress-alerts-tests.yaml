@@ -55,6 +55,10 @@ tests:
 
     name: 5xxErrorResponses alert not fired as path is for /health
 
+     # This is here to help folks better understand the promql expression assert that at 2m the rate (increase per second) in the last minute: for 500 requests it's 0.03 ((3 - 1) / 60), for 501 requests it's 0.05 ((5 - 2) / 60)
+    #  which is greater than 0,the average of those is 0.041
+    #  In summary, the PromQL expression calculates the average rate of server errors (status codes starting with "5" for requests handled by nginx controller excluding requests with "/health" path and evaluates the expression
+    # over a 5 minute period and further grouping the results by 'ingress' & 'exported_namespace'.)
     promql_expr_test:
       - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
         eval_time: 6m
