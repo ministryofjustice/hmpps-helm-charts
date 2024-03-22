@@ -32,13 +32,18 @@ podAnnotations: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+# Changing the defaults values for securityContext below will have no effect. They are
+# listed here to prevent warning messages appearing and to also document the values.
+# If these values are not set here, then the gatekeeper admission controller will set.
+# See https://github.com/ministryofjustice/cloud-platform-terraform-gatekeeper/tree/main/resources/mutations
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
 
 service:
   enabled: true
