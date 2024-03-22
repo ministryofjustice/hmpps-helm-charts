@@ -9,6 +9,9 @@ targetApplication: ""
 # To disable inclusion of ingress alerts, set to false, defaults true
 ingressAlertsEnabled: true
 
+# To disable inclusion of application alerts, set to false, defaults true
+applicationAlertsEnabled: true
+
 # The alert severity label is used within Alert Manager and determines which slack channel alerts are sent to.
 alertSeverity: digital-prison-service-dev
 

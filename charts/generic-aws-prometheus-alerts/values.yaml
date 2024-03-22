@@ -1,0 +1,41 @@
+---
+# Default values for generic-aws-prometheus-alerts.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# The alert severity label is used within Alert Manager and determines which slack channel alerts are sent to.
+alertSeverity: digital-prison-service-dev
+
+extraAnnotations: {}
+
+extraLabels:
+  prometheus: cloud-platform
+
+additionalRuleLabels: {}
+
+# To monitor AWS RDS instances, add the name of the rds instance in a list.
+# This can be obtained from the instance address in the rds secret in the namespace
+# and should be the first part of the address e.g. cloud-platform-13962204fd879828
+# rdsAlertsDatabases:
+#   database-name-id: "Database nice display name"
+#   database-name-2-id: "Database nice display name 2"
+
+rdsAlertsCPUThreshold: 1
+
+# Set the alert CPU threshold (minutes).
+rdsAlertsCPUThresholdMinutes: 2
+
+# Set the alert number of connections threshold.
+# AWS cloudwatch doesn't expose the maximum number of connections, so this needs to be calculated.
+# https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html contains information on how
+# much memory each instance class has e.g. db.t3.small is 2Gib, db.t3.medium is 4GiB.
+# https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections then provides
+# calculations for each database on the maximum number of database connections so for a db.t3.small database it will be
+# LEAST({2Gib/9531392}, 5000) = LEAST({2 * 1024 * 1024 * 1024/9531392}, 5000) = LEAST(225, 5000) = 225.
+rdsAlertsConnectionThreshold: 5
+
+# Set the alert number of connections threshold (minutes).
+rdsAlertsConnectionThresholdMinutes: 1
+
+# Alert for business hours only - 7am to 6pm UTC (8am to 7pm BST) on week days (Monday to Friday)
+businessHoursOnly: false
