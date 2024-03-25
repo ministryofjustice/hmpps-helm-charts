@@ -20,7 +20,7 @@ allowlist_groups:
     item-2: "6.0.0.0/32"
 
 scheduledDowntime:
- enabled: true
+  enabled: true
 
 retryDlqCronjob:
   enabled: true
