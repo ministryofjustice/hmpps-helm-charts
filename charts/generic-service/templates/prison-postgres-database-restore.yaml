@@ -50,7 +50,7 @@ spec:
                   readOnly: true
                   subPath: entrypoint.sh
               securityContext:
-                {{- toYaml .Values.securityContext | nindent 14 }}
+                {{- toYaml .Values.securityContext | nindent 16 }}
     {{- include "postgresRestore.envs" .Values | nindent 14 }}
           restartPolicy: "Never"
           volumes:

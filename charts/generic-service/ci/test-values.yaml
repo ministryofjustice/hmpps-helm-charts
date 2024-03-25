@@ -18,3 +18,12 @@ allowlist_groups:
   example-group-2:
     item-1: "5.0.0.0/32"
     item-2: "6.0.0.0/32"
+
+scheduledDowntime:
+ enabled: true
+
+retryDlqCronjob:
+  enabled: true
+
+postgresDatabaseRestore:
+  enabled: true
