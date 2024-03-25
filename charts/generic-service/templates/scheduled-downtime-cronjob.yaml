@@ -17,13 +17,15 @@ spec:
         spec:
           containers:
             - name: hmpps-devops-tools
-              image: ghcr.io/ministryofjustice/hmpps-devops-tools:latest
+              image: "{{ .Values.scheduledDowntime.image }}:{{ .Values.scheduledDowntime.tag }}"
               args:
                 - kubectl
                 - scale
                 - deploy
                 - {{ include "generic-service.fullname" . }}
                 - --replicas=0
+              securityContext:
+                {{- toYaml .Values.scheduledDowntime.securityContext | nindent 16 }}
           restartPolicy: OnFailure
           serviceAccountName: {{ .Values.scheduledDowntime.serviceAccountName }}
 ---
@@ -53,6 +55,8 @@ spec:
                 - {{ include "generic-service.fullname" . }}
                 - --current-replicas=0
                 - --replicas={{ .Values.replicaCount }}
+              securityContext:
+                {{- toYaml .Values.securityContext | nindent 16 }}
           restartPolicy: OnFailure
           serviceAccountName: {{ .Values.scheduledDowntime.serviceAccountName }}
 {{- end }}
