@@ -36,7 +36,7 @@ podSecurityContext: {}
 # listed here to prevent warning messages appearing and to also document the values.
 # If these values are not set here, then the gatekeeper admission controller will set.
 # See https://github.com/ministryofjustice/cloud-platform-terraform-gatekeeper/tree/main/resources/mutations
-securityContext:
+securityContext: &securityContext
   capabilities:
     drop:
     - ALL
@@ -203,6 +203,11 @@ custommetrics:
   metricsPath: /metrics
   metricsPort: http
 
+# Devops tools image is used in cronjob below - should be kept up-to-date.
+# using 'latest' tag causes warning messages, so using 'main' tag instead.
+devopsToolsImage: &devopsToolsImage ghcr.io/ministryofjustice/hmpps-devops-tools
+devopsToolsTag: &devopsToolsTag main
+
 postgresDatabaseRestore:
   enabled: false
 # Required environment secrets for the restore script:
@@ -217,6 +222,9 @@ postgresDatabaseRestore:
 #      DB_USER_PREPROD: "database_username"
 #      DB_PASS_PREPROD: "database_password"
 #      DB_HOST_PREPROD: "rds_instance_address"
+  image: *devopsToolsImage
+  tag: *devopsToolsTag
+  securityContext: *securityContext
 
 scheduledDowntime:
   enabled: false
@@ -227,10 +235,15 @@ scheduledDowntime:
   serviceAccountName: scheduled-downtime-serviceaccount
   # every 10 minutes between 7am and 10pm UTC Monday-Friday
   retryDlqSchedule: "*/10 7-21 * * 1-5"
+  image: *devopsToolsImage
+  tag: *devopsToolsTag
+  securityContext: *securityContext
 
 retryDlqCronjob:
   enabled: false
   # every 10 minutes
   retryDlqSchedule: "*/10 * * * *"
-  image: ghcr.io/ministryofjustice/hmpps-devops-tools
-  tag: latest
+  image: *devopsToolsImage
+  tag: *devopsToolsTag
+  securityContext: *securityContext
+

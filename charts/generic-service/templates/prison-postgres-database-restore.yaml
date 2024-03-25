@@ -41,7 +41,7 @@ spec:
         spec:
           containers:
             - name: postgres-restore
-              image: "ghcr.io/ministryofjustice/hmpps-devops-tools:latest"
+              image: "{{ .Values.postgresDatabaseRestore.image }}:{{ .Values.postgresDatabaseRestore.tag }}"
               command:
                 - /bin/entrypoint.sh
               volumeMounts:
@@ -50,7 +50,7 @@ spec:
                   readOnly: true
                   subPath: entrypoint.sh
               securityContext:
-                {{- toYaml .Values.securityContext | nindent 16 }}
+                {{- toYaml .Values.postgresDatabaseRestore.securityContext | nindent 16 }}
     {{- include "postgresRestore.envs" .Values | nindent 14 }}
           restartPolicy: "Never"
           volumes:
