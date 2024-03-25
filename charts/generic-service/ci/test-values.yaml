@@ -1,6 +1,7 @@
 ---
 ingress:
   enabled: true
+  className: example
 
 allowlist:
   custom-1: "1.1.1.1/32"

@@ -25,7 +25,7 @@ metadata:
     nginx.ingress.kubernetes.io/modsecurity-snippet: {{ tpl (toYaml .Values.ingress.modsecurity_snippet) . | nindent 6 }}
   {{- end }}
 spec:
-  ingressClassName: {{- if .Values.ingress.modsecurity_enabled }} "modsec" {{- else }} "default" {{- end }}
+  ingressClassName: {{- if .Values.ingress.className }} {{ .Values.ingress.className }} {{- else if .Values.ingress.modsecurity_enabled }} "modsec" {{- else }} "default" {{- end }}
   tls:
   - hosts:
     {{- range $hosts }}
@@ -50,6 +50,6 @@ spec:
               service:
                 name: {{ $fullName }}
                 port:
-                  number: {{ $svcPort }}  
+                  number: {{ $svcPort }}
     {{- end }}
 {{- end }}
