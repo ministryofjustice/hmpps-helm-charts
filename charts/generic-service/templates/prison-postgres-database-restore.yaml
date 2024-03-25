@@ -49,6 +49,8 @@ spec:
                   mountPath: /bin/entrypoint.sh
                   readOnly: true
                   subPath: entrypoint.sh
+              securityContext:
+                {{- toYaml .Values.securityContext | nindent 14 }}
     {{- include "postgresRestore.envs" .Values | nindent 14 }}
           restartPolicy: "Never"
           volumes:

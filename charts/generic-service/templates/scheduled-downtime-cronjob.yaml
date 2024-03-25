@@ -24,6 +24,8 @@ spec:
                 - deploy
                 - {{ include "generic-service.fullname" . }}
                 - --replicas=0
+              securityContext:
+                {{- toYaml .Values.securityContext | nindent 14 }}
           restartPolicy: OnFailure
           serviceAccountName: {{ .Values.scheduledDowntime.serviceAccountName }}
 ---
@@ -53,6 +55,8 @@ spec:
                 - {{ include "generic-service.fullname" . }}
                 - --current-replicas=0
                 - --replicas={{ .Values.replicaCount }}
+              securityContext:
+                {{- toYaml .Values.securityContext | nindent 14 }}
           restartPolicy: OnFailure
           serviceAccountName: {{ .Values.scheduledDowntime.serviceAccountName }}
 {{- end }}
