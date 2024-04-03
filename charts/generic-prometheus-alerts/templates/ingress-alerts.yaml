@@ -28,7 +28,31 @@ spec:
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
-            
+
+# ## Understanding the below PromQL expression with an example
+# rate() - calculates the per-second rate of increase of a time series over a specified time range (ex: nginx_requests)
+# series of http requests: 100, 150, 200, 3, 0, 40, 22, 1, 2, 11
+# evaluation time: 5 minutes
+# for each data point the rate of increase:
+# 1. No rate calculation for the first data point (100)
+# 2. Rate at t1: (150-100)/300 = 0.1667 requests per second
+# 3. Rate at t1: (200-150)/300 = 0.1667 requests per second
+# 4. Rate at t1: (3-200)/300 = -0.6567 requests per second
+# 5. Rate at t1: (0-3)/300 = 0.-0.01 requests per second
+# 6. Rate at t1: (40-0)/300 = 0.1333 requests per second
+# 7. Rate at t1: (22-40)/300 = -0.06 requests per second
+# 8. Rate at t1: (1-22)/300 = -0.0633 requests per second
+# 9. Rate at t1: (2-1)/300 = 0.0033 requests per second
+# 10.Rate at t1: (11-2)/300 = 0.03 requests per second
+# average rate of increase: (0.1667 + 0.1667 - 0.6567 - 0.01 + 0.1333 - 0.06 - 0.0633 + 0.0033 + 0.03 )/ 9 = 0.0107 requests per second
+# It states the average per-second rate of increase of the nginx requests.
+# The below expression calculates the average rate of server errors (status codes starting with "5") for requests handles by the nginx ingress controller,
+# - it excludes requests with the "/health" path
+# - evaluates the expression over a 5 minute period (the last 5 mins)
+# - groups the results by the 'ingress' and 'exported_namespace' labels
+# - checks if the average rate of server errors is greater than 0.01 requests per second
+# NOTE: '0.01' is configurable as and when needed
+
         - alert: 5xxErrorResponsesOnHealthEndpoint
           annotations:
             message: High rate of 5xx errors detected on /health path in Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
