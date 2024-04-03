@@ -1,6 +1,6 @@
 # generic-prometheus-alerts chart
 
-This chart creates a standard set of prometheus alerts for a given application.
+This chart creates a standard set of prometheus alerts for a given application..
 
 You must provide it with a value for `targetApplication`, this is used within the queries to filter results.
 
