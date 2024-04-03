@@ -128,5 +128,8 @@ ingress5xxErrorWindowMinutes: 1
 # Set the error window minutes for 5xx ingress High5xxErrorRateOnHealthEndpoint
 ingress5xxErrorWindowMinutesHealthEndpoint: 5
 
+# Threshold for number of instances of 5xx ingress High5xxErrorRateOnHealthEndpoint
+ingress5xxErrorCountThreshold: 10
+
 # Alert for business hours only - 7am to 6pm UTC (8am to 7pm BST) on week days (Monday to Friday)
 businessHoursOnly: false

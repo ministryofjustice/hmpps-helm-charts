@@ -14,19 +14,13 @@ tests:
         values: '0 2 5'
 
     name: 5xxErrorResponses alert fired as request rate increases over the duration of the 1 minute time range window
-
-    # this is here to help folks better understand the promql expression
-    # assert that
-    #   at 2m the rate (increase per second) in the last minute: for 500 requests it's 0.03 ((3 - 1) / 60), for 501 requests it's 0.05 ((5 - 2) / 60)
-    #   which is greater than 0
-    #   the average of those is 0.041
+  
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
+      - expr: sum(increase(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples:
           - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
-            value: 0.04166666666666667
-
+            value: 8
     alert_rule_test:
       # assert that the 5xx alert is firing
       - eval_time: 2m
@@ -42,7 +36,7 @@ tests:
               runbook_url: https://runbook.com/ingress-5xx-error-responses
               dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/f1e13059dfd23fdcaf479f4fa833f92610c2dfa5/kubernetes-ingress-traffic?1&var-namespace=test-application-dev&var-ingress=test-application.*&from=now-5m&to=now
       # and that the 5xx health alert is not firing
-      - eval_time: 6m
+      - eval_time: 2m
         alertname: 5xxErrorResponsesOnHealthEndpoint
         exp_alerts: []
 
@@ -56,14 +50,14 @@ tests:
     name: 5xxErrorResponses alert not fired as path is for /health
 
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
+      - expr: sum(increase(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
         eval_time: 6m
-        exp_samples:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/health", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
+        exp_samples: []
+      - expr: sum(increase(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/health", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
         eval_time: 6m
         exp_samples:
           - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
-            value: 0.0175
+            value: 10.5
 
     alert_rule_test:
       # assert that the 5xx alert is not firing

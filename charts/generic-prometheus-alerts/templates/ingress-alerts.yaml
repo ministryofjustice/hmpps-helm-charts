@@ -28,18 +28,19 @@ spec:
           for: 1m
           labels:
             severity: {{ .Values.alertSeverity }}
-            
+
         - alert: 5xxErrorResponsesOnHealthEndpoint
           annotations:
-            message: High rate of 5xx errors detected on /health path in Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
+            message: 5xx errors for /health endpoint. Counted $value within {{ .Values.ingress5xxErrorWindowMinutesHealthEndpoint }} min time frame. Ingress resource {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
             runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
             dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-5m&to=now
           expr: |-
-            avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", path="/health", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutesHealthEndpoint }}m]) > 0) by (ingress, exported_namespace)
+            sum(increase(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", path="/health", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutesHealthEndpoint }}m]) > {{ .Values.ingress5xxErrorCountThreshold }}) by (ingress, exported_namespace)
             {{ $businessOrAllHoursExpression }}
           for: 5m
           labels:
-            severity: {{ .Values.alertSeverity }}    
+            severity: {{ .Values.alertSeverity }}
+
         - alert: RatelimitBlocking
           annotations:
             message: Rate limit is being applied on ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
