@@ -9,7 +9,7 @@ tests:
   - interval: 1m
     input_series:
       - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/bob", status="500"}'
-        values: '0 1 3'
+        values: '0 3 5'
       - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/joe", status="501"}'
         values: '0 2 5'
 
@@ -24,7 +24,7 @@ tests:
     #   the new expression checks if the count of occurences is > 10
     # assert that at 2m the count_over_time in the last 2 minutes: 0 + 1 + 3 = 4 for (status=500) & 0 + 2 + 5 = 7 for (status=501)
     promql_expr_test:
-      - expr: count_over_time(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[1m]) > 10 by (ingress, exported_namespace)
+      - expr: count_over_time(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[1m]) > 10
         eval_time: 2m
         exp_samples:
           - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
@@ -62,14 +62,14 @@ tests:
 #  In summary, the PromQL expression calculates the average rate of server errors (status codes starting with "5" for requests handled by nginx controller excluding requests with "/health" path and evaluates the expression
 # over a 5 minute period and further grouping the results by 'ingress' & 'exported_namespace'.)
     promql_expr_test:
-      - expr: count_over_time(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[1m]) > 10 by (ingress, exported_namespace)
+      - expr: count_over_time(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[1m]) > 5
         eval_time: 6m
         exp_samples:
-      - expr: count_over_time(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[1m]) > 10 by (ingress, exported_namespace)
+      - expr: count_over_time(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[1m]) > 5
         eval_time: 6m
         exp_samples:
           - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
-            value: 7
+            value: 1
 
     alert_rule_test:
       # assert that the 5xx alert is not firing

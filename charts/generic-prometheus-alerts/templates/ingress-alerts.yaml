@@ -70,7 +70,7 @@ spec:
             runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
             dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-5m&to=now
           expr: |-
-            count_over_time(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", path="/health", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutesHealthEndpoint }}m]) > {{ .Values.ingress5xxErrorInstances }} by (ingress, exported_namespace)
+            count_over_time(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", path="/health", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutesHealthEndpoint }}m]) > {{ .Values.ingress5xxErrorInstances }}
             {{ $businessOrAllHoursExpression }}
           for: 5m
           labels:
