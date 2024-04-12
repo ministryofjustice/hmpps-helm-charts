@@ -64,7 +64,7 @@ tests:
       - expr: sum(increase(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
         eval_time: 6m
         exp_samples:
-      - expr: sum(increase(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
+      - expr: sum(increase(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/health", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
         eval_time: 6m
         exp_samples:
           - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
