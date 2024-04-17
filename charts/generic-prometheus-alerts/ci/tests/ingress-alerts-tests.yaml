@@ -51,21 +51,21 @@ tests:
 
     promql_expr_test:
       - expr: sum(increase(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path!="/health", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
-        eval_time: 6m
+        eval_time: 2m
         exp_samples: []
       - expr: sum(increase(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/health", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
-        eval_time: 6m
+        eval_time: 2m
         exp_samples:
           - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
-            value: 10.5
+            value: 14
 
     alert_rule_test:
       # assert that the 5xx alert is not firing
-      - eval_time: 6m
+      - eval_time: 2m
         alertname: 5xxErrorResponses
         exp_alerts: []
       # and that the 5xx health alert is firing
-      - eval_time: 6m
+      - eval_time: 2m
         alertname: 5xxErrorResponsesOnHealthEndpoint
         exp_alerts:
           - exp_labels:
