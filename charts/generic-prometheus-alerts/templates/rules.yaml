@@ -1,4 +1,4 @@
-{{- if .Values.businessHoursOnly -}}
+{{- if and (.Values.businessHoursOnly) (.Values.applicationAlertsEnabled) -}}
 
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
 {{- $targetApplicationUnderscore := .Values.targetApplication | replace "-" "_" }}
