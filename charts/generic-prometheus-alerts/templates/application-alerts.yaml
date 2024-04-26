@@ -90,19 +90,6 @@ spec:
           labels:
             severity: {{ .Values.alertSeverity }}
 
-        - alert: KubeCronJobRunning
-          annotations:
-            message: CronJob {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.cronjob {{`}}`}} is taking more than 1h to complete.
-            runbook_url: {{ .Values.runbookUrl }}application-cronjob-running
-            dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
-            summary: CronJob taking a long time to complete.
-          expr: |-
-            time() - kube_cronjob_next_schedule_time{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", cronjob=~"{{ $targetCronjob }}"} > 3600
-            {{ $businessOrAllHoursExpression }}
-          for: 1h
-          labels:
-            severity: {{ .Values.alertSeverity }}
-
         - record: job:kube_job_status_start_time_{{ $targetNamespaceUnderscore }}:max
           expr: |
             label_replace(
