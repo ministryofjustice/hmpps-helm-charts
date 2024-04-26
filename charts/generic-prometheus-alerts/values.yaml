@@ -31,10 +31,6 @@ orgId: 1
 
 # hpaTargetOverride: ".*"
 
-# jobTargetOverride: ".*"
-
-# cronjobTargetOverride: ".*"
-
 # Mod_Security normally blocks requests with http status 403 - forbidden.
 # To be able to distinguish and specifically alert on mod_security blocking
 # the general pattern has been to update the mod_security config to block

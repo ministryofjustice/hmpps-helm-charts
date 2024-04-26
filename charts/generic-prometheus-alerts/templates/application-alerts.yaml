@@ -5,8 +5,6 @@
 {{- $targetApplicationRegex := printf "%s.*" .Values.targetApplication }}
 {{- $targetPod := default $targetApplicationRegex .Values.podTargetOverride }}
 {{- $targetDeployment := default .Values.targetApplication .Values.deploymentTargetOverride }}
-{{- $targetJobName := default $targetApplicationRegex .Values.jobTargetOverride }}
-{{- $targetCronjob := default $targetApplicationRegex .Values.cronjobTargetOverride }}
 {{- $targetHpa := default .Values.targetApplication .Values.hpaTargetOverride }}
 {{- $targetApplicationBusinessHours := printf "and ON() %s:business_hours" .Values.targetApplication | replace "-" "_" }}
 {{- $businessOrAllHoursExpression := ternary $targetApplicationBusinessHours "" .Values.businessHoursOnly}}
@@ -85,19 +83,6 @@ spec:
             summary: Pod container waiting longer than 1 hour
           expr: |
             sum by (namespace, pod, container) (kube_pod_container_status_waiting_reason{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", pod=~"{{ $targetPod }}"}) > 0
-            {{ $businessOrAllHoursExpression }}
-          for: 1h
-          labels:
-            severity: {{ .Values.alertSeverity }}
-
-        - alert: KubeCronJobRunning
-          annotations:
-            message: CronJob {{`{{`}} $labels.namespace {{`}}`}}/{{`{{`}} $labels.cronjob {{`}}`}} is taking more than 1h to complete.
-            runbook_url: {{ .Values.runbookUrl }}application-cronjob-running
-            dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
-            summary: CronJob taking a long time to complete.
-          expr: |-
-            time() - kube_cronjob_next_schedule_time{job="kube-state-metrics", namespace=~"{{ $targetNamespace }}", cronjob=~"{{ $targetCronjob }}"} > 3600
             {{ $businessOrAllHoursExpression }}
           for: 1h
           labels:
