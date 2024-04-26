@@ -5,8 +5,6 @@
 {{- $targetApplicationRegex := printf "%s.*" .Values.targetApplication }}
 {{- $targetPod := default $targetApplicationRegex .Values.podTargetOverride }}
 {{- $targetDeployment := default .Values.targetApplication .Values.deploymentTargetOverride }}
-{{- $targetJobName := default $targetApplicationRegex .Values.jobTargetOverride }}
-{{- $targetCronjob := default $targetApplicationRegex .Values.cronjobTargetOverride }}
 {{- $targetHpa := default .Values.targetApplication .Values.hpaTargetOverride }}
 {{- $targetApplicationBusinessHours := printf "and ON() %s:business_hours" .Values.targetApplication | replace "-" "_" }}
 {{- $businessOrAllHoursExpression := ternary $targetApplicationBusinessHours "" .Values.businessHoursOnly}}
