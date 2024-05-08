@@ -125,7 +125,7 @@ spec:
             dashboard_url: {{ $.Values.grafanaUrl }}/d/application-alerts/application-alerts?orgId=1&var-namespace={{ $targetNamespace }}
             summary: CronJob is failing.
           expr: |
-            (job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}:sum
+            (count_over_time(job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}:sum[{{ .Values.applicationCronJobStatusFailedWindowMinutes }}m])
             * ON(cronjob,namespace) GROUP_LEFT()
             (kube_cronjob_spec_suspend == 0))
             {{ $businessOrAllHoursExpression }}
