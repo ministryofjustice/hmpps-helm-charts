@@ -131,3 +131,9 @@ ingress5xxHealthEndpointThreshold: 0.004
 
 # Alert for business hours only - 7am to 6pm UTC (8am to 7pm BST) on week days (Monday to Friday)
 businessHoursOnly: false
+
+# Set the time frame in minutes for CronJobStatusFailed alert
+# The job used to check whether the status was failure and alert at that specific moment, however in the period when
+# the job runs the failure flag is not set which caused the alert to then be resolved.  The time window should be set
+# to a duration longer than the duration of the job so that the alert doesn't clear (if failing) during run of the job.
+applicationCronJobStatusFailedWindowMinutes: 5

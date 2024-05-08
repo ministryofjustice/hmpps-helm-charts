@@ -3,7 +3,7 @@ rule_files:
   - ../test-application-app.yaml
   - ../test-business-hours-app.yaml
 
-evaluation_interval: 5m
+evaluation_interval: 1m
 
 tests:
   ##
@@ -116,3 +116,58 @@ tests:
       - eval_time: 60m
         alertname: CronJobStatusFailed
         exp_alerts: []
+
+  # example three.  Test of cron job failed alerts
+  - interval: 1m
+    input_series:
+      - series: 'kube_job_status_failed{job="kube-state-metrics", job_name="test-application-cronjob-1", namespace="test-application-dev", reason="BackoffLimitExceeded"}'
+        values: '1x4 0 1x5'
+      - series: 'kube_job_status_start_time{job="kube-state-metrics", job_name="test-application-cronjob-1", namespace="test-application-dev"}'
+        values: '0+0x12'
+      - series: 'kube_job_owner{job="kube-state-metrics", job_name="test-application-cronjob-1", namespace="test-application-dev", owner_kind="CronJob", owner_name="test-application-cronjob"}'
+        values: '1+0x12'
+      - series: 'kube_cronjob_spec_suspend{cronjob="test-application-cronjob", job="kube-state-metrics", namespace="test-application-dev"}'
+        values: '0+0x12'
+    promql_expr_test:
+      # at 0 the job will have failed
+      - expr: job:kube_job_status_failed_test_application_dev:sum
+        eval_time: 0m
+        exp_samples:
+          - labels: 'job:kube_job_status_failed_test_application_dev:sum{cronjob="test-application-cronjob", job="test-application-cronjob-1", job_name="test-application-cronjob-1", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+            value: 0
+      # at 5 the job will have not failed yet - will be running
+      - expr: job:kube_job_status_failed_test_application_dev:sum
+        eval_time: 5m
+        exp_samples: []
+      # at 6 the job will have now failed again
+      - expr: job:kube_job_status_failed_test_application_dev:sum
+        eval_time: 6m
+        exp_samples:
+          - labels: 'job:kube_job_status_failed_test_application_dev:sum{cronjob="test-application-cronjob", job="test-application-cronjob-1", job_name="test-application-cronjob-1", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+            value: 0
+      # count over last 5 minutes will show the failures though
+      - expr: count_over_time(job:kube_job_status_failed_test_application_dev:sum[5m])
+        eval_time: 6m
+        exp_samples:
+          - labels: '{cronjob="test-application-cronjob", job="test-application-cronjob-1", job_name="test-application-cronjob-1", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+            value: 5
+
+    alert_rule_test:
+      # check that the CronJobStatusFailed alert is firing even though there was a blip at 5m when it didn't fail
+      # so we use count_over_time so that we don't get an alert to say that the job has cleared during execution
+      - eval_time: 5m
+        alertname: CronJobStatusFailed
+        exp_alerts:
+          - exp_labels:
+              cronjob: test-application-cronjob
+              job: test-application-cronjob-1
+              job_name: test-application-cronjob-1
+              namespace: test-application-dev
+              owner_name: test-application-cronjob
+              severity: alert-severity-tag
+            exp_annotations:
+              message: CronJob test-application-dev/test-application-cronjob is failing.
+              runbook_url: https://runbook.com/application-cronjob-failed
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/application-alerts/application-alerts?orgId=1&var-namespace=test-application-dev
+              summary: CronJob is failing.
+
