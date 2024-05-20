@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ue
 
-PRISON_API_BASE_URL=https://api-preprod.prison.service.justice.gov.uk
+PRISON_API_BASE_URL=https://prison-api-preprod.prison.service.justice.gov.uk
 
 check_http() { http --stream --check-status --ignore-stdin --timeout=600 "$@"; }
 psql_preprod() { psql -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" -d "$DB_NAME_PREPROD" -At -c "$@"; }
