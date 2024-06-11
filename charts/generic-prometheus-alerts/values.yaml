@@ -56,6 +56,16 @@ additionalRuleLabels: {}
 # sqsNumberAlertQueueNames:
 #   - "other-queue-name"
 #   - "other-queue-name-2"
+#
+# If you have lots of AWS SQS then these can be grouped so that there are separate alerts for each group rather than
+# one prometheus alert to cover them all. At present these alerts are only created for the number of messages.
+# sqsNumberAlertQueueMappings:
+#   group-one:
+#     - "name-one-queue"
+#     - "name-one-dlq"
+#   group-two:
+#     - "name-two-queue"
+#     - "name-two-dlq"
 
 # Set the alert threshold for SQS oldest message in the queue (minutes).
 # sqsAlertsOldestThreshold: 30
