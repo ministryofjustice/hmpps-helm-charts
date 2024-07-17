@@ -20,11 +20,11 @@ data:
 {{ .Files.Get "prison-postgres-restore.sh" | indent 4 }}
 
 ---
+
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  {{ $jobName := ternary .Values.postgresDatabaseRestore.jobName  (include "generic-service.fullname" . )"-postgres-restore" .Values.postgresDatabaseRestore.jobName -}}
-  name: {{ $jobName }}
+  name: {{ .Values.postgresDatabaseRestore.jobName | default (printf "%s-postgres-restore" (include "generic-service.fullname" .)) }}
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
