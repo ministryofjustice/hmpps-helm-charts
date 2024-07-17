@@ -659,6 +659,15 @@ entries:
     version: 0.1.0
   generic-service:
   - apiVersion: v2
+    created: "2024-07-17T12:35:21.580556915Z"
+    description: A Helm chart for a generic application deployment.
+    digest: 6dd07f1c0e54f97245ff7884737bfe5cda774d25994de80f9661fca1702585cc
+    name: generic-service
+    type: application
+    urls:
+    - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-service-3.4.0/generic-service-3.4.0.tgz
+    version: 3.4.0
+  - apiVersion: v2
     created: "2024-06-13T07:40:50.689107836Z"
     description: A Helm chart for a generic application deployment.
     digest: 0313b533a5c978ea591652a522a75d29fc853fbf45b9a54aa91363425d460df5
@@ -1244,4 +1253,4 @@ entries:
     urls:
     - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-service-1.0.0/generic-service-1.0.0.tgz
     version: 1.0.0
-generated: "2024-06-13T07:40:50.689430713Z"
+generated: "2024-07-17T12:35:21.5809304Z"
