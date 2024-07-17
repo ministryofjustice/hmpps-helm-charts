@@ -23,7 +23,7 @@ data:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "generic-service.fullname" . }}-postgres-restore
+  name: {{ .Values.postgresDatabaseRestore.jobName }}
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
