@@ -209,7 +209,7 @@ devopsToolsImage: &devopsToolsImage ghcr.io/ministryofjustice/hmpps-devops-tools
 devopsToolsTag: &devopsToolsTag main
 
 postgresDatabaseRestore:
-  jobName: ""
+  jobName:
   enabled: false
 # Required environment secrets for the restore script:
 #  namespace_secrets:
