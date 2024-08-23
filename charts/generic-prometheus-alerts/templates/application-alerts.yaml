@@ -1,4 +1,3 @@
-{{- if .Values.applicationAlertsEnabled -}}
 {{- $targetNamespace := .Release.Namespace }}
 {{- $targetNamespaceUnderscore := .Release.Namespace | replace "-" "_" }}
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
@@ -202,4 +201,3 @@ spec:
           for: 0m
           labels:
             severity: {{ .Values.alertSeverity }}
-{{- end }}

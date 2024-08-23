@@ -52,9 +52,6 @@ service:
 
 ingress:
   enabled: false
-  # if not hosted in Cloud Platform (e.g. digital studio hosting) then you might need to use
-  # the dso controller with a different ingress class name annotation instead.
-  dso_enabled: false
   annotations:
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
   # 'host' only remains for backwards compatibility. 'hosts' should be used instead
