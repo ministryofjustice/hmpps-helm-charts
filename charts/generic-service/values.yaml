@@ -220,6 +220,9 @@ postgresDatabaseRestore:
 #      DB_USER_PREPROD: "database_username"
 #      DB_PASS_PREPROD: "database_password"
 #      DB_HOST_PREPROD: "rds_instance_address"
+# Optional schema name if not using the default 'public' schema:
+#  env:
+#    SCHEMA_TO_RESTORE: "my_schema"
   image: *devopsToolsImage
   tag: *devopsToolsTag
   securityContext: *securityContext

@@ -26,14 +26,14 @@ echo "${DB_HOST_PREPROD}:5432:${DB_NAME_PREPROD}:${DB_USER_PREPROD}:${DB_PASS_PR
 chmod 0600 ~/.pgpass
 
 # Check that we can connect to preprod postgres and create restore table
-if ! OUTPUT=$(psql_preprod "create table if not exists restore_status(restore_date date)"); then
+if ! OUTPUT=$(psql_preprod "create table if not exists ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status(restore_date date)"); then
   echo -e "\nUnable to talk to postgres and create restore table"
   echo "$OUTPUT"
   exit 1
 fi
 
 # Grab last restore date from postgres
-SAVED_RESTORE_DATE=$(psql_preprod "select restore_date from restore_status")
+SAVED_RESTORE_DATE=$(psql_preprod "select restore_date from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status")
 
 # we've found a date, check to see if we've had a newer restore
 if [[ -n $SAVED_RESTORE_DATE && ! $DATABASE_RESTORE_DATE > $SAVED_RESTORE_DATE ]]; then
@@ -47,7 +47,7 @@ fi
 
 # Grab flyway versions from preprod and prod.  If schema history different then restore won't really work
 # Only solution is to release to production before then doing the restore.
-FLYWAY_SQL="select count(version) from flyway_schema_history"
+FLYWAY_SQL="select count(version) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}flyway_schema_history"
 PREPROD_FLYWAY_VERSION=$(psql_preprod "$FLYWAY_SQL")
 PROD_FLYWAY_VERSION=$(psql_prod "$FLYWAY_SQL")
 if [[ "$PREPROD_FLYWAY_VERSION" != "$PROD_FLYWAY_VERSION" ]]; then
@@ -61,10 +61,10 @@ else
 fi
 
 # Dump postgres database from production
-pg_dump -h "$DB_HOST" -U "$DB_USER" -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"
+pg_dump -h "$DB_HOST" -U "$DB_USER" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"
 
 # Restore database to preprod
-pg_restore -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" --clean --no-owner -v -d "$DB_NAME_PREPROD" /tmp/db.dump
+pg_restore -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} --clean --no-owner -v -d "$DB_NAME_PREPROD" /tmp/db.dump
 
 # now stash away the restore status in postgres
 echo -e "\nWriting restore date of $DATABASE_RESTORE_DATE to the preprod database"

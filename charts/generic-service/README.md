@@ -172,6 +172,9 @@ should be injected into the production namespace, see https://github.com/ministr
 for an example PR. Both production and pre-production credentials should then be added as a `namespace_secrets:` section,
 see the `values.yaml` in this repository for an example of the secrets.
 
+If you have set up a schema separate to the default 'public' schema and want to refresh that schema, you must additionally
+supply the `SCHEMA_TO_RESTORE` environment variable in the `env:` section (again see the `values.yaml` for an example).
+
 #### Manually running the database restore cronjob
 The restore cronjob script only runs if there is a newer NOMIS database so we need to override the configuration to ensure to force the run.
 We do that by using `jq` to amend the json and adding in the `FORCE_RUN=true` parameter.
