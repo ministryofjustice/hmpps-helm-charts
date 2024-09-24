@@ -108,6 +108,22 @@ generic-service:
 
 [K8s documentation to mount secrets](https://kubernetes.io/docs/concepts/configuration/secret/#use-case-dotfiles-in-a-secret-volume)
 
+```yaml
+  volumes:
+    - name: secrets
+      secret:
+        secretName: "k8s-secret-name"
+        items:
+          - key: secret-key
+            path: secret-file-name
+  volumeMounts:
+    - name: secrets
+      mountPath: /app/secrets
+      readOnly: true
+```
+
+This configuration will create a file `/app/secrets/secret-file-name` with the content of the k8s secret within it.
+
 When loading secrets as mounted volumes inside a container the pre-existing kubernetes secret should look like the following, as per example above:
 
 ```yaml
@@ -115,8 +131,7 @@ kind: Secret
 type: Opaque
 apiVersion: v1
 data:
-  config.yaml: [base64 encoded file contents]
-  key.pem: [base64 encoded file contents]
+  secret-key: [base64 encoded file contents]
 ```
 
 ### Injecting env into batch yamls
