@@ -102,17 +102,11 @@ generic-service:
       AP_ARN: "arn?" # optional
 
   # Pre-existing kubernetes secrets to load as mounted file(s) within pod/container
-  # namespace_secrets_to_file:
-  #   [name of kubernetes secret]:
-  #     [path of directory used by volume mount]:
-  #       - [key of kubernetes secret - also name of the mounted file]
-  # E.g.
-  namespace_secrets_to_file:
-    secret-name:
-      /app/secrets:
-        - config.yaml
-        - key.pem
 ```
+
+### Mounting Secrets
+
+[K8s documentation to mount secrets](https://kubernetes.io/docs/concepts/configuration/secret/#use-case-dotfiles-in-a-secret-volume)
 
 When loading secrets as mounted volumes inside a container the pre-existing kubernetes secret should look like the following, as per example above:
 
@@ -123,13 +117,6 @@ apiVersion: v1
 data:
   config.yaml: [base64 encoded file contents]
   key.pem: [base64 encoded file contents]
-```
-
-The result of the above secret, along with the example `namespace_secrets_to_file` value would mean running containers be able read/load file contents from:
-
-```sh
-/app/secrets/config.yaml
-/app/secrets/key.pem
 ```
 
 ### Injecting env into batch yamls
