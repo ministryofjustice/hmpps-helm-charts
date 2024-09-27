@@ -42,4 +42,4 @@ tests:
             exp_annotations:
               message: "Ingress test-application-dev/test-application-ingress is not serving enough 2xx responses."
               runbook_url: "https://runbook.com/ingress-2xx-responses"
-              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/f1e13059dfd23fdcaf479f4fa833f92610c2dfa5/kubernetes-ingress-traffic?1&var-namespace=test-application-dev&var-ingress=test-application.*&from=now-20m&to=now"
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/f1e13059dfd23fdcaf479f4fa833f92610c2dfa5/kubernetes-ingress-traffic?1&var-namespace=test-application-dev&var-ingress=test-application.*&from=now-2h&to=now"

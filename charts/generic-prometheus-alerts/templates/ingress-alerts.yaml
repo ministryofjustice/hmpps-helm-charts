@@ -33,10 +33,10 @@ spec:
           annotations:
             message: Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}} is not serving enough 2xx responses.
             runbook_url: {{ .Values.runbookUrl }}ingress-2xx-responses
-            dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-20m&to=now
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-2h&to=now
           expr: |-
             sum by (ingress, exported_namespace) (increase(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}",ingress=~"{{ $targetIngress }}",path="/",status=~"2.*"}[{{ .Values.ingress2xxWindowMinutes }}m])) < {{ .Values.ingress2xxThreshold }}
-          for: 1h
+          for: {{ .Values.ingress2xxWindowMinutes }}m
           labels:
             severity: {{ .Values.alertSeverity }}
 {{- end }}
