@@ -136,7 +136,19 @@ ingress5xxErrorWindowMinutesHealthEndpoint: 5
 # mark, so for our app going slightly higher than that stops the alerts.
 ingress5xxHealthEndpointThreshold: 0.004
 
-# Alert for business hours only - 7am to 6pm UTC (8am to 7pm BST) on week days (Monday to Friday)
+# Whether to enable checks for successful ingress responses.
+# Defaults to false (disabled) since services will not get consistent traffic in dev and pre-prod and might not get
+# consistent traffic in production either.
+ingress2xxEnabled: false
+
+# Set the window minutes for 2xx ingress responses
+ingress2xxWindowMinutes: 60
+
+# Set the minimum amount of 2xx ingress responses in ingress2xxWindowMinutes time window.
+# This excludes any requests to /health and internal requests to /ping, but includes requests to /info.
+ingress2xxThreshold: 100
+
+# Alert for business hours only - 8am to 6pm on week days (Monday to Friday)
 businessHoursOnly: false
 
 # Set the time frame in minutes for CronJobStatusFailed alert

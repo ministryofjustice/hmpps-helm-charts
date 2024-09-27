@@ -14,6 +14,17 @@ Your application has been responding with regular 5xx status codes for over 1 mi
 
 The best course of action is to check your application logs or error tracking system (i.e. Application Insights or Sentry) and investigate the issue from there.
 
+### ingress-2xx-responses
+
+> Ingress `<namespace>`/`<service>` is not serving enough 2xx responses.
+
+Your application has been configured to alert if the number of 2xx status codes falls below a set value over the given
+time period.  This could indicate a misconfiguration in HMPPS Auth or the application returning not found (404)
+responses instead.
+
+The best course of action is to check your application logs or error tracking system (i.e. Application Insights or
+Sentry) and investigate the issue from there.
+
 ### ingress-rate-limiting
 
 > Rate limit is being applied on ingress `<namespace>`/`<service>`.
