@@ -8,3 +8,4 @@ generic-prometheus-alerts:
   sqsAlertsQueueNames:
     - "queue-name"
   businessHoursOnly: false
+  ingress2xxEnabled: true
