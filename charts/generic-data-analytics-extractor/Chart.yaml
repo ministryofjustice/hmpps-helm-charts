@@ -1,4 +1,4 @@
 apiVersion: v1
 name: generic-data-analytics-extractor
 description: Runs a daily cron job which extracts and sends a database dump to the analytical platform
-version: 1.1.1
+version: 1.1.2
