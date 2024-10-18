@@ -64,6 +64,8 @@ spec:
                   value: "{{ .Values.saveEventsLog }}"
                 - name: DATA_PRODUCT_NAME
                   value: "{{ .Values.dataProductName }}"
+              resources:
+                {{- toYaml .Values.resources | nindent 16 }}
 {{- if .Values.dataPlatformApiAuthSecretName }}
                 - name: API_AUTH
                   valueFrom:
