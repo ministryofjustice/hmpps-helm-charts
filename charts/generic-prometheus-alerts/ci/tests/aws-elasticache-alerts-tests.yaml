@@ -1,0 +1,36 @@
+---
+rule_files:
+  - ../test-application-rds.yaml
+  - ../test-business-hours-rds.yaml
+
+evaluation_interval: 5m
+
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'aws_rds_cpuutilization_average{dbinstance_identifier="cloud-platform-uuid"}'
+        values: '85+0x8'
+
+    alert_rule_test:
+      # assert that the cpu utilisation alert is firing
+      - eval_time: 5m
+        alertname: rds-cpu-utilisation
+        exp_alerts:
+          - exp_labels:
+              dbinstance_identifier: cloud-platform-uuid
+              severity: alert-severity-tag
+            exp_annotations:
+              message: "RDS database test rds in test-application-dev - CPU utilisation at 85.00 which is over threshold of 80 for last 5 mins. This alert configured by app test-application-dev/test-application."
+              runbook_url: https://runbook.com/rds-cpu-utilisation
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/VR46pmwWk/aws-rds?orgId=1&var-datasource=Cloudwatch&var-region=default&var-dbinstanceidentifier=cloud-platform-uuid&from=now-6h&to=now
+              summary: RDS CPU usage too high
+
+  - interval: 1m
+    input_series:
+      - series: 'aws_rds_cpuutilization_average{dbinstance_identifier="cloud-platform-uuid"}'
+        values: '80+0x8'
+
+    alert_rule_test:
+      # assert that the cpu utilisation alert isn't firing as value is on threshold
+      - eval_time: 5m
+        alertname: rds-cpu-utilisation
