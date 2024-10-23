@@ -239,7 +239,7 @@ data stored there or reducing the amount of data stored per key.
 
 > elasticache cluster `<clusterId>` in `<targetNamespace>` - memory utilisation at `XX` which is over threshold of `<elastiCacheAlertsMemoryUsageThreshold>` for last `<elastiCacheAlertsMemoryUsageThresholdMinutes>` mins. This alert configured by app `<targetNamespace>`/`<targetApplication>`.
 
-This is the percentage of memory that's used by a cluster node. When this metric reaches 100% of its threshold, Redis 
+This is the percentage of memory that's used by a cluster node. When this metric reaches 100%, Redis 
 initiates the Redis maxmemory eviction policy. The default `maxmemory-policy` is `volatile_lru` which removes the least
 recently used keys with a TTL set. If there are none with a TTL, an out of memory OOM error occurs.
 

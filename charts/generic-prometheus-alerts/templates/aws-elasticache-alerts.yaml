@@ -31,6 +31,7 @@ spec:
             summary: elasticache cluster EngineCPU usage too high
           expr: |-
             (sum by (cache_cluster_id) (aws_elasticache_engine_cpuutilization_average{cache_cluster_id='{{ $clusterId }}'} offset {{ $elastiCacheAlertsEngineCPUThresholdMinutes }}m) > {{ $elastiCacheAlertsEngineCPUThreshold }})
+            {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsEngineCPUThresholdMinutes }}m
           labels:
             severity: {{ $.Values.alertSeverity }}
@@ -42,6 +43,7 @@ spec:
             summary: elasticache cluster CPU usage too high
           expr: |-
             (sum by (cache_cluster_id) (aws_elasticache_cpuutilization_average{cache_cluster_id='{{ $clusterId }}'} offset {{ $elastiCacheAlertsCPUThresholdMinutes }}m) > {{ $elastiCacheAlertsCPUThreshold }})
+            {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsCPUThresholdMinutes }}m
           labels:
             severity: {{ $.Values.alertSeverity }}
@@ -53,6 +55,7 @@ spec:
             summary: elasticache cluster freeable memory too low
           expr: |-
             (sum by (cache_cluster_id) (aws_elasticache_freeable_memory_average{cache_cluster_id='{{ $clusterId }}'} offset 5m)/1000000) < {{ $elastiCacheAlertsFreeMemoryThreshold }}
+            {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsFreeMemoryThresholdMinutes }}m
           labels:
             severity: {{ $.Values.alertSeverity }}
@@ -64,7 +67,8 @@ spec:
             summary: elasticache cluster memory usage too high
           expr: |-
             (sum by (cache_cluster_id) (aws_elasticache_database_memory_usage_percentage_average{cache_cluster_id='{{ $clusterId }}'} offset {{ $elastiCacheAlertsMemoryUsageThresholdMinutes }}m) < {{ $elastiCacheAlertsMemoryUsageThreshold }}
-          for: { { $elastiCacheAlertsMemoryUsageThresholdMinutes } }m
+            {{ $businessOrAllHoursExpression }}
+          for: {{ $elastiCacheAlertsMemoryUsageThresholdMinutes }}m
           labels:
             severity: { { $.Values.alertSeverity } }
         {{- end }}
