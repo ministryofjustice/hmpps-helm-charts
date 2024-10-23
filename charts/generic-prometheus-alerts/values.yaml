@@ -70,7 +70,7 @@ additionalRuleLabels: {}
 # Set the alert threshold for total number of SQS on the queue waiting to be processed.
 # sqsAlertsTotalMessagesThreshold: 100
 
-# To monitor AWS SNS Topic queues, add the name of the topic in a list.
+# To monitor AWS SNS Topic queues, add the topic names in a list.
 # snsAlertsTopicNames:
 #   topic-name-id: "Topic nice display name"
 #   topic-name-2-id: "Topic nice display name 2"
@@ -78,10 +78,10 @@ additionalRuleLabels: {}
 # Set the alert threshold for no SNS messages published to topic (minutes).
 # snsAlertsNoMessagesThresholdMinutes: 30
 
-# To monitor AWS Elasticache, add the name of the clusterId in a list.
+# To monitor AWS Elasticache, add the cluster node names in a list as follows.
 # elastiCacheAlertsClusterIds:
-#   elasticache-cluster-id: "Meaningful cluster display name"
-#   elasticache-cluster-2-id: "Meaningful cluster display name 2"
+#   elasticache-cluster-1-001: "Meaningful cluster node display name"
+#   elasticache-cluster-1-002: "Meaningful cluster node display name 2"
 
 # Maxiumum threshold for Elasticache EngineCPUUtilisation - value between 0 and 100.
 elastiCacheAlertsEngineCPUThreshold: 75
