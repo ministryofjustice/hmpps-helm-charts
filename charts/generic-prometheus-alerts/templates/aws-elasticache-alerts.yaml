@@ -51,7 +51,7 @@ spec:
           annotations:
             message: elasticache cluster {{ $clusterId }} in {{ $targetNamespace }} - freeable memory at {{`{{`}} printf "%.2f" $value {{`}}`}} which is below threshold of {{ $elastiCacheAlertsFreeMemoryThreshold }} for last {{ $elastiCacheAlertsFreeMemoryThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
             runbook_url: {{ $.Values.runbookUrl }}elasticache-memory-utilisation
-            dashboard_url: {{ $.Values.grafanaUrl }}/d/nK7rpiQZk/aws-elasticache-redis?orgId=1&var-cacheclusterId=={{ $clusterId }}&from=now-6h&to=now
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/nK7rpiQZk/aws-elasticache-redis?orgId=1&var-cacheclusterId={{ $clusterId }}&from=now-6h&to=now
             summary: elasticache cluster freeable memory too low
           expr: |-
             (sum by (cache_cluster_id) (aws_elasticache_freeable_memory_average{cache_cluster_id='{{ $clusterId }}'} offset 5m)/1000000) < {{ $elastiCacheAlertsFreeMemoryThreshold }}
@@ -62,14 +62,14 @@ spec:
         - alert: elasticache-memory-utilisation
           annotations:
             message: elasticache cluster {{ $clusterId }} in {{ $targetNamespace }} - memory utilisation at {{`{{`}} printf "%.2f" $value {{`}}`}} which is over threshold of {{ $elastiCacheAlertsMemoryUsageThreshold }} for last {{ $elastiCacheAlertsMemoryUsageThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
-            runbook_url: { { $.Values.runbookUrl } }elasticache-memory-utilisation
-            dashboard_url: { { $.Values.grafanaUrl } }/d/nK7rpiQZk/aws-elasticache-redis?orgId=1&var-cacheclusterId={{ $clusterId }}&from=now-6h&to=now
+            runbook_url: {{ $.Values.runbookUrl }}elasticache-memory-utilisation
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/nK7rpiQZk/aws-elasticache-redis?orgId=1&var-cacheclusterId={{ $clusterId }}&from=now-6h&to=now
             summary: elasticache cluster memory usage too high
           expr: |-
             (sum by (cache_cluster_id) (aws_elasticache_database_memory_usage_percentage_average{cache_cluster_id='{{ $clusterId }}'} offset {{ $elastiCacheAlertsMemoryUsageThresholdMinutes }}m) < {{ $elastiCacheAlertsMemoryUsageThreshold }}
             {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsMemoryUsageThresholdMinutes }}m
           labels:
-            severity: { { $.Values.alertSeverity } }
+            severity: {{ $.Values.alertSeverity }}
         {{- end }}
 {{- end }}
