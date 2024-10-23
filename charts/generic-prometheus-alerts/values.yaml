@@ -83,14 +83,14 @@ additionalRuleLabels: {}
 #   elasticache-cluster-id: "Meaningful cluster display name"
 #   elasticache-cluster-2-id: "Meaningful cluster display name 2"
 
-# Maxiumum threshold for Elasticache EngineCPUUtilisation - value between 0 and 1.
-elastiCacheAlertsEngineCPUThreshold: 0.85
+# Maxiumum threshold for Elasticache EngineCPUUtilisation - value between 0 and 100.
+elastiCacheAlertsEngineCPUThreshold: 75
 
 # Duration over which to measure Elasticache EngineCPUUtilisation (minutes).
 elastiCacheAlertsEngineCPUThresholdMinutes: 5
 
-# Maximum threshold for Elasticache CPUUtilisation - value between 0 and 1.
-elastiCacheAlertsCPUThreshold: 90
+# Maximum threshold for Elasticache CPUUtilisation - value between 0 and 100.
+elastiCacheAlertsCPUThreshold: 75
 
 # Duration over which to measure Elasticache CPUUtilisation (minutes).
 elastiCacheAlertsCPUThresholdMinutes: 5
