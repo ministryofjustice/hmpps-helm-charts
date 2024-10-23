@@ -80,25 +80,32 @@ additionalRuleLabels: {}
 
 # To monitor AWS Elasticache, add the name of the clusterId in a list.
 # elastiCacheAlertsClusterIds:
-#   cacheClusterId: "Elasticache cluster Id"
+#   elasticache-cluster-id: "Meaningful cluster display name"
+#   elasticache-cluster-2-id: "Meaningful cluster display name 2"
 
-# Set the alert for Elasticache's CPU threshold - value between 0 and 1.
+# Maxiumum threshold for Elasticache EngineCPUUtilisation - value between 0 and 1.
 elastiCacheAlertsEngineCPUThreshold: 0.85
 
-# Set the alert for Elasticache's CPU threshold (minutes).
+# Duration over which to measure Elasticache EngineCPUUtilisation (minutes).
 elastiCacheAlertsEngineCPUThresholdMinutes: 5
 
-# Set the alert for Elasticache's CPU threshold - value between 0 and 100.
+# Maximum threshold for Elasticache CPUUtilisation - value between 0 and 1.
 elastiCacheAlertsCPUThreshold: 90
 
-# Set the alert for Elasticache's CPU threshold (minutes).
+# Duration over which to measure Elasticache CPUUtilisation (minutes).
 elastiCacheAlertsCPUThresholdMinutes: 5
 
-# Set the alert for Elasticache's FreeMemory threshold - value should be above 150MB.
+# Minimum threshold for Elasticache FreeMemory - value should be above 150MB.
 elastiCacheAlertsFreeMemoryThreshold: 150
 
-# Set the alert for Elasticache's FreeMemory threshold (minutes).
+# Duration over which to measure Elasticache FreeMemory (minutes).
 elastiCacheAlertsFreeMemoryThresholdMinutes: 5
+
+# Maximum threshold for Elasticache DatabaseMemoryUsagePercentage - value between 0 and 100.
+elastiCacheAlertsMemoryUsageThreshold: 75
+
+# Duration over which to measure Elasticache DatabaseMemoryUsagePercentage (minutes).
+elastiCacheAlertsMemoryUsageThresholdMinutes: 5
 
 # To monitor AWS RDS instances, add the name of the rds instance in a list.
 # This can be obtained from the instance address in the rds secret in the namespace

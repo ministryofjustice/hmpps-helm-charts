@@ -195,3 +195,55 @@ Other reasons why you could run out is if perhaps you're running r2dbc and you'v
 ### sqs-number-of-messages
 
 > SQS - {{ $sqsLabelQueueName }} - number of messages={{`{{`}} $value {{`}}`}} (exceeds {{ $sqsAlertsTotalMessagesThreshold }}), check consumers are healthy.
+
+## Elasticache Alerts
+
+### elasticache-enginecpu-utilisation
+
+> elasticache cluster `<clusterId>` in `<targetNamespace>` - EngineCPU utilisation at `XX` which is over threshold of `<elastiCacheAlertsEngineCPUThreshold>` for last `<elastiCacheAlertsEngineCPUThresholdMinutes>` mins. This alert configured by app `<targetNamespace>`/`<targetApplication>`.
+
+Redis is a single threaded process and uses only one CPU core at any given point in time. This is a measure of the 
+percentage CPU usage of that core.
+
+If the CPU utilisation is regularly too high, consider using a bigger elasticache instance class. This does have a small
+(typically a minute or two's) downtime associated with changing instance class.
+
+If the cluster is expected to run hot then you could always increase `elastiCacheAlertsEngineCPUThreshold` to a higher value.
+
+### elasticache-cpu-utilisation
+
+> elasticache cluster `<clusterId>` in `<targetNamespace>` - CPU utilisation at `XX` which is over threshold of `<elastiCacheAlertsCPUThreshold>` for last `<elastiCacheAlertsCPUThresholdMinutes>` mins. This alert configured by app `<targetNamespace>`/`<targetApplication>`.
+
+This is a measure of total CPU utilisation percentage, across all cores. Since Redis is a single threaded process and 
+uses only one CPU core at any given point in time, this measure is diluted by the number of cores. Pay attention to the
+EngineCPUUtilization metric as well (see above).
+
+If the CPU utilisation is regularly too high, consider using a bigger elasticache instance class. This does have a small
+(typically a minute or two's) downtime associated with changing instance class.
+
+If the cluster is expected to run hot then you could always increase `elastiCacheAlertsCPUThreshold` to a higher value.
+
+### elasticache-freeable-memory
+
+> elasticache cluster `<clusterId>` in `<targetNamespace>` - freeable memory at `XX` which is below threshold of `<elastiCacheAlertsFreeMemoryThreshold>` for last `<elastiCacheAlertsFreeMemoryThresholdMinutes>` mins. This alert configured by app `<targetNamespace>`/`<targetApplication>`.
+
+This is the amount of free memory available on the Elasticache host. When there isn't enough memory available, the host
+starts to rely more on swap memory and this starts to degrade performance.
+
+If the freeable memory is regularly too low, too much data is being stored in Redis. Consider using a bigger elasticache 
+instance class. This does have a small (typically a minute or two's) downtime associated with changing instance class.
+Alternatively consider exercises to reduce the amount of memory that it requires by shortening the TTL of the
+data stored there or reducing the amount of data stored per key.
+
+### elasticache-memory-utilisation
+
+> elasticache cluster `<clusterId>` in `<targetNamespace>` - memory utilisation at `XX` which is over threshold of `<elastiCacheAlertsMemoryUsageThreshold>` for last `<elastiCacheAlertsMemoryUsageThresholdMinutes>` mins. This alert configured by app `<targetNamespace>`/`<targetApplication>`.
+
+This is the percentage of memory that's used by a cluster node. When this metric reaches 100%, Redis 
+initiates the Redis maxmemory eviction policy. The default `maxmemory-policy` is `volatile_lru` which removes the least
+recently used keys with a TTL set. If there are none with a TTL, an out of memory OOM error occurs.
+
+If the memory utilisation is regularly too high, too much data is being stored in Redis. Consider using a bigger elasticache
+instance class. This does have a small (typically a minute or two's) downtime associated with changing instance class.
+Alternatively consider exercises to reduce the amount of memory that it requires by shortening the TTL of the
+data stored there or reducing the amount of data stored per key.
