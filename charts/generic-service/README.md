@@ -177,6 +177,14 @@ see the `values.yaml` in this repository for an example of the secrets.
 If you have set up a schema separate to the default 'public' schema and want to refresh that schema, you must additionally
 supply the `SCHEMA_TO_RESTORE` environment variable in the `env:` section (again see the `values.yaml` for an example).
 
+#### Inputs
+
+| Name | Description | Example |
+|------|-------------|---------|
+| timeout | Sets the active deadline seconds after which the job will be terminated and the Job status will become `type: Failed` with `reason: DeadlineExceeded`. Default is 2400 seconds (40 minutes) | 7200 |
+| storageRequest | Specifies the minimum temporary storage required to backup the database. Will also be used for the `storageLimit` input if that is not supplied | 128Gi |
+| storageLimit | Specifies the maximum temporary storage allowed to backup the database. The `storageRequest` input will be used if this is not supplied | 256Gi |
+
 #### Manually running the database restore cronjob
 The restore cronjob script only runs if there is a newer NOMIS database so we need to override the configuration to ensure to force the run.
 We do that by using `jq` to amend the json and adding in the `FORCE_RUN=true` parameter.

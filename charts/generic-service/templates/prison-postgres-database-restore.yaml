@@ -37,7 +37,7 @@ spec:
       # Tidy up all jobs after 4 days
       ttlSecondsAfterFinished: 345600
       backoffLimit: 0
-      activeDeadlineSeconds: 2400
+      activeDeadlineSeconds: {{ (.Values.postgresDatabaseRestore.timeout) | default 2400 }}
       template:
         spec:
           containers:
@@ -50,6 +50,13 @@ spec:
                   mountPath: /bin/entrypoint.sh
                   readOnly: true
                   subPath: entrypoint.sh
+            {{- if .Values.postgresDatabaseRestore.storageRequest -}}
+              resources:
+                requests:
+                  ephemeral-storage: {{ (.Values.postgresDatabaseRestore.storageRequest) }}
+                limits:
+                  ephemeral-storage: {{ (.Values.postgresDatabaseRestore.storageRequest) | (.Values.postgresDatabaseRestore.storageLimit) }}
+            {{- end }}
               securityContext:
                 {{- toYaml .Values.postgresDatabaseRestore.securityContext | nindent 16 }}
     {{- include "postgresRestore.envs" .Values | nindent 14 }}
