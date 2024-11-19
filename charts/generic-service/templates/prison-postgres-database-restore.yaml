@@ -50,13 +50,6 @@ spec:
                   mountPath: /bin/entrypoint.sh
                   readOnly: true
                   subPath: entrypoint.sh
-            {{- if .Values.postgresDatabaseRestore.storageRequest -}}
-              resources:
-                requests:
-                  ephemeral-storage: {{ .Values.postgresDatabaseRestore.storageRequest }}
-                limits:
-                  ephemeral-storage: {{ .Values.postgresDatabaseRestore.storageRequest | default .Values.postgresDatabaseRestore.storageLimit }}
-            {{- end }}
               securityContext:
                 {{- toYaml .Values.postgresDatabaseRestore.securityContext | nindent 16 }}
     {{- include "postgresRestore.envs" .Values | nindent 14 }}
