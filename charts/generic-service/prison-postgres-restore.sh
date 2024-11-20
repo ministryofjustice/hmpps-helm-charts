@@ -45,7 +45,7 @@ if [[ -n $SAVED_RESTORE_DATE && ! $DATABASE_RESTORE_DATE > $SAVED_RESTORE_DATE ]
   echo -e "\nRun forced"
 fi
 # Check if flyway exist in the project
-CHECK_SQL="select count(1) from information_schema.tables where table_name='flyway_schema_history';"
+CHECK_SQL="select count(1) from information_schema.tables where table_name='${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}flyway_schema_history';"
 PREPROD_IS_FLYWAY_PRESENT=$(psql_preprod "$CHECK_SQL")
 if [[ "$PREPROD_IS_FLYWAY_PRESENT" != "0" ]]; then
 # Grab flyway versions from preprod and prod.  If schema history different then restore won't really work
