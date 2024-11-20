@@ -188,6 +188,15 @@ readinessProbe:
   timeoutSeconds: 10
   failureThreshold: 10
 
+# Example pod lifecycle hooks
+# lifecycle:
+#   postStart:
+#     exec:
+#       command: ["/bin/sh", "-c", "echo Hello from the postStart handler"]
+#   preStop:
+#     exec:
+#       command: ["/bin/sh", "-c", "echo Hello from the preStop handler"]
+
 strategy:
   type: RollingUpdate
   rollingUpdate:
