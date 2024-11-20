@@ -44,20 +44,24 @@ if [[ -n $SAVED_RESTORE_DATE && ! $DATABASE_RESTORE_DATE > $SAVED_RESTORE_DATE ]
   fi
   echo -e "\nRun forced"
 fi
-
+# Check if flyway exist in the project
+CHECK_SQL="select count(1) from information_schema.tables where table_name='flyway_schema_history';"
+PREPROD_IS_FLYWAY_PRESENT=$(psql_preprod "$CHECK_SQL")
+if [[ "$PREPROD_IS_FLYWAY_PRESENT" != "0" ]]; then
 # Grab flyway versions from preprod and prod.  If schema history different then restore won't really work
-# Only solution is to release to production before then doing the restore.
-FLYWAY_SQL="select count(version) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}flyway_schema_history"
-PREPROD_FLYWAY_VERSION=$(psql_preprod "$FLYWAY_SQL")
-PROD_FLYWAY_VERSION=$(psql_prod "$FLYWAY_SQL")
-if [[ "$PREPROD_FLYWAY_VERSION" != "$PROD_FLYWAY_VERSION" ]]; then
-  echo -e "\nFound different number of flyway versions"
-  echo "Preprod has $PREPROD_FLYWAY_VERSION different versions"
-  echo "Prod has $PROD_FLYWAY_VERSION different versions"
-  echo "SQL used for comparison was $FLYWAY_SQL"
-  exit 1
-else
-  echo -e "\nFlyway version check passed, both schemas have $PROD_FLYWAY_VERSION flyway versions installed"
+  # Only solution is to release to production before then doing the restore.
+  FLYWAY_SQL="select count(version) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}flyway_schema_history"
+  PREPROD_FLYWAY_VERSION=$(psql_preprod "$FLYWAY_SQL")
+  PROD_FLYWAY_VERSION=$(psql_prod "$FLYWAY_SQL")
+  if [[ "$PREPROD_FLYWAY_VERSION" != "$PROD_FLYWAY_VERSION" ]]; then
+    echo -e "\nFound different number of flyway versions"
+    echo "Preprod has $PREPROD_FLYWAY_VERSION different versions"
+    echo "Prod has $PROD_FLYWAY_VERSION different versions"
+    echo "SQL used for comparison was $FLYWAY_SQL"
+    exit 1
+  else
+    echo -e "\nFlyway version check passed, both schemas have $PROD_FLYWAY_VERSION flyway versions installed"
+  fi
 fi
 
 # Dump postgres database from production
