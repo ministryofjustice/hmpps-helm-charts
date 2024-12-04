@@ -28,7 +28,7 @@ metadata:
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
-  schedule: "30 6-21/4 * * 1-5" # At minute 30 past every 4th hour from 6am through 9pm UTC Monday-Friday
+  schedule: {{ .Values.postgresDatabaseRestore.schedule }}
   concurrencyPolicy: "Forbid"
   successfulJobsHistoryLimit: 5
   failedJobsHistoryLimit: 5

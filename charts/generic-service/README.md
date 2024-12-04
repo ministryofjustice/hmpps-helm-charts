@@ -172,16 +172,17 @@ will create a scheduled job runs every four hours in production only.  This chec
 the NOMIS database since the last database restore and if so then does another restore.  The pre-production credentials
 should be injected into the production namespace, see https://github.com/ministryofjustice/cloud-platform-environments/pull/8325
 for an example PR. Both production and pre-production credentials should then be added as a `namespace_secrets:` section,
-see the `values.yaml` in this repository for an example of the secrets.
+see the `values.yaml` in this repository for an example of the secrets and other options.
 
 If you have set up a schema separate to the default 'public' schema and want to refresh that schema, you must additionally
 supply the `SCHEMA_TO_RESTORE` environment variable in the `env:` section (again see the `values.yaml` for an example).
 
 #### Inputs
 
-| Name | Description | Example |
-|------|-------------|---------|
-| timeout | Sets the active deadline seconds after which the job will be terminated and the Job status will become `type: Failed` with `reason: DeadlineExceeded`. Default is 2400 seconds (40 minutes) | 7200 |
+| Name     | Description                                                                                                                                                                                 | Example     |
+|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| timeout  | Sets the active deadline seconds after which the job will be terminated and the Job status will become `type: Failed` with `reason: DeadlineExceeded`. Default is 2400 seconds (40 minutes) | 7200        |
+| schedule | Overrides the default cron schedule (30 6-21/4 * * 1-5) allowing preprod databases which are up continuously to be restored as soon as possible after Nomis is restored                     | 5 */2 * * * |
 
 #### Manually running the database restore cronjob
 The restore cronjob script only runs if there is a newer NOMIS database so we need to override the configuration to ensure to force the run.

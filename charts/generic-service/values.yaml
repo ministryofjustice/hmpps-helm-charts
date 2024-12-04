@@ -235,6 +235,8 @@ postgresDatabaseRestore:
   image: *devopsToolsImage
   tag: *devopsToolsTag
   securityContext: *securityContext
+  # Default schedule is at minute 30 past every 4th hour from 6am through 9pm UTC Monday-Friday
+  schedule: "30 6-21/4 * * 1-5"
 
 scheduledDowntime:
   enabled: false
