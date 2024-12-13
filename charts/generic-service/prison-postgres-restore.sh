@@ -63,12 +63,12 @@ fi
 # If set, convert a comma delimited set of tables to exclude to multiple -T options to be passed to pg_dump
 # NB we include the -T option in the EXCLUDE_TABLE variable, so it doesn't need to be included in the call
 # to pg_dump below
-if [ ! -z ${EXCLUDE_TABLES+x} ]; then
+if [[ "${EXCLUDE_TABLES}" ]]; then
   EXCLUDE_TABLE="-T ${EXCLUDE_TABLES//,/ -T }";
 fi
 
 # Dump postgres database from production
-pg_dump -h "$DB_HOST" -U "$DB_USER" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} ${EXCLUDE_TABLE:+ $EXCLUDE_TABLE} -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"
+pg_dump -h "$DB_HOST" -U "$DB_USER" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} ${EXCLUDE_TABLE:+$EXCLUDE_TABLE} -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"
 
 # Restore database to preprod
 pg_restore -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} --clean --no-owner -v -d "$DB_NAME_PREPROD" /tmp/db.dump
