@@ -52,6 +52,13 @@ spec:
                   subPath: entrypoint.sh
               securityContext:
                 {{- toYaml .Values.postgresDatabaseRestore.securityContext | nindent 16 }}
+              resources:
+                limits:
+                  cpu: "3"
+                  memory: 2Gi
+                requests:
+                  cpu: 500m
+                  memory: 500Mi
     {{- include "postgresRestore.envs" .Values | nindent 14 }}
           restartPolicy: "Never"
           volumes:
