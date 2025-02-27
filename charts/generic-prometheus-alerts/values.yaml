@@ -10,7 +10,9 @@ targetApplication: ""
 ingressAlertsEnabled: true
 
 # The alert severity label is used within Alert Manager and determines which slack channel alerts are sent to.
-alertSeverity: digital-prison-service-dev
+alertSeverity: ""
+
+businessUnit: hmpps
 
 runbookUrl: https://github.com/ministryofjustice/hmpps-helm-charts/blob/main/charts/generic-prometheus-alerts/RUNBOOK.md#
 grafanaUrl: https://grafana.live.cloud-platform.service.justice.gov.uk

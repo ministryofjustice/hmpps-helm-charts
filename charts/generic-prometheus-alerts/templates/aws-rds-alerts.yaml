@@ -30,7 +30,8 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $rdsAlertsCPUThresholdMinutes }}m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+
         - alert: rds-connection-count
           annotations:
             message: RDS database {{ $val }} in {{ $targetNamespace }} - there are {{`{{`}} $value {{`}}`}} connections which is over threshold of {{ $rdsAlertsConnectionThreshold }} for last {{ $rdsAlertsConnectionThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
@@ -42,6 +43,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $rdsAlertsConnectionThresholdMinutes }}m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+
 {{- end }}
 {{- end }}
