@@ -27,7 +27,8 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 1m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+
 {{- if .Values.ingress2xxEnabled }}
         - alert: 2xxResponses
           annotations:
@@ -39,7 +40,8 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ .Values.ingress2xxWindowMinutes }}m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+
 {{- end }}
         - alert: 5xxErrorResponsesOnHealthEndpoint
           annotations:
@@ -51,7 +53,8 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 5m
           labels:
-            severity: {{ .Values.alertSeverity }}    
+            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+
         - alert: RatelimitBlocking
           annotations:
             message: Rate limit is being applied on ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
@@ -62,7 +65,8 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 1m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+
         - alert: ModSecurityBlocking
           annotations:
             message: Mod_Security is blocking ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}. Blocking http requests at rate of {{`{{`}} printf "%.2f" $value {{`}}`}} per second.
@@ -73,5 +77,6 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 1m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+
 {{- end }}
