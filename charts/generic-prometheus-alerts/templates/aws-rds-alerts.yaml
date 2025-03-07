@@ -30,7 +30,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $rdsAlertsCPUThresholdMinutes }}m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: rds-connection-count
           annotations:
@@ -43,7 +43,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $rdsAlertsConnectionThresholdMinutes }}m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
 {{- end }}
 {{- end }}

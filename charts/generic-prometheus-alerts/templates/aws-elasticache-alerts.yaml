@@ -34,7 +34,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsEngineCPUThresholdMinutes }}m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: elasticache-cpu-utilisation
           annotations:
@@ -47,7 +47,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsCPUThresholdMinutes }}m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: elasticache-freeable-memory
           annotations:
@@ -60,7 +60,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsFreeMemoryThresholdMinutes }}m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: elasticache-memory-utilisation
           annotations:
@@ -73,7 +73,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsMemoryUsageThresholdMinutes }}m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         {{- end }}
 {{- end }}

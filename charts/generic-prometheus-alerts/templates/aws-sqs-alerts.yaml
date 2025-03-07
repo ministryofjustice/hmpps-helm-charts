@@ -32,7 +32,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 10m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 {{ end }}
 {{ if $sqsNumberAlertQueueNames }}
         - alert: SQS-number-of-messages
@@ -45,7 +45,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 10m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 {{ end }}
 {{ range $key, $queues := $sqsNumberAlertQueueMappings }}
         - alert: SQS-number-of-messages-{{ $key }}
@@ -58,6 +58,6 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 10m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 {{ end }}
 {{- end }}

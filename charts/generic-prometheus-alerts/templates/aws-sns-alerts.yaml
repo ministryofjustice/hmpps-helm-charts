@@ -26,7 +26,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $snsAlertsNoMessagesThresholdMinutes }}m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
 {{- end }}
 {{- end }}

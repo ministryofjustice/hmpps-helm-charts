@@ -27,7 +27,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 1m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
 {{- if .Values.ingress2xxEnabled }}
         - alert: 2xxResponses
@@ -40,7 +40,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ .Values.ingress2xxWindowMinutes }}m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
 {{- end }}
         - alert: 5xxErrorResponsesOnHealthEndpoint
@@ -53,7 +53,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 5m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: RatelimitBlocking
           annotations:
@@ -65,7 +65,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 1m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: ModSecurityBlocking
           annotations:
@@ -77,6 +77,6 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 1m
           labels:
-            {{- include "generic-prometheus-alerts.ruleLabels" . | nindent 12 }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
 {{- end }}
