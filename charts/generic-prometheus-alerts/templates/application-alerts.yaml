@@ -201,6 +201,3 @@ spec:
           for: 0m
           labels:
             {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
-{{ range $index, $service := (lookup "v1" "Service" "mynamespace" "").items }}
-    {{ $index }}: {{ $service }}
-{{ end }}
