@@ -27,8 +27,7 @@ check_postgres_server_versions() {
   else
     echo "Path $PSQL_PATH does not exist"
     exit 1
-  end
-
+  fi
 }
 
 check_postgres_server_versions
