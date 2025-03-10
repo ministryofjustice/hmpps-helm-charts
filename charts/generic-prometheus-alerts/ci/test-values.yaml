@@ -1,2 +1,3 @@
 ---
 targetApplication: "test-application-name"
+alertSeverity: "alert-severity-tag"

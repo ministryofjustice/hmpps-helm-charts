@@ -29,7 +29,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: KubePodNotReady
           annotations:
@@ -42,7 +42,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: KubeDeploymentGenerationMismatch
           annotations:
@@ -57,7 +57,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: KubeDeploymentReplicasMismatch
           annotations:
@@ -72,7 +72,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: KubeContainerWaiting
           annotations:
@@ -85,7 +85,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 1h
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - record: job:kube_job_status_start_time_{{ $targetNamespaceUnderscore }}:max
           expr: |
@@ -129,7 +129,7 @@ spec:
             (kube_cronjob_spec_suspend == 0))
             {{ $businessOrAllHoursExpression }}
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: KubeHpaReplicasMismatch
           annotations:
@@ -154,7 +154,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: KubeHpaMaxedOut
           annotations:
@@ -169,7 +169,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: KubeQuotaExceeded
           annotations:
@@ -185,7 +185,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 15m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
         - alert: KubeContainerOOMKilled
           annotations:
@@ -200,4 +200,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 0m
           labels:
-            severity: {{ .Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+{{ range $index, $service := (lookup "v1" "Service" "mynamespace" "").items }}
+    {{ $index }}: {{ $service }}
+{{ end }}

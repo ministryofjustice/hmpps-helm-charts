@@ -39,6 +39,8 @@ tests:
               exported_namespace: test-application-dev
               ingress: test-application-ingress
               severity: alert-severity-tag
+              application: test-application
+              businessUnit: hmpps
             exp_annotations:
               message: "Ingress test-application-dev/test-application-ingress is not serving enough 2xx responses."
               runbook_url: "https://runbook.com/ingress-2xx-responses"

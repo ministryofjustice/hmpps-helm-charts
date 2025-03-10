@@ -34,7 +34,8 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsEngineCPUThresholdMinutes }}m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
         - alert: elasticache-cpu-utilisation
           annotations:
             message: elasticache cluster {{ $clusterId }} in {{ $targetNamespace }} - CPU utilisation at {{`{{`}} printf "%.2f" $value {{`}}`}} which is over threshold of {{ $elastiCacheAlertsCPUThreshold }} for last {{ $elastiCacheAlertsCPUThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
@@ -46,7 +47,8 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsCPUThresholdMinutes }}m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
         - alert: elasticache-freeable-memory
           annotations:
             message: elasticache cluster {{ $clusterId }} in {{ $targetNamespace }} - freeable memory at {{`{{`}} printf "%.2f" $value {{`}}`}} which is below threshold of {{ $elastiCacheAlertsFreeMemoryThreshold }} for last {{ $elastiCacheAlertsFreeMemoryThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
@@ -58,7 +60,8 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsFreeMemoryThresholdMinutes }}m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
         - alert: elasticache-memory-utilisation
           annotations:
             message: elasticache cluster {{ $clusterId }} in {{ $targetNamespace }} - memory utilisation at {{`{{`}} printf "%.2f" $value {{`}}`}} which is over threshold of {{ $elastiCacheAlertsMemoryUsageThreshold }} for last {{ $elastiCacheAlertsMemoryUsageThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
@@ -70,6 +73,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $elastiCacheAlertsMemoryUsageThresholdMinutes }}m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
         {{- end }}
 {{- end }}
