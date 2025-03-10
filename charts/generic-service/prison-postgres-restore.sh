@@ -20,8 +20,15 @@ check_postgres_server_versions() {
   echo "Detected PostgreSQL server version: $PSQL_PROD_VERSION"
 
   # Set the path to the specific version of psql
-  export PATH="/usr/lib/postgresql/$PSQL_PROD_VERSION/bin:$PATH"
-  echo "Set PATH to: $PATH"
+  PSQL_PATH="/usr/lib/postgresql/$PSQL_PROD_VERSION/bin"
+  if [[ -d "$PSQL_PATH" ]]; then
+    export PATH="$PSQL_PATH:$PATH"
+    echo "Set PATH to: $PATH"
+  else
+    echo "Path $PSQL_PATH does not exist"
+    exit 1
+  end
+
 }
 
 check_postgres_server_versions
