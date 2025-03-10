@@ -21,6 +21,8 @@ tests:
               severity: alert-severity-tag
               application: test-application
               businessUnit: hmpps
+              environment: none
+              productId: none
             exp_annotations:
               message: RDS database test rds in test-application-dev - there are 190 connections which is over threshold of 180 for last 5 mins. This alert configured by app test-application-dev/test-application.
               runbook_url: https://runbook.com/rds-connection-count

@@ -21,6 +21,8 @@ tests:
               severity: alert-severity-tag
               application: test-application
               businessUnit: hmpps
+              environment: none
+              productId: none
             exp_annotations:
               message: "RDS database test rds in test-application-dev - CPU utilisation at 85.00 which is over threshold of 80 for last 5 mins. This alert configured by app test-application-dev/test-application."
               runbook_url: https://runbook.com/rds-cpu-utilisation
