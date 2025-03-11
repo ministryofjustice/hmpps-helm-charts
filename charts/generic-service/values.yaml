@@ -209,10 +209,15 @@ custommetrics:
   metricsPath: /metrics
   metricsPort: http
 
-# Devops tools image is used in cronjob below - should be kept up-to-date.
+# Devops tools image is used in retry DLQ cronjob below - should be kept up-to-date.
 # using 'latest' tag causes warning messages, so using 'main' tag instead.
 devopsToolsImage: &devopsToolsImage ghcr.io/ministryofjustice/hmpps-devops-tools
 devopsToolsTag: &devopsToolsTag main
+
+# postgres tools image is used in db restore cronjob below - should be kept up-to-date.
+# using 'latest' tag causes warning messages, so using 'main' tag instead.
+postgresToolsImage: &postgresToolsImage ghcr.io/ministryofjustice/hmpps-postgres-tools
+postgresToolsTag: &postgresToolsTag main
 
 postgresDatabaseRestore:
   jobName:
@@ -232,8 +237,8 @@ postgresDatabaseRestore:
 # Optional schema name if not using the default 'public' schema:
 #  env:
 #    SCHEMA_TO_RESTORE: "my_schema"
-  image: *devopsToolsImage
-  tag: *devopsToolsTag
+  image: *postgresToolsImage
+  tag: *postgresToolsTag
   securityContext: *securityContext
   # Default schedule is at minute 30 past every 4th hour from 6am through 9pm UTC Monday-Friday
   schedule: "30 6-21/4 * * 1-5"
