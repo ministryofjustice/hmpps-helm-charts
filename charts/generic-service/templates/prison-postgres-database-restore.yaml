@@ -43,6 +43,7 @@ spec:
           containers:
             - name: postgres-restore
               image: "{{ .Values.postgresDatabaseRestore.image }}:{{ .Values.postgresDatabaseRestore.tag }}"
+              imagePullPolicy: always
               command:
                 - /bin/entrypoint.sh
               volumeMounts:
