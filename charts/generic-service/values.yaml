@@ -252,8 +252,8 @@ scheduledDowntime:
   serviceAccountName: scheduled-downtime-serviceaccount
   # every 10 minutes between 7am and 10pm UTC Monday-Friday
   retryDlqSchedule: "*/10 7-21 * * 1-5"
-  image: *postgresToolsImage
-  tag: *postgresToolsTag
+  image: *devopsToolsImage
+  tag: *devopsToolsTag
   securityContext: *securityContext
 
 retryDlqCronjob:
