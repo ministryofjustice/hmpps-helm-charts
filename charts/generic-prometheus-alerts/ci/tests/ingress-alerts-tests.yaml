@@ -37,6 +37,10 @@ tests:
               exported_namespace: test-application-dev
               ingress: test-application-ingress
               severity: alert-severity-tag
+              application: test-application
+              businessUnit: hmpps
+              environment: none
+              productId: none
             exp_annotations:
               message: "Ingress test-application-dev/test-application-ingress is serving 5xx responses."
               runbook_url: https://runbook.com/ingress-5xx-error-responses
@@ -79,6 +83,10 @@ tests:
               exported_namespace: test-application-dev
               ingress: test-application-ingress
               severity: alert-severity-tag
+              application: test-application
+              businessUnit: hmpps
+              environment: none
+              productId: none
             exp_annotations:
               message: "High rate of 5xx errors detected on /health path in Ingress test-application-dev/test-application-ingress."
               runbook_url: https://runbook.com/ingress-5xx-error-responses
@@ -158,6 +166,10 @@ tests:
               exported_namespace: test-application-dev
               ingress: test-application-ingress
               severity: alert-severity-tag
+              application: test-application
+              businessUnit: hmpps
+              environment: none
+              productId: none
             exp_annotations:
               message: "Rate limit is being applied on ingress test-application-dev/test-application-ingress."
               runbook_url: https://runbook.com/ingress-rate-limiting
@@ -215,6 +227,10 @@ tests:
               exported_namespace: test-application-dev
               ingress: test-application-ingress
               severity: alert-severity-tag
+              application: test-application
+              businessUnit: hmpps
+              environment: none
+              productId: none
             exp_annotations:
               message: "Mod_Security is blocking ingress test-application-dev/test-application-ingress. Blocking http requests at rate of 0.37 per second."
               runbook_url: https://runbook.com/ingress-modsecurity-blocking

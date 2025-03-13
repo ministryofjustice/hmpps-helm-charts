@@ -62,6 +62,10 @@ tests:
               namespace: test-application-dev
               owner_name: test-application-cronjob
               severity: alert-severity-tag
+              application: test-application
+              businessUnit: hmpps
+              environment: none
+              productId: none
             exp_annotations:
               message: CronJob test-application-dev/test-application-cronjob is failing.
               runbook_url: https://runbook.com/application-cronjob-failed
@@ -165,6 +169,10 @@ tests:
               namespace: test-application-dev
               owner_name: test-application-cronjob
               severity: alert-severity-tag
+              application: test-application
+              businessUnit: hmpps
+              environment: none
+              productId: none
             exp_annotations:
               message: CronJob test-application-dev/test-application-cronjob is failing.
               runbook_url: https://runbook.com/application-cronjob-failed
