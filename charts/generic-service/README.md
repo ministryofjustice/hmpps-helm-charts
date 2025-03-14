@@ -176,6 +176,14 @@ see the `values.yaml` in this repository for an example of the secrets and other
 
 If you have set up a schema separate to the default 'public' schema and want to refresh that schema, you must additionally
 supply the `SCHEMA_TO_RESTORE` environment variable in the `env:` section (again see the `values.yaml` for an example).
+If you have additionally set up a separate (non-admin) user to access this schema you may find that after refresh the permissions
+on tables etc for that user are reset. A simple way to resolve this is to issue the following one-off database command in a console:
+
+```sql
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA <SCHEMA_TO_RESTORE> TO <NON_ADMIN_USER_NAME>;
+ALTER DEFAULT PRIVILEGES IN SCHEMA <SCHEMA_TO_RESTORE> GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO <NON_ADMIN_USER_NAME>;
+```
+
 
 #### Inputs
 
