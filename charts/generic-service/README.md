@@ -174,6 +174,10 @@ should be injected into the production namespace, see https://github.com/ministr
 for an example PR. Both production and pre-production credentials should then be added as a `namespace_secrets:` section,
 see the `values.yaml` in this repository for an example of the secrets and other options.
 
+Currently, Flyway and ActiveRecord database migrations are supported. The default is Flyway. You can change this by
+supplying the `MIGRATIONS_VENDOR` environment variable in the `env:` section (see `values.yaml` for an example). Possible 
+values are `flyway` and `active_record`.
+
 If you have set up a schema separate to the default 'public' schema and want to refresh that schema, you must additionally
 supply the `SCHEMA_TO_RESTORE` environment variable in the `env:` section (again see the `values.yaml` for an example).
 If you have additionally set up a separate (non-admin) user to access this schema you may find that after refresh the permissions
