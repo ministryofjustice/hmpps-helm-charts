@@ -250,6 +250,7 @@ scheduledDowntime:
   startup: '30 6 * * 1-5'
   # Stop at 10pm UTC Monday-Friday
   shutdown: '0 22 * * 1-5'
+  timeZone: Etc/UTC
   serviceAccountName: scheduled-downtime-serviceaccount
   # every 10 minutes between 7am and 10pm UTC Monday-Friday
   retryDlqSchedule: "*/10 7-21 * * 1-5"
