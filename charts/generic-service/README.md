@@ -269,6 +269,7 @@ scheduledDowntime:
   enabled: true
   startup: '0 6 * * 1-5' # Start at 6am UTC Monday-Friday
   shutdown: '0 22 * * 1-5' # Stop at 10pm UTC Monday-Friday
+  timeZone: Etc/UTC
   serviceAccountName: scheduled-downtime-serviceaccount # This must match the service account name in the Terraform module
 ```
 
