@@ -66,19 +66,28 @@ if [[ -n $SAVED_RESTORE_DATE && ! $DATABASE_RESTORE_DATE > $SAVED_RESTORE_DATE ]
   echo -e "\nRun forced"
 fi
 
-# Grab flyway versions from preprod and prod.  If schema history different then restore won't really work
+# Grab schema versions from preprod and prod.  If schema history different then restore won't really work
 # Only solution is to release to production before then doing the restore.
-FLYWAY_SQL="select count(version) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}flyway_schema_history"
-PREPROD_FLYWAY_VERSION=$(psql_preprod "$FLYWAY_SQL")
-PROD_FLYWAY_VERSION=$(psql_prod "$FLYWAY_SQL")
-if [[ "$PREPROD_FLYWAY_VERSION" != "$PROD_FLYWAY_VERSION" ]]; then
-  echo -e "\nFound different number of flyway versions"
-  echo "Preprod has $PREPROD_FLYWAY_VERSION different versions"
-  echo "Prod has $PROD_FLYWAY_VERSION different versions"
-  echo "SQL used for comparison was $FLYWAY_SQL"
+MIGRATIONS_VENDOR="${MIGRATIONS_VENDOR:-flyway}"
+if [[ "$MIGRATIONS_VENDOR" == "flyway" ]]; then
+  SCHEMA_VERSIONS_SQL="select count(version) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}flyway_schema_history"
+elif [[ "$MIGRATIONS_VENDOR" == "active_record" ]]; then
+  SCHEMA_VERSIONS_SQL="select count(version) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}schema_migrations"
+else
+  echo -e "\nUnrecognized MIGRATIONS_VENDOR value: $MIGRATIONS_VENDOR. Valid values are 'flyway' or 'active_record'"
+  exit 1
+fi
+
+PREPROD_SCHEMA_VERSION=$(psql_preprod "$SCHEMA_VERSIONS_SQL")
+PROD_SCHEMA_VERSION=$(psql_prod "$SCHEMA_VERSIONS_SQL")
+if [[ "$PREPROD_SCHEMA_VERSION" != "$PROD_SCHEMA_VERSION" ]]; then
+  echo -e "\nFound different number of schema versions"
+  echo "Preprod has $PREPROD_SCHEMA_VERSION different versions"
+  echo "Prod has $PROD_SCHEMA_VERSION different versions"
+  echo "SQL used for comparison was: $SCHEMA_VERSIONS_SQL"
   exit 1
 else
-  echo -e "\nFlyway version check passed, both schemas have $PROD_FLYWAY_VERSION flyway versions installed"
+  echo -e "\n$MIGRATIONS_VENDOR migrations check passed, both schemas have $PROD_SCHEMA_VERSION versions installed"
 fi
 
 # Dump postgres database from production

@@ -234,9 +234,10 @@ postgresDatabaseRestore:
 #      DB_USER_PREPROD: "database_username"
 #      DB_PASS_PREPROD: "database_password"
 #      DB_HOST_PREPROD: "rds_instance_address"
-# Optional schema name if not using the default 'public' schema:
+# Optional schema name and migrations vendor if not using the default 'public' schema or 'flyway' vendor:
 #  env:
 #    SCHEMA_TO_RESTORE: "my_schema"
+#    MIGRATIONS_VENDOR: "active_record"
   image: *postgresToolsImage
   tag: *postgresToolsTag
   securityContext: *securityContext
@@ -249,6 +250,7 @@ scheduledDowntime:
   startup: '30 6 * * 1-5'
   # Stop at 10pm UTC Monday-Friday
   shutdown: '0 22 * * 1-5'
+  timeZone: Etc/UTC
   serviceAccountName: scheduled-downtime-serviceaccount
   # every 10 minutes between 7am and 10pm UTC Monday-Friday
   retryDlqSchedule: "*/10 7-21 * * 1-5"
