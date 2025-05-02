@@ -1,7 +1,7 @@
 {{- if .Values.ingressAlertsEnabled -}}
 {{- $targetNamespace := .Release.Namespace }}
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
-{{- $defaultTargetIngress := print .Values.targetApplication ".*" }}
+{{- $defaultTargetIngress := print .Values.targetApplication "(-v1-2)" }}
 {{- $targetIngress := default $defaultTargetIngress .Values.ingressTargetOverride }}
 {{- $modSecBlockingStatusCode := default "406" .Values.modSecBlockingStatusCodeOverride }}
 {{- $targetApplicationBusinessHours := printf "and ON() %s:business_hours" .Values.targetApplication | replace "-" "_" }}

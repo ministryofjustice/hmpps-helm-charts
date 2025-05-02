@@ -1,8 +1,8 @@
 {{- $targetNamespace := .Release.Namespace }}
 {{- $targetNamespaceUnderscore := .Release.Namespace | replace "-" "_" }}
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
-{{- $targetApplicationRegex := printf "%s.*" .Values.targetApplication }}
-{{- $targetPod := default $targetApplicationRegex .Values.podTargetOverride }}
+{{- $targetPodRegex := printf "%s(-[a-z0-9]{10}-[a-z0-9]{5})" .Values.targetApplication }}
+{{- $targetPod := default $targetPodRegex .Values.podTargetOverride }}
 {{- $targetDeployment := default .Values.targetApplication .Values.deploymentTargetOverride }}
 {{- $targetHpa := default .Values.targetApplication .Values.hpaTargetOverride }}
 {{- $targetApplicationBusinessHours := printf "and ON() %s:business_hours" .Values.targetApplication | replace "-" "_" }}
