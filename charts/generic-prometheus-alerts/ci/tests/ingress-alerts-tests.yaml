@@ -42,9 +42,10 @@ tests:
               environment: none
               productId: none
             exp_annotations:
+              summary: "Ingress serving 5xx responses."
               message: "Ingress test-application-dev/test-application-v1-2 is serving 5xx responses."
               runbook_url: https://runbook.com/ingress-5xx-error-responses
-              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/f1e13059dfd23fdcaf479f4fa833f92610c2dfa5/kubernetes-ingress-traffic?1&var-namespace=test-application-dev&var-ingress=test-application(-v1-2)&from=now-5m&to=now
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application"
       # and that the 5xx health alert is not firing
       - eval_time: 6m
         alertname: 5xxErrorResponsesOnHealthEndpoint
@@ -88,9 +89,10 @@ tests:
               environment: none
               productId: none
             exp_annotations:
+              summary: "High rate of 5xx errors on /health."
               message: "High rate of 5xx errors detected on /health path in Ingress test-application-dev/test-application-v1-2."
               runbook_url: https://runbook.com/ingress-5xx-error-responses
-              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/f1e13059dfd23fdcaf479f4fa833f92610c2dfa5/kubernetes-ingress-traffic?1&var-namespace=test-application-dev&var-ingress=test-application(-v1-2)&from=now-5m&to=now
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application"
 
   - interval: 1m
     input_series:
@@ -171,9 +173,10 @@ tests:
               environment: none
               productId: none
             exp_annotations:
+              summary: "Ingress is being rate limited."
               message: "Rate limit is being applied on ingress test-application-dev/test-application-v1-2."
               runbook_url: https://runbook.com/ingress-rate-limiting
-              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application"
 
   - interval: 1m
     input_series:
@@ -232,9 +235,10 @@ tests:
               environment: none
               productId: none
             exp_annotations:
+              summary: "Mod_Security blocking ingress."
               message: "Mod_Security is blocking ingress test-application-dev/test-application-v1-2. Blocking http requests at rate of 0.37 per second."
               runbook_url: https://runbook.com/ingress-modsecurity-blocking
-              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application"
 
   - interval: 1m
     input_series:
