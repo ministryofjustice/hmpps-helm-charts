@@ -20,7 +20,6 @@ businessUnit: hmpps
 
 runbookUrl: https://github.com/ministryofjustice/hmpps-helm-charts/blob/main/charts/generic-prometheus-alerts/RUNBOOK.md#
 grafanaUrl: https://grafana.live.cloud-platform.service.justice.gov.uk
-dashboardId: f1e13059dfd23fdcaf479f4fa833f92610c2dfa5
 orgId: 1
 
 # Alert by default will target resources uses a regex and the application name (.Values.targetApplication).

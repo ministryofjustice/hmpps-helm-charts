@@ -25,10 +25,10 @@ spec:
         {{- range $clusterId, $displayName := $.Values.elastiCacheAlertsClusterIds }}
         - alert: elasticache-enginecpu-utilisation
           annotations:
-            message: elasticache cluster {{ $clusterId }} in {{ $targetNamespace }} - EngineCPU utilisation at {{`{{`}} printf "%.2f" $value {{`}}`}} which is over threshold of {{ $elastiCacheAlertsEngineCPUThreshold }} for last {{ $elastiCacheAlertsEngineCPUThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
+            summary: ElastiCache cluster EngineCPU usage too high.
+            message: ElastiCache cluster {{ $clusterId }} in {{ $targetNamespace }} - EngineCPU utilisation at {{`{{`}} printf "%.2f" $value {{`}}`}} which is over threshold of {{ $elastiCacheAlertsEngineCPUThreshold }} for last {{ $elastiCacheAlertsEngineCPUThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
             runbook_url: {{ $.Values.runbookUrl }}elasticache-enginecpu-utilisation
             dashboard_url: {{ $.Values.grafanaUrl }}/d/nK7rpiQZk/aws-elasticache-redis?orgId=1&var-cacheclusterId={{ $clusterId }}&from=now-6h&to=now
-            summary: elasticache cluster EngineCPU usage too high
           expr: |-
             aws_elasticache_engine_cpuutilization_average{cache_cluster_id='{{ $clusterId }}'} offset {{ $elastiCacheAlertsEngineCPUThresholdMinutes }}m > {{ $elastiCacheAlertsEngineCPUThreshold }}
             {{ $businessOrAllHoursExpression }}
@@ -38,10 +38,10 @@ spec:
 
         - alert: elasticache-cpu-utilisation
           annotations:
-            message: elasticache cluster {{ $clusterId }} in {{ $targetNamespace }} - CPU utilisation at {{`{{`}} printf "%.2f" $value {{`}}`}} which is over threshold of {{ $elastiCacheAlertsCPUThreshold }} for last {{ $elastiCacheAlertsCPUThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
+            summary: ElastiCache cluster CPU usage too high.
+            message: ElastiCache cluster {{ $clusterId }} in {{ $targetNamespace }} - CPU utilisation at {{`{{`}} printf "%.2f" $value {{`}}`}} which is over threshold of {{ $elastiCacheAlertsCPUThreshold }} for last {{ $elastiCacheAlertsCPUThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
             runbook_url: {{ $.Values.runbookUrl }}elasticache-cpu-utilisation
             dashboard_url: {{ $.Values.grafanaUrl }}/d/nK7rpiQZk/aws-elasticache-redis?orgId=1&var-cacheclusterId={{ $clusterId }}&from=now-6h&to=now
-            summary: elasticache cluster CPU usage too high
           expr: |-
             aws_elasticache_cpuutilization_average{cache_cluster_id='{{ $clusterId }}'} offset {{ $elastiCacheAlertsCPUThresholdMinutes }}m > {{ $elastiCacheAlertsCPUThreshold }}
             {{ $businessOrAllHoursExpression }}
@@ -51,10 +51,10 @@ spec:
 
         - alert: elasticache-freeable-memory
           annotations:
-            message: elasticache cluster {{ $clusterId }} in {{ $targetNamespace }} - freeable memory at {{`{{`}} printf "%.2f" $value {{`}}`}} which is below threshold of {{ $elastiCacheAlertsFreeMemoryThreshold }} for last {{ $elastiCacheAlertsFreeMemoryThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
+            summary: ElastiCache cluster freeable memory too low.
+            message: ElastiCache cluster {{ $clusterId }} in {{ $targetNamespace }} - freeable memory at {{`{{`}} printf "%.2f" $value {{`}}`}} which is below threshold of {{ $elastiCacheAlertsFreeMemoryThreshold }} for last {{ $elastiCacheAlertsFreeMemoryThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
             runbook_url: {{ $.Values.runbookUrl }}elasticache-memory-utilisation
             dashboard_url: {{ $.Values.grafanaUrl }}/d/nK7rpiQZk/aws-elasticache-redis?orgId=1&var-cacheclusterId={{ $clusterId }}&from=now-6h&to=now
-            summary: elasticache cluster freeable memory too low
           expr: |-
             (aws_elasticache_freeable_memory_average{cache_cluster_id='{{ $clusterId }}'} offset 5m)/1000000 < {{ $elastiCacheAlertsFreeMemoryThreshold }}
             {{ $businessOrAllHoursExpression }}
@@ -64,10 +64,10 @@ spec:
 
         - alert: elasticache-memory-utilisation
           annotations:
-            message: elasticache cluster {{ $clusterId }} in {{ $targetNamespace }} - memory utilisation at {{`{{`}} printf "%.2f" $value {{`}}`}} which is over threshold of {{ $elastiCacheAlertsMemoryUsageThreshold }} for last {{ $elastiCacheAlertsMemoryUsageThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
+            summary: ElastiCache cluster memory usage too high.
+            message: ElastiCache cluster {{ $clusterId }} in {{ $targetNamespace }} - memory utilisation at {{`{{`}} printf "%.2f" $value {{`}}`}} which is over threshold of {{ $elastiCacheAlertsMemoryUsageThreshold }} for last {{ $elastiCacheAlertsMemoryUsageThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
             runbook_url: {{ $.Values.runbookUrl }}elasticache-memory-utilisation
             dashboard_url: {{ $.Values.grafanaUrl }}/d/nK7rpiQZk/aws-elasticache-redis?orgId=1&var-cacheclusterId={{ $clusterId }}&from=now-6h&to=now
-            summary: elasticache cluster memory usage too high
           expr: |-
             aws_elasticache_database_memory_usage_percentage_average{cache_cluster_id='{{ $clusterId }}'} offset {{ $elastiCacheAlertsMemoryUsageThresholdMinutes }}m > {{ $elastiCacheAlertsMemoryUsageThreshold }}
             {{ $businessOrAllHoursExpression }}

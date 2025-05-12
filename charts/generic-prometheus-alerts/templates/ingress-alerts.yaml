@@ -1,7 +1,7 @@
 {{- if .Values.ingressAlertsEnabled -}}
 {{- $targetNamespace := .Release.Namespace }}
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
-{{- $defaultTargetIngress := print .Values.targetApplication ".*" }}
+{{- $defaultTargetIngress := print .Values.targetApplication "(-v1-2)" }}
 {{- $targetIngress := default $defaultTargetIngress .Values.ingressTargetOverride }}
 {{- $modSecBlockingStatusCode := default "406" .Values.modSecBlockingStatusCodeOverride }}
 {{- $targetApplicationBusinessHours := printf "and ON() %s:business_hours" .Values.targetApplication | replace "-" "_" }}
@@ -19,9 +19,10 @@ spec:
       rules:
         - alert: 5xxErrorResponses
           annotations:
+            summary: Ingress serving 5xx responses.
             message: Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}} is serving 5xx responses.
             runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
-            dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-5m&to=now                                                                                                                                                                             
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
           expr: |-
             avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", path="/", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutes }}m]) > 0) by (ingress, exported_namespace)
             {{ $businessOrAllHoursExpression }}
@@ -32,9 +33,10 @@ spec:
 {{- if .Values.ingress2xxEnabled }}
         - alert: 2xxResponses
           annotations:
+            summary: Ingress not serving enough 2xx responses.
             message: Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}} is not serving enough 2xx responses.
             runbook_url: {{ .Values.runbookUrl }}ingress-2xx-responses
-            dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-2h&to=now
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
           expr: |-
             sum by (ingress, exported_namespace) (increase(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}",ingress=~"{{ $targetIngress }}",path="/",status=~"2.*"}[{{ .Values.ingress2xxWindowMinutes }}m])) < {{ .Values.ingress2xxThreshold }}
             {{ $businessOrAllHoursExpression }}
@@ -45,9 +47,10 @@ spec:
 {{- end }}
         - alert: 5xxErrorResponsesOnHealthEndpoint
           annotations:
+            summary: High rate of 5xx errors on /health.
             message: High rate of 5xx errors detected on /health path in Ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
             runbook_url: {{ .Values.runbookUrl }}ingress-5xx-error-responses
-            dashboard_url: {{ $.Values.grafanaUrl }}/d/{{ $.Values.dashboardId }}/kubernetes-ingress-traffic?{{ $.Values.orgId }}&var-namespace={{ $targetNamespace }}&var-ingress={{ $targetIngress }}&from=now-5m&to=now
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
           expr: |-
             avg(rate(nginx_ingress_controller_requests{exported_namespace=~"{{ $targetNamespace }}", ingress=~"{{ $targetIngress }}", path="/health", status=~"5.*"}[{{ .Values.ingress5xxErrorWindowMinutesHealthEndpoint }}m]) > {{ .Values.ingress5xxHealthEndpointThreshold }}) by (ingress, exported_namespace)
             {{ $businessOrAllHoursExpression }}
@@ -57,6 +60,7 @@ spec:
 
         - alert: RatelimitBlocking
           annotations:
+            summary: Ingress is being rate limited.
             message: Rate limit is being applied on ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}.
             runbook_url: {{ .Values.runbookUrl }}ingress-rate-limiting
             dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
@@ -69,6 +73,7 @@ spec:
 
         - alert: ModSecurityBlocking
           annotations:
+            summary: Mod_Security blocking ingress.
             message: Mod_Security is blocking ingress {{`{{`}} $labels.exported_namespace {{`}}`}}/{{`{{`}} $labels.ingress {{`}}`}}. Blocking http requests at rate of {{`{{`}} printf "%.2f" $value {{`}}`}} per second.
             runbook_url: {{ .Values.runbookUrl }}ingress-modsecurity-blocking
             dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}

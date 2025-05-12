@@ -8,9 +8,9 @@ evaluation_interval: 1m
 tests:
   - interval: 1m
     input_series:
-      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/", status="500"}'
+      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", path="/", status="500"}'
         values: '0 1 3'
-      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/", status="501"}'
+      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", path="/", status="501"}'
         values: '0 2 5'
 
     name: 5xxErrorResponses alert fired as request rate increases over the duration of the 1 minute time range window
@@ -21,10 +21,10 @@ tests:
     #   which is greater than 0
     #   the average of those is 0.041
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", path="/", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples:
-          - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
+          - labels: '{exported_namespace="test-application-dev", ingress="test-application-v1-2"}'
             value: 0.04166666666666667
 
     alert_rule_test:
@@ -35,16 +35,17 @@ tests:
           - exp_labels:
               alertname: 5xxErrorResponses
               exported_namespace: test-application-dev
-              ingress: test-application-ingress
+              ingress: test-application-v1-2
               severity: alert-severity-tag
               application: test-application
               businessUnit: hmpps
               environment: none
               productId: none
             exp_annotations:
-              message: "Ingress test-application-dev/test-application-ingress is serving 5xx responses."
+              summary: "Ingress serving 5xx responses."
+              message: "Ingress test-application-dev/test-application-v1-2 is serving 5xx responses."
               runbook_url: https://runbook.com/ingress-5xx-error-responses
-              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/f1e13059dfd23fdcaf479f4fa833f92610c2dfa5/kubernetes-ingress-traffic?1&var-namespace=test-application-dev&var-ingress=test-application.*&from=now-5m&to=now
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application"
       # and that the 5xx health alert is not firing
       - eval_time: 6m
         alertname: 5xxErrorResponsesOnHealthEndpoint
@@ -52,21 +53,21 @@ tests:
 
   - interval: 1m
     input_series:
-      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/health", status="500"}'
+      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", path="/health", status="500"}'
         values: '0 1 3'
-      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/health", status="501"}'
+      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", path="/health", status="501"}'
         values: '0 6 5'
 
     name: 5xxErrorResponses alert not fired as path is for /health
 
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", path="/", status=~"5.*"}[5m]) > 0) by (ingress, exported_namespace)
         eval_time: 6m
         exp_samples:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/health", status=~"5.*"}[5m]) > 0.004) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", path="/health", status=~"5.*"}[5m]) > 0.004) by (ingress, exported_namespace)
         eval_time: 6m
         exp_samples:
-          - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
+          - labels: '{exported_namespace="test-application-dev", ingress="test-application-v1-2"}'
             value: 0.0175
 
     alert_rule_test:
@@ -81,16 +82,17 @@ tests:
           - exp_labels:
               alertname: 5xxErrorResponsesOnHealthEndpoint
               exported_namespace: test-application-dev
-              ingress: test-application-ingress
+              ingress: test-application-v1-2
               severity: alert-severity-tag
               application: test-application
               businessUnit: hmpps
               environment: none
               productId: none
             exp_annotations:
-              message: "High rate of 5xx errors detected on /health path in Ingress test-application-dev/test-application-ingress."
+              summary: "High rate of 5xx errors on /health."
+              message: "High rate of 5xx errors detected on /health path in Ingress test-application-dev/test-application-v1-2."
               runbook_url: https://runbook.com/ingress-5xx-error-responses
-              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/f1e13059dfd23fdcaf479f4fa833f92610c2dfa5/kubernetes-ingress-traffic?1&var-namespace=test-application-dev&var-ingress=test-application.*&from=now-5m&to=now
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application"
 
   - interval: 1m
     input_series:
@@ -116,7 +118,7 @@ tests:
 
   - interval: 1m
     input_series:
-      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/", status="500"}'
+      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", path="/", status="500"}'
         values: '0 1 0'
 
     name: 5xxErrorResponses alert not fired as request rate decreases over the duration of the 1 minute time range window
@@ -124,7 +126,7 @@ tests:
     # this is here to help folks better understand the promql expression
     # at 2m the rate (increase per second) in the last minute: 0 which is not greater than 0, assert nothing is returned
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", path="/", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", path="/", status=~"5.*"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples: []
 
@@ -139,7 +141,7 @@ tests:
   ##
   - interval: 1m
     input_series:
-      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status="429"}'
+      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", status="429"}'
         values: '0 1 3'
 
     name: RatelimitBlocking alert fired as request rate increases over the duration of the 1 minute time range window
@@ -150,10 +152,10 @@ tests:
     #   which is greater than 0
     #   the average is 0.03
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"429"}[1m]) > 0) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", status=~"429"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples:
-          - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
+          - labels: '{exported_namespace="test-application-dev", ingress="test-application-v1-2"}'
             value: 0.03333333333333333
 
     alert_rule_test:
@@ -164,20 +166,21 @@ tests:
           - exp_labels:
               alertname: RatelimitBlocking
               exported_namespace: test-application-dev
-              ingress: test-application-ingress
+              ingress: test-application-v1-2
               severity: alert-severity-tag
               application: test-application
               businessUnit: hmpps
               environment: none
               productId: none
             exp_annotations:
-              message: "Rate limit is being applied on ingress test-application-dev/test-application-ingress."
+              summary: "Ingress is being rate limited."
+              message: "Rate limit is being applied on ingress test-application-dev/test-application-v1-2."
               runbook_url: https://runbook.com/ingress-rate-limiting
-              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application"
 
   - interval: 1m
     input_series:
-      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status="429"}'
+      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", status="429"}'
         values: '0 1 0'
 
     name: RatelimitBlocking alert not fired as request rate decreases over the duration of the 1 minute time range window
@@ -185,7 +188,7 @@ tests:
     # this is here to help folks better understand the promql expression
     # at 2m the rate (increase per second) in the last minute: 0 which is not greater than 0, assert nothing is returned
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"429"}[1m]) > 0) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", status=~"429"}[1m]) > 0) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples: []
 
@@ -200,7 +203,7 @@ tests:
   ##
   - interval: 1m
     input_series:
-      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status="406"}'
+      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", status="406"}'
         values: '0 21 43'
 
     name: ModSecurityBlocking alert fired as request rate is greater than 20 over the duration of the 1 minute time range window
@@ -211,10 +214,10 @@ tests:
     #   which is greater than 0.33
     #   the average is 0.36
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"406"}[1m]) > 0.33) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", status=~"406"}[1m]) > 0.33) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples:
-          - labels: '{exported_namespace="test-application-dev", ingress="test-application-ingress"}'
+          - labels: '{exported_namespace="test-application-dev", ingress="test-application-v1-2"}'
             value: 0.36666666666666664
 
     alert_rule_test:
@@ -225,20 +228,21 @@ tests:
           - exp_labels:
               alertname: ModSecurityBlocking
               exported_namespace: test-application-dev
-              ingress: test-application-ingress
+              ingress: test-application-v1-2
               severity: alert-severity-tag
               application: test-application
               businessUnit: hmpps
               environment: none
               productId: none
             exp_annotations:
-              message: "Mod_Security is blocking ingress test-application-dev/test-application-ingress. Blocking http requests at rate of 0.37 per second."
+              summary: "Mod_Security blocking ingress."
+              message: "Mod_Security is blocking ingress test-application-dev/test-application-v1-2. Blocking http requests at rate of 0.37 per second."
               runbook_url: https://runbook.com/ingress-modsecurity-blocking
-              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application"
 
   - interval: 1m
     input_series:
-      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status="406"}'
+      - series: 'nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", status="406"}'
         values: '0 20 38'
 
     name: ModSecurityBlocking alert not fired as request rate is equal to the threshold over the duration of the 1 minute time range window
@@ -246,7 +250,7 @@ tests:
     # this is here to help folks better understand the promql expression
     # at 2m the rate (increase per second) in the last minute: 0.3 ((38 - 20) / 60) which not greater than 0.33, assert nothing is returned
     promql_expr_test:
-      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-ingress", status=~"406"}[1m]) > 0.33) by (ingress, exported_namespace)
+      - expr: avg(rate(nginx_ingress_controller_requests{exported_namespace="test-application-dev", ingress="test-application-v1-2", status=~"406"}[1m]) > 0.33) by (ingress, exported_namespace)
         eval_time: 2m
         exp_samples: []
 
