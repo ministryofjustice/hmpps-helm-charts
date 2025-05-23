@@ -21,27 +21,29 @@ spec:
 {{- range $key, $val := $.Values.rdsAlertsDatabases }}
         - alert: rds-cpu-utilisation
           annotations:
+            summary: RDS CPU usage too high
             message: RDS database {{ $val }} in {{ $targetNamespace }} - CPU utilisation at {{`{{`}} printf "%.2f" $value {{`}}`}} which is over threshold of {{ $rdsAlertsCPUThreshold }} for last {{ $rdsAlertsCPUThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
             runbook_url: {{ $.Values.runbookUrl }}rds-cpu-utilisation
             dashboard_url: {{ $.Values.grafanaUrl }}/d/VR46pmwWk/aws-rds?orgId=1&var-datasource=Cloudwatch&var-region=default&var-dbinstanceidentifier={{ $key }}&from=now-6h&to=now
-            summary: RDS CPU usage too high
           expr: |-
             aws_rds_cpuutilization_average{dbinstance_identifier='{{ $key }}'} > {{ $rdsAlertsCPUThreshold }}
             {{ $businessOrAllHoursExpression }}
           for: {{ $rdsAlertsCPUThresholdMinutes }}m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
         - alert: rds-connection-count
           annotations:
+            summary: Too many RDS connections
             message: RDS database {{ $val }} in {{ $targetNamespace }} - there are {{`{{`}} $value {{`}}`}} connections which is over threshold of {{ $rdsAlertsConnectionThreshold }} for last {{ $rdsAlertsConnectionThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
             runbook_url: {{ $.Values.runbookUrl }}rds-connection-count
             dashboard_url: {{ $.Values.grafanaUrl }}/d/VR46pmwWk/aws-rds?orgId=1&var-datasource=Cloudwatch&var-region=default&var-dbinstanceidentifier={{ $key }}&from=now-6h&to=now
-            summary: Too many RDS connections
           expr: |-
             aws_rds_database_connections_average{dbinstance_identifier='{{ $key }}'} > {{ $rdsAlertsConnectionThreshold }}
             {{ $businessOrAllHoursExpression }}
           for: {{ $rdsAlertsConnectionThresholdMinutes }}m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
 {{- end }}
 {{- end }}

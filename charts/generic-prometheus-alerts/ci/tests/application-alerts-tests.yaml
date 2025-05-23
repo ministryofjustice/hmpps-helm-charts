@@ -62,10 +62,14 @@ tests:
               namespace: test-application-dev
               owner_name: test-application-cronjob
               severity: alert-severity-tag
+              application: test-application
+              businessUnit: hmpps
+              environment: none
+              productId: none
             exp_annotations:
               message: CronJob test-application-dev/test-application-cronjob is failing.
               runbook_url: https://runbook.com/application-cronjob-failed
-              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/application-alerts/application-alerts?orgId=1&var-namespace=test-application-dev
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application"
               summary: CronJob is failing.
 
   # example two - three jobs (from the same cronjob) have run, the first two failed, the last one succeeded
@@ -165,9 +169,12 @@ tests:
               namespace: test-application-dev
               owner_name: test-application-cronjob
               severity: alert-severity-tag
+              application: test-application
+              businessUnit: hmpps
+              environment: none
+              productId: none
             exp_annotations:
               message: CronJob test-application-dev/test-application-cronjob is failing.
               runbook_url: https://runbook.com/application-cronjob-failed
-              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/application-alerts/application-alerts?orgId=1&var-namespace=test-application-dev
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-application-dev&var-service=test-application"
               summary: CronJob is failing.
-

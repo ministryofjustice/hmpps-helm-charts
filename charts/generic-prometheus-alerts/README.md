@@ -4,7 +4,7 @@ This chart creates a standard set of prometheus alerts for a given application.
 
 You must provide it with a value for `targetApplication`, this is used within the queries to filter results.
 
-To receive the alerts via slack you must also set a value for `alertSeverity`. This value determines how alerts get routed to a slack channel. This is a process defined by the CloudPlatform team, see [Cloud Platform User Guide](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts)
+You must also provide a value for `alertSeverity`, this enables integration with slack and being able to receive alerts via slack. This value determines how alerts get routed to a slack channel. This is a process defined by the CloudPlatform team, see [Cloud Platform User Guide](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts)
 
 ## Quick start
 

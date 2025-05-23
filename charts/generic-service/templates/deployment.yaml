@@ -70,6 +70,10 @@ spec:
           startupProbe:
 {{ toYaml .Values.startupProbe | indent 12 }}
           {{- end }}
+          {{- if .Values.lifecycle }}
+          lifecycle:
+{{ toYaml .Values.lifecycle | indent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- include "deployment.envs" .Values | nindent 10 }}

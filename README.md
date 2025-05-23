@@ -11,10 +11,6 @@ new functionality that will not affect deployments.
 
 It is important to test out any changes locally on a variety of projects prior to raising a PR.
 
-**Worth bearing in mind when making changes** - these charts can be used by services running in clusters hosted on
-CloudPlatform (#ask-cloud-platform) or Digital Studio Ops (#ask-digital-studio-ops), and they may have different
-#configuration. The parameter `dso_enabled` was introduced to toggle features for services running in the DSO cluster.
-
 Once a PR has been merged and a release created please edit the latest
 [release](https://github.com/ministryofjustice/hmpps-helm-charts/releases) with information on what has changed.
 

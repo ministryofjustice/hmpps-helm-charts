@@ -52,9 +52,6 @@ service:
 
 ingress:
   enabled: false
-  # if not hosted in Cloud Platform (e.g. digital studio hosting) then you might need to use
-  # the dso controller with a different ingress class name annotation instead.
-  dso_enabled: false
   annotations:
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
   # 'host' only remains for backwards compatibility. 'hosts' should be used instead
@@ -191,6 +188,15 @@ readinessProbe:
   timeoutSeconds: 10
   failureThreshold: 10
 
+# Example pod lifecycle hooks
+# lifecycle:
+#   postStart:
+#     exec:
+#       command: ["/bin/sh", "-c", "echo Hello from the postStart handler"]
+#   preStop:
+#     exec:
+#       command: ["/bin/sh", "-c", "echo Hello from the preStop handler"]
+
 strategy:
   type: RollingUpdate
   rollingUpdate:
@@ -203,10 +209,15 @@ custommetrics:
   metricsPath: /metrics
   metricsPort: http
 
-# Devops tools image is used in cronjob below - should be kept up-to-date.
+# Devops tools image is used in retry DLQ cronjob below - should be kept up-to-date.
 # using 'latest' tag causes warning messages, so using 'main' tag instead.
 devopsToolsImage: &devopsToolsImage ghcr.io/ministryofjustice/hmpps-devops-tools
 devopsToolsTag: &devopsToolsTag main
+
+# postgres tools image is used in db restore cronjob below - should be kept up-to-date.
+# using 'latest' tag causes warning messages, so using 'main' tag instead.
+postgresToolsImage: &postgresToolsImage ghcr.io/ministryofjustice/hmpps-postgres-tools
+postgresToolsTag: &postgresToolsTag main
 
 postgresDatabaseRestore:
   jobName:
@@ -223,9 +234,15 @@ postgresDatabaseRestore:
 #      DB_USER_PREPROD: "database_username"
 #      DB_PASS_PREPROD: "database_password"
 #      DB_HOST_PREPROD: "rds_instance_address"
-  image: *devopsToolsImage
-  tag: *devopsToolsTag
+# Optional schema name and migrations vendor if not using the default 'public' schema or 'flyway' vendor:
+#  env:
+#    SCHEMA_TO_RESTORE: "my_schema"
+#    MIGRATIONS_VENDOR: "active_record"
+  image: *postgresToolsImage
+  tag: *postgresToolsTag
   securityContext: *securityContext
+  # Default schedule is at minute 30 past every 4th hour from 6am through 9pm UTC Monday-Friday
+  schedule: "30 6-21/4 * * 1-5"
 
 scheduledDowntime:
   enabled: false
@@ -233,6 +250,7 @@ scheduledDowntime:
   startup: '30 6 * * 1-5'
   # Stop at 10pm UTC Monday-Friday
   shutdown: '0 22 * * 1-5'
+  timeZone: Etc/UTC
   serviceAccountName: scheduled-downtime-serviceaccount
   # every 10 minutes between 7am and 10pm UTC Monday-Friday
   retryDlqSchedule: "*/10 7-21 * * 1-5"

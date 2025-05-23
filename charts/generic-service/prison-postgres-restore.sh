@@ -25,15 +25,36 @@ echo "${DB_HOST}:5432:${DB_NAME}:${DB_USER}:${DB_PASS}" > ~/.pgpass
 echo "${DB_HOST_PREPROD}:5432:${DB_NAME_PREPROD}:${DB_USER_PREPROD}:${DB_PASS_PREPROD}" >> ~/.pgpass
 chmod 0600 ~/.pgpass
 
+# Check postgres server versions and adjust PATH to use the correct version of pg client tools.
+PSQL_PREPROD_VERSION=$(psql_preprod "SHOW server_version;" | cut -d"." -f1)
+PSQL_PROD_VERSION=$(psql_preprod "SHOW server_version;" | cut -d"." -f1)
+if [[ "$PSQL_PREPROD_VERSION" != "$PSQL_PROD_VERSION" ]]; then
+  echo "Preprod and prod postgres server versions are different"
+  echo "Preprod version: $PSQL_PREPROD_VERSION"
+  echo "Prod version: $PSQL_PROD_VERSION"
+  exit 1
+fi
+echo "Detected PostgreSQL server version: $PSQL_PROD_VERSION"
+
+# Set the path to the specific version of psql
+PSQL_PATH="/usr/lib/postgresql/$PSQL_PROD_VERSION/bin"
+if [[ -d "$PSQL_PATH" ]]; then
+  export PATH="$PSQL_PATH:$PATH"
+  echo "Set PATH to: $PATH"
+else
+  echo "Path $PSQL_PATH does not exist"
+  exit 1
+fi
+
 # Check that we can connect to preprod postgres and create restore table
-if ! OUTPUT=$(psql_preprod "create table if not exists restore_status(restore_date date)"); then
+if ! OUTPUT=$(psql_preprod "create table if not exists ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status(restore_date date)"); then
   echo -e "\nUnable to talk to postgres and create restore table"
   echo "$OUTPUT"
   exit 1
 fi
 
 # Grab last restore date from postgres
-SAVED_RESTORE_DATE=$(psql_preprod "select restore_date from restore_status")
+SAVED_RESTORE_DATE=$(psql_preprod "select restore_date from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status")
 
 # we've found a date, check to see if we've had a newer restore
 if [[ -n $SAVED_RESTORE_DATE && ! $DATABASE_RESTORE_DATE > $SAVED_RESTORE_DATE ]]; then
@@ -45,26 +66,35 @@ if [[ -n $SAVED_RESTORE_DATE && ! $DATABASE_RESTORE_DATE > $SAVED_RESTORE_DATE ]
   echo -e "\nRun forced"
 fi
 
-# Grab flyway versions from preprod and prod.  If schema history different then restore won't really work
+# Grab schema versions from preprod and prod.  If schema history different then restore won't really work
 # Only solution is to release to production before then doing the restore.
-FLYWAY_SQL="select count(version) from flyway_schema_history"
-PREPROD_FLYWAY_VERSION=$(psql_preprod "$FLYWAY_SQL")
-PROD_FLYWAY_VERSION=$(psql_prod "$FLYWAY_SQL")
-if [[ "$PREPROD_FLYWAY_VERSION" != "$PROD_FLYWAY_VERSION" ]]; then
-  echo -e "\nFound different number of flyway versions"
-  echo "Preprod has $PREPROD_FLYWAY_VERSION different versions"
-  echo "Prod has $PROD_FLYWAY_VERSION different versions"
-  echo "SQL used for comparison was $FLYWAY_SQL"
+MIGRATIONS_VENDOR="${MIGRATIONS_VENDOR:-flyway}"
+if [[ "$MIGRATIONS_VENDOR" == "flyway" ]]; then
+  SCHEMA_VERSIONS_SQL="select count(version) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}flyway_schema_history"
+elif [[ "$MIGRATIONS_VENDOR" == "active_record" ]]; then
+  SCHEMA_VERSIONS_SQL="select count(version) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}schema_migrations"
+else
+  echo -e "\nUnrecognized MIGRATIONS_VENDOR value: $MIGRATIONS_VENDOR. Valid values are 'flyway' or 'active_record'"
+  exit 1
+fi
+
+PREPROD_SCHEMA_VERSION=$(psql_preprod "$SCHEMA_VERSIONS_SQL")
+PROD_SCHEMA_VERSION=$(psql_prod "$SCHEMA_VERSIONS_SQL")
+if [[ "$PREPROD_SCHEMA_VERSION" != "$PROD_SCHEMA_VERSION" ]]; then
+  echo -e "\nFound different number of schema versions"
+  echo "Preprod has $PREPROD_SCHEMA_VERSION different versions"
+  echo "Prod has $PROD_SCHEMA_VERSION different versions"
+  echo "SQL used for comparison was: $SCHEMA_VERSIONS_SQL"
   exit 1
 else
-  echo -e "\nFlyway version check passed, both schemas have $PROD_FLYWAY_VERSION flyway versions installed"
+  echo -e "\n$MIGRATIONS_VENDOR migrations check passed, both schemas have $PROD_SCHEMA_VERSION versions installed"
 fi
 
 # Dump postgres database from production
-pg_dump -h "$DB_HOST" -U "$DB_USER" -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"
+pg_dump -h "$DB_HOST" -U "$DB_USER" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"
 
 # Restore database to preprod
-pg_restore -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" --clean --no-owner -v -d "$DB_NAME_PREPROD" /tmp/db.dump
+pg_restore -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} --clean --if-exists --no-owner --single-transaction -v -d "$DB_NAME_PREPROD" /tmp/db.dump
 
 # now stash away the restore status in postgres
 echo -e "\nWriting restore date of $DATABASE_RESTORE_DATE to the preprod database"

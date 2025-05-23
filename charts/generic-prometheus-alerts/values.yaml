@@ -9,15 +9,17 @@ targetApplication: ""
 # To disable inclusion of ingress alerts, set to false, defaults true
 ingressAlertsEnabled: true
 
-# To disable inclusion of application alerts, set to false, defaults true
-applicationAlertsEnabled: true
-
 # The alert severity label is used within Alert Manager and determines which slack channel alerts are sent to.
-alertSeverity: digital-prison-service-dev
+alertSeverity: ""
+
+# These values used in the rule labels, which enables better filtering of alerts in alertmanager.  Global helm values used by these labels are passed in at helm upgrade/install time.
+businessUnit: hmpps
+# global:
+#   environment: "xxx"
+#   productId: "xxx"
 
 runbookUrl: https://github.com/ministryofjustice/hmpps-helm-charts/blob/main/charts/generic-prometheus-alerts/RUNBOOK.md#
 grafanaUrl: https://grafana.live.cloud-platform.service.justice.gov.uk
-dashboardId: f1e13059dfd23fdcaf479f4fa833f92610c2dfa5
 orgId: 1
 
 # Alert by default will target resources uses a regex and the application name (.Values.targetApplication).
@@ -73,7 +75,7 @@ additionalRuleLabels: {}
 # Set the alert threshold for total number of SQS on the queue waiting to be processed.
 # sqsAlertsTotalMessagesThreshold: 100
 
-# To monitor AWS SNS Topic queues, add the name of the topic in a list.
+# To monitor AWS SNS Topic queues, add the topic names in a list.
 # snsAlertsTopicNames:
 #   topic-name-id: "Topic nice display name"
 #   topic-name-2-id: "Topic nice display name 2"
@@ -81,27 +83,34 @@ additionalRuleLabels: {}
 # Set the alert threshold for no SNS messages published to topic (minutes).
 # snsAlertsNoMessagesThresholdMinutes: 30
 
-# To monitor AWS Elasticache, add the name of the clusterId in a list.
+# To monitor AWS Elasticache, add the cluster node names in a list as follows.
 # elastiCacheAlertsClusterIds:
-#   cacheClusterId: "Elasticache cluster Id"
+#   elasticache-cluster-1-001: "Meaningful cluster node display name"
+#   elasticache-cluster-1-002: "Meaningful cluster node display name 2"
 
-# Set the alert for Elasticache's CPU threshold - value between 0 and 1.
-elastiCacheAlertsEngineCPUThreshold: 0.85
+# Maxiumum threshold for Elasticache EngineCPUUtilisation - value between 0 and 100.
+elastiCacheAlertsEngineCPUThreshold: 75
 
-# Set the alert for Elasticache's CPU threshold (minutes).
+# Duration over which to measure Elasticache EngineCPUUtilisation (minutes).
 elastiCacheAlertsEngineCPUThresholdMinutes: 5
 
-# Set the alert for Elasticache's CPU threshold - value between 0 and 100.
-elastiCacheAlertsCPUThreshold: 90
+# Maximum threshold for Elasticache CPUUtilisation - value between 0 and 100.
+elastiCacheAlertsCPUThreshold: 75
 
-# Set the alert for Elasticache's CPU threshold (minutes).
+# Duration over which to measure Elasticache CPUUtilisation (minutes).
 elastiCacheAlertsCPUThresholdMinutes: 5
 
-# Set the alert for Elasticache's FreeMemory threshold - value should be above 150MB.
+# Minimum threshold for Elasticache FreeMemory - value should be above 150MB.
 elastiCacheAlertsFreeMemoryThreshold: 150
 
-# Set the alert for Elasticache's FreeMemory threshold (minutes).
+# Duration over which to measure Elasticache FreeMemory (minutes).
 elastiCacheAlertsFreeMemoryThresholdMinutes: 5
+
+# Maximum threshold for Elasticache DatabaseMemoryUsagePercentage - value between 0 and 100.
+elastiCacheAlertsMemoryUsageThreshold: 75
+
+# Duration over which to measure Elasticache DatabaseMemoryUsagePercentage (minutes).
+elastiCacheAlertsMemoryUsageThresholdMinutes: 5
 
 # To monitor AWS RDS instances, add the name of the rds instance in a list.
 # This can be obtained from the instance address in the rds secret in the namespace
@@ -139,7 +148,19 @@ ingress5xxErrorWindowMinutesHealthEndpoint: 5
 # mark, so for our app going slightly higher than that stops the alerts.
 ingress5xxHealthEndpointThreshold: 0.004
 
-# Alert for business hours only - 7am to 6pm UTC (8am to 7pm BST) on week days (Monday to Friday)
+# Whether to enable checks for successful ingress responses.
+# Defaults to false (disabled) since services will not get consistent traffic in dev and pre-prod and might not get
+# consistent traffic in production either.
+ingress2xxEnabled: false
+
+# Set the window minutes for 2xx ingress responses
+ingress2xxWindowMinutes: 60
+
+# Set the minimum amount of 2xx ingress responses in ingress2xxWindowMinutes time window.
+# This excludes any requests to /health and internal requests to /ping, but includes requests to /info.
+ingress2xxThreshold: 100
+
+# Alert for business hours only - 8am to 6pm on week days (Monday to Friday)
 businessHoursOnly: false
 
 # Set the time frame in minutes for CronJobStatusFailed alert

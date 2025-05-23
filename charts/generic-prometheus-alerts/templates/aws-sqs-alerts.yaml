@@ -24,6 +24,7 @@ spec:
 {{ if $sqsOldestAlertQueueNames }}
         - alert: SQS-oldest-message
           annotations:
+            summary: SQS oldest message alert.
             message: "SQS - {{ $sqsLabelQueueName }} has message older than {{ $sqsAlertsOldestThreshold }} mins, check consumers are healthy. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}."
             runbook_url: {{ $.Values.runbookUrl }}sqs-oldest-message
             dashboard_url: {{ $.Values.grafanaUrl }}/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue={{ $sqsLabelQueueName }}&from=now-6h&to=now
@@ -32,11 +33,12 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 10m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 {{ end }}
 {{ if $sqsNumberAlertQueueNames }}
         - alert: SQS-number-of-messages
           annotations:
+            summary: SQS number of messages alert.
             message: SQS - {{ $sqsLabelQueueName }} - number of messages={{`{{`}} $value {{`}}`}} (exceeds {{ $sqsAlertsTotalMessagesThreshold }}), check consumers are healthy.
             runbook_url: {{ $.Values.runbookUrl }}sqs-number-of-messages
             dashboard_url: {{ $.Values.grafanaUrl }}/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue={{ $sqsLabelQueueName }}&from=now-6h&to=now
@@ -45,11 +47,12 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 10m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 {{ end }}
 {{ range $key, $queues := $sqsNumberAlertQueueMappings }}
         - alert: SQS-number-of-messages-{{ $key }}
           annotations:
+            summary: SQS number of messages alert.
             message: SQS - {{ $sqsLabelQueueName }} - number of messages={{`{{`}} $value {{`}}`}} (exceeds {{ $sqsAlertsTotalMessagesThreshold }}), check consumers are healthy.
             runbook_url: {{ $.Values.runbookUrl }}sqs-number-of-messages
             dashboard_url: {{ $.Values.grafanaUrl }}/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue={{ $sqsLabelQueueName }}&from=now-6h&to=now
@@ -58,6 +61,6 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: 10m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 {{ end }}
 {{- end }}

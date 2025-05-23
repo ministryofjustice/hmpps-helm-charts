@@ -23,5 +23,11 @@ env:
     value: "{{ $val }}"
 {{- end }}
 {{- include "app.makeAllowListEnvs" . | indent 2 }}
+{{- if .env_all_allow_list}}
+  - name: IP_ALLOWLIST_RAW_MAPPINGS
+    value: "{{ .allowlist_groups }}"
+  - name: IP_ALLOWLIST_VERSION
+    value: "{{ .allowlist_version }}"
+{{- end -}}
 {{- end -}}
 {{- end -}}

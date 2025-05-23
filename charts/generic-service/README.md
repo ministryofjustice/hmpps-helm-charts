@@ -102,17 +102,27 @@ generic-service:
       AP_ARN: "arn?" # optional
 
   # Pre-existing kubernetes secrets to load as mounted file(s) within pod/container
-  # namespace_secrets_to_file:
-  #   [name of kubernetes secret]:
-  #     [path of directory used by volume mount]:
-  #       - [key of kubernetes secret - also name of the mounted file]
-  # E.g.
-  namespace_secrets_to_file:
-    secret-name:
-      /app/secrets:
-        - config.yaml
-        - key.pem
 ```
+
+### Mounting Secrets
+
+[K8s documentation to mount secrets](https://kubernetes.io/docs/concepts/configuration/secret/#use-case-dotfiles-in-a-secret-volume)
+
+```yaml
+  volumes:
+    - name: secrets
+      secret:
+        secretName: "k8s-secret-name"
+        items:
+          - key: secret-key
+            path: secret-file-name
+  volumeMounts:
+    - name: secrets
+      mountPath: /app/secrets
+      readOnly: true
+```
+
+This configuration will create a file `/app/secrets/secret-file-name` with the content of the k8s secret within it.
 
 When loading secrets as mounted volumes inside a container the pre-existing kubernetes secret should look like the following, as per example above:
 
@@ -121,15 +131,7 @@ kind: Secret
 type: Opaque
 apiVersion: v1
 data:
-  config.yaml: [base64 encoded file contents]
-  key.pem: [base64 encoded file contents]
-```
-
-The result of the above secret, along with the example `namespace_secrets_to_file` value would mean running containers be able read/load file contents from:
-
-```sh
-/app/secrets/config.yaml
-/app/secrets/key.pem
+  secret-key: [base64 encoded file contents]
 ```
 
 ### Injecting env into batch yamls
@@ -170,7 +172,29 @@ will create a scheduled job runs every four hours in production only.  This chec
 the NOMIS database since the last database restore and if so then does another restore.  The pre-production credentials
 should be injected into the production namespace, see https://github.com/ministryofjustice/cloud-platform-environments/pull/8325
 for an example PR. Both production and pre-production credentials should then be added as a `namespace_secrets:` section,
-see the `values.yaml` in this repository for an example of the secrets.
+see the `values.yaml` in this repository for an example of the secrets and other options.
+
+Currently, Flyway and ActiveRecord database migrations are supported. The default is Flyway. You can change this by
+supplying the `MIGRATIONS_VENDOR` environment variable in the `env:` section (see `values.yaml` for an example). Possible 
+values are `flyway` and `active_record`.
+
+If you have set up a schema separate to the default 'public' schema and want to refresh that schema, you must additionally
+supply the `SCHEMA_TO_RESTORE` environment variable in the `env:` section (again see the `values.yaml` for an example).
+If you have additionally set up a separate (non-admin) user to access this schema you may find that after refresh the permissions
+on tables etc for that user are reset. A simple way to resolve this is to issue the following one-off database command in a console:
+
+```sql
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA <SCHEMA_TO_RESTORE> TO <NON_ADMIN_USER_NAME>;
+ALTER DEFAULT PRIVILEGES IN SCHEMA <SCHEMA_TO_RESTORE> GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO <NON_ADMIN_USER_NAME>;
+```
+
+
+#### Inputs
+
+| Name     | Description                                                                                                                                                                                 | Example     |
+|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| timeout  | Sets the active deadline seconds after which the job will be terminated and the Job status will become `type: Failed` with `reason: DeadlineExceeded`. Default is 2400 seconds (40 minutes) | 7200        |
+| schedule | Overrides the default cron schedule (30 6-21/4 * * 1-5) allowing preprod databases which are up continuously to be restored as soon as possible after Nomis is restored                     | 5 */2 * * * |
 
 #### Manually running the database restore cronjob
 The restore cronjob script only runs if there is a newer NOMIS database so we need to override the configuration to ensure to force the run.
@@ -245,6 +269,7 @@ scheduledDowntime:
   enabled: true
   startup: '0 6 * * 1-5' # Start at 6am UTC Monday-Friday
   shutdown: '0 22 * * 1-5' # Stop at 10pm UTC Monday-Friday
+  timeZone: Etc/UTC
   serviceAccountName: scheduled-downtime-serviceaccount # This must match the service account name in the Terraform module
 ```
 

@@ -41,3 +41,6 @@ fullnameOverride: ""
 image:
   repository: ministryofjustice/data-engineering-data-extractor
   tag: v1.2.2
+
+# Optional definition of resources useful for services with more data to extract
+resources: {}

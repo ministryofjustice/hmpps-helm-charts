@@ -18,6 +18,7 @@ spec:
 {{- range $key, $val := $.Values.snsAlertsTopicNames }}
         - alert: SNS-no-messages-published
           annotations:
+            summary: SNS topic no messages published.
             message: "SNS topic {{ $val }} - no messages published in last {{ $snsAlertsNoMessagesThresholdMinutes }} mins, check the producer(s). This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}."
             runbook_url: {{ $.Values.runbookUrl }}sns-no-messages-published
             dashboard_url: {{ $.Values.grafanaUrl }}/d/AWSSNS001/aws-sns?orgId=1&var-datasource=Cloudwatch&var-region=default&var-topic={{ $key }}&from=now-6h&to=now
@@ -26,6 +27,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           for: {{ $snsAlertsNoMessagesThresholdMinutes }}m
           labels:
-            severity: {{ $.Values.alertSeverity }}
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
 {{- end }}
 {{- end }}
