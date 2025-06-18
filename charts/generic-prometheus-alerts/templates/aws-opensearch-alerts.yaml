@@ -1,0 +1,119 @@
+{{- if .Values.openSearchAlertsDomainNames -}}
+{{- $targetNamespace := .Release.Namespace }}
+{{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
+{{- $openSearchAlertsCPUThreshold := .Values.openSearchAlertsCPUThreshold }}
+{{- $openSearchAlertsCPUThresholdMinutes := .Values.openSearchAlertsCPUThresholdMinutes }}
+{{- $openSearchAlertsClusterIndexWritesBlockedMinutes := .Values.openSearchAlertsClusterIndexWritesBlockedMinutes }}
+{{- $openSearchAlertsClusterStatusRedMinutes := .Values.openSearchAlertsClusterStatusRedMinutes }}
+{{- $openSearchAlertsClusterStatusYellowMinutes := .Values.openSearchAlertsClusterStatusYellowMinutes }}
+{{- $openSearchAlertsFreeStorageSpaceThresholdGB := .Values.openSearchAlertsFreeStorageSpaceThresholdGB }}
+{{- $openSearchAlertsFreeStorageSpaceThresholdMinutes := .Values.openSearchAlertsFreeStorageSpaceThresholdMinutes }}
+{{- $openSearchAlertsJVMMemoryPressureThreshold := .Values.openSearchAlertsJVMMemoryPressureThreshold }}
+{{- $openSearchAlertsJVMMemoryPressureThresholdMinutes := .Values.openSearchAlertsJVMMemoryPressureThresholdMinutes }}
+{{- $openSearchAlertsSnapshotFailureMinutes := .Values.openSearchAlertsSnapshotFailureMinutes }}
+{{- $targetApplicationBusinessHours := printf "and ON() %s:business_hours" .Values.targetApplication | replace "-" "_" }}
+{{- $businessOrAllHoursExpression := ternary $targetApplicationBusinessHours "" .Values.businessHoursOnly}}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ $targetApplication }}-opensearch
+  labels:
+    {{ include "generic-prometheus-alerts.labels" . | nindent 4 }}
+spec:
+  groups:
+    - name: {{ $targetApplication }}-opensearch
+      rules:
+        {{- range $domainName, $displayName := $.Values.openSearchAlertsDomainNames }}
+        - alert: OpenSearchClusterStatusRed
+          annotations:
+            summary: OpenSearch cluster status is red
+            message: {{ $displayName }} in {{ $targetNamespace }} - Cluster status is red. At least one primary shard and its replicas are not allocated to a node.
+            runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-red-cluster-status
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
+          expr: |-
+            aws_es_cluster_status_red_maximum{domain_name='{{ $domainName }}'} >= 1
+            {{ $businessOrAllHoursExpression }}
+          for: {{ $openSearchAlertsClusterStatusRedMinutes }}m
+          labels:
+            {{ include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
+        - alert: OpenSearchClusterStatusYellow
+          annotations:
+            summary: OpenSearch cluster status is yellow
+            message: {{ $displayName }} in {{ $targetNamespace }} - Cluster status is yellow. At least one replica shard is not allocated to a node.
+            runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-yellow-cluster-status
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
+          expr: |-
+            aws_es_cluster_status_yellow_maximum{domain_name='{{ $domainName }}'} >= 1
+            {{ $businessOrAllHoursExpression }}
+          for: {{ $openSearchAlertsClusterStatusYellowMinutes }}m
+          labels:
+            {{ include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
+        - alert: OpenSearchFreeStorageSpace
+          annotations:
+            summary: OpenSearch free storage space is low
+            message: {{ $displayName }} in {{ $targetNamespace }} - A node in your cluster has less than {{ $openSearchAlertsFreeStorageSpaceThresholdGB }} GiB of free storage space.
+            runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-watermark
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
+          expr: |-
+            (aws_es_free_storage_space_minimum{domain_name='{{ $domainName }}', node_id != ""} > 0)
+            and
+            (aws_es_free_storage_space_minimum{domain_name='{{ $domainName }}', node_id != ""} < {{ $openSearchAlertsFreeStorageSpaceThresholdGB }} * 1024)
+            {{ $businessOrAllHoursExpression }}
+          for: {{ $openSearchAlertsFreeStorageSpaceThresholdMinutes }}m
+          labels:
+            {{ include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
+        - alert: OpenSearchIndexWritesBlocked
+          annotations:
+            summary: OpenSearch cluster index writes are blocked
+            message: {{ $displayName }} in {{ $targetNamespace }} - Your cluster is blocking write requests.
+            runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#troubleshooting-cluster-block
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
+          expr: |-
+            aws_es_cluster_index_writes_blocked_maximum{domain_name='{{ $domainName }}'} >= 1
+            {{ $businessOrAllHoursExpression }}
+          for: {{ $openSearchAlertsClusterIndexWritesBlockedMinutes }}m
+          labels:
+            {{ include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
+        - alert: OpenSearchAutomatedSnapshotFailure
+          annotations:
+            summary: OpenSearch automated snapshot failed
+            message: {{ $displayName }} in {{ $targetNamespace }} - An automated snapshot failed. This failure is often the result of a red cluster health status.
+            runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-red-cluster-status
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
+          expr: |-
+            aws_es_automated_snapshot_failure_maximum{domain_name='{{ $domainName }}'} >= 1
+            {{ $businessOrAllHoursExpression }}
+          for: {{ $openSearchAlertsSnapshotFailureMinutes }}m
+          labels:
+            {{ include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
+        - alert: OpenSearchCPUUtilisation
+          annotations:
+            summary: OpenSearch CPU usage too high
+            message: {{ $displayName }} in {{ $targetNamespace }} - Sustained high CPU usage. Consider using larger instance types or adding instances.
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
+          expr: |-
+            aws_es_cpuutilization_maximum{domain_name='{{ $domainName }}', node_id != ""} > {{ $openSearchAlertsCPUThreshold }}
+            {{ $businessOrAllHoursExpression }}
+          for: {{ $openSearchAlertsCPUThresholdMinutes }}m
+          labels:
+            {{ include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
+        - alert: OpenSearchJVMMemoryPressure
+          annotations:
+            summary: OpenSearch JVM memory pressure is too high
+            message: {{ $displayName }} in {{ $targetNamespace }} - High JVM memory pressure. The cluster could encounter out of memory errors if usage increases. Consider scaling vertically.
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
+          expr: |-
+            aws_es_jvmmemory_pressure_maximum{domain_name='{{ $domainName }}', node_id != ""} > {{ $openSearchAlertsJVMMemoryPressureThreshold }}
+            {{ $businessOrAllHoursExpression }}
+          for: {{ $openSearchAlertsJVMMemoryPressureThresholdMinutes }}m
+          labels:
+            {{ include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+        {{- end }}
+{{- end }}

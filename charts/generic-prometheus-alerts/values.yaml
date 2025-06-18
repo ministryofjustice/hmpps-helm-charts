@@ -168,3 +168,37 @@ businessHoursOnly: false
 # the job runs the failure flag is not set which caused the alert to then be resolved.  The time window should be set
 # to a duration longer than the duration of the job so that the alert doesn't clear (if failing) during run of the job.
 applicationCronJobStatusFailedWindowMinutes: 5
+
+
+# To monitor AWS OpenSearch domains, add the domain names and a display name in a map.
+# The key is the domain name from AWS, and the value is a friendly name for notifications.
+# openSearchAlertsDomainNames:
+#   cloud-platform-123abc: "My Application OpenSearch"
+#   cloud-platform-456def: "My Logging OpenSearch"
+
+# OpenSearch alert thresholds default to AWS recommendations:
+# https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cloudwatch-alarms.html
+
+# Duration for which the cluster status must be RED before alerting (minutes).
+openSearchAlertsClusterStatusRedMinutes: 1
+
+# Duration for which the cluster status must be YELLOW before alerting (minutes).
+openSearchAlertsClusterStatusYellowMinutes: 5
+
+# Duration for which cluster index writes must be blocked before alerting (minutes).
+openSearchAlertsClusterIndexWritesBlockedMinutes: 5
+
+# Duration for which automated snapshot failures must persist before alerting (minutes).
+openSearchAlertsSnapshotFailureMinutes: 1
+
+# Minimum threshold for OpenSearch FreeStorageSpace (in GiB). AWS recommends setting this to 25% of your data node volume size.
+openSearchAlertsFreeStorageSpaceThresholdGB: 20
+openSearchAlertsFreeStorageSpaceThresholdMinutes: 1
+
+# Maximum threshold for OpenSearch data node CPUUtilization (percentage).
+openSearchAlertsCPUThreshold: 80
+openSearchAlertsCPUThresholdMinutes: 45
+
+# Maximum threshold for OpenSearch data node JVMMemoryPressure (percentage).
+openSearchAlertsJVMMemoryPressureThreshold: 95
+openSearchAlertsJVMMemoryPressureThresholdMinutes: 3

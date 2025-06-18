@@ -7,4 +7,6 @@ generic-prometheus-alerts:
     cloud-platform-uuid: "test rds"
   sqsAlertsQueueNames:
     - "queue-name"
+  openSearchAlertsDomainNames:
+    cloud-platform-uuid: "test-domain"
   businessHoursOnly: true

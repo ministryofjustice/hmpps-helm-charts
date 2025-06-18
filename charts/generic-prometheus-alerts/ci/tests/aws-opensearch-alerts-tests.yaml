@@ -1,0 +1,129 @@
+---
+rule_files:
+  - ../test-application-opensearch.yaml
+  - ../test-business-hours-opensearch.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - interval: 1m
+    name: OpenSearchClusterStatusRed alert fires when cluster status is red for configured duration
+    input_series:
+      - series: 'aws_es_cluster_status_red_maximum{domain_name="cloud-platform-uuid"}'
+        values: '0 0 0 0 1' # Red for 1 minute
+
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: OpenSearchClusterStatusRed
+        exp_alerts:
+          - exp_labels:
+              alertname: OpenSearchClusterStatusRed
+              application: test-application
+              businessUnit: hmpps
+              domain_name: cloud-platform-uuid
+              environment: none
+              productId: none
+              severity: alert-severity-tag
+            exp_annotations:
+              summary: OpenSearch cluster status is red
+              message: test-domain in test-application-dev - Cluster status is red. At least one primary shard and its replicas are not allocated to a node.
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName=cloud-platform-uuid&from=now-6h&to=now
+              runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-red-cluster-status
+
+  - interval: 1m
+    name: OpenSearchClusterStatusYellow alert fires when cluster status is yellow for configured duration
+    input_series:
+      - series: 'aws_es_cluster_status_yellow_maximum{domain_name="cloud-platform-uuid"}'
+        values: '0 0 0 0 0 1 1 1 1 1' # Yellow for 5 minutes
+
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: OpenSearchClusterStatusYellow
+        exp_alerts:
+          - exp_labels:
+              alertname: OpenSearchClusterStatusRed
+              application: test-application
+              businessUnit: hmpps
+              domain_name: cloud-platform-uuid
+              environment: none
+              productId: none
+              severity: alert-severity-tag
+            exp_annotations:
+              summary: OpenSearch cluster status is yellow
+              message: test-domain in test-application-dev - Cluster status is yellow. At least one replica shard is not allocated to a node.
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName=cloud-platform-uuid&from=now-6h&to=now
+              runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-yellow-cluster-status
+
+  - interval: 1m
+    name: OpenSearchFreeStorageSpace alert fires when free storage space is low for configured duration
+    input_series:
+      - series: 'aws_es_free_storage_space_minimum{domain_name="cloud-platform-uuid", node_id="node1"}'
+        values: '25000 25000 25000 25000 500' # Below 20GB for 1 minute
+
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: OpenSearchFreeStorageSpace
+        exp_alerts:
+          - exp_labels:
+              alertname: OpenSearchClusterStatusRed
+              application: test-application
+              businessUnit: hmpps
+              domain_name: cloud-platform-uuid
+              environment: none
+              node_id: node1
+              productId: none
+              severity: alert-severity-tag
+            exp_annotations:
+              summary: OpenSearch free storage space is low
+              message: test-domain in test-application-dev - A node in your cluster has less than 20 GiB of free storage space.
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName=cloud-platform-uuid&from=now-6h&to=now
+              runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-watermark
+
+  - interval: 1m
+    name: OpenSearchAutomatedSnapshotFailure alert fires when automated snapshot fails for configured duration
+    input_series:
+      - series: 'aws_es_automated_snapshot_failure_maximum{domain_name="cloud-platform-uuid", node_id="node1"}'
+        values: '0 0 0 0 1' # Failed for 1 minute
+
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: OpenSearchAutomatedSnapshotFailure
+        exp_alerts:
+          - exp_labels:
+              alertname: OpenSearchClusterStatusRed
+              application: test-application
+              businessUnit: hmpps
+              domain_name: cloud-platform-uuid
+              environment: none
+              node_id: node1
+              productId: none
+              severity: alert-severity-tag
+            exp_annotations:
+              summary: OpenSearch automated snapshot failed
+              message: test-domain in test-application-dev - An automated snapshot failed. This failure is often the result of a red cluster health status.
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName=cloud-platform-uuid&from=now-6h&to=now
+              runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-red-cluster-status
+
+  - interval: 1m
+    name: OpenSearchJVMMemoryPressure alert fires when JVM memory pressure is too high for configured duration
+    input_series:
+      - series: 'aws_es_jvmmemory_pressure_maximum{domain_name="cloud-platform-uuid", node_id="node1"}'
+        values: '50 50 99 99 99' # 99% for 3 minutes
+
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: OpenSearchJVMMemoryPressure
+        exp_alerts:
+          - exp_labels:
+              alertname: OpenSearchJVMMemoryPressure
+              application: test-application
+              businessUnit: hmpps
+              domain_name: cloud-platform-uuid
+              environment: none
+              node_id: node1
+              productId: none
+              severity: alert-severity-tag
+            exp_annotations:
+              summary: OpenSearch JVM memory pressure is too high
+              message: test-domain in test-application-dev - High JVM memory pressure. The cluster could encounter out of memory errors if usage increases. Consider scaling vertically.
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName=cloud-platform-uuid&from=now-6h&to=now

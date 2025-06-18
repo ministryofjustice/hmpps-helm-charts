@@ -3,7 +3,7 @@
 default: build
 
 ci_dir="charts/generic-prometheus-alerts/ci"
-objects=rules app ingress rds sns sqs
+objects=rules app ingress rds sns sqs opensearch
 apps=test-application test-business-hours
 group_names=$(foreach app,$(apps),$(addprefix $(app)-,$(objects)))
 
