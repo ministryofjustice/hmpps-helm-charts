@@ -168,6 +168,7 @@ businessHoursOnly: false
 # the job runs the failure flag is not set which caused the alert to then be resolved.  The time window should be set
 # to a duration longer than the duration of the job so that the alert doesn't clear (if failing) during run of the job.
 applicationCronJobStatusFailedWindowMinutes: 5
+applicationCronJobAlertsEnabled: true
 
 
 # To monitor AWS OpenSearch domains, add the domain names and a display name in a map.
