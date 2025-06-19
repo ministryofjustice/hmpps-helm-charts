@@ -237,6 +237,16 @@ entries:
   generic-prometheus-alerts:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-06-19T08:21:31.957490931Z"
+    description: Creates a set of standard prometheus alert rules for a given application
+    digest: fe641b39a88083769c44a37d720eaba75e117aae2a556a8700d79e60845530cb
+    name: generic-prometheus-alerts
+    type: application
+    urls:
+    - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-prometheus-alerts-1.13.0/generic-prometheus-alerts-1.13.0.tgz
+    version: 1.13.0
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-06-18T12:02:53.726532653Z"
     description: Creates a set of standard prometheus alert rules for a given application
     digest: 715f3b3ebb45bd8887143c9d28f2637f148bf2d4a3f020afeed420538cf975ee
@@ -1525,4 +1535,4 @@ entries:
     urls:
     - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-service-1.0.0/generic-service-1.0.0.tgz
     version: 1.0.0
-generated: "2025-06-18T12:02:53.726889739Z"
+generated: "2025-06-19T08:21:31.95788757Z"
