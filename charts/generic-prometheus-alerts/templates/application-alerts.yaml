@@ -117,6 +117,7 @@ spec:
                   "job", "$1", "job_name", "(.+)"),
                 "cronjob", "$1", "owner_name", "(.+)")
             {{ $businessOrAllHoursExpression }}
+        {{ if .Values.applicationCronJobAlertsEnabled }}
         - alert: CronJobStatusFailed
           annotations:
             summary: CronJob is failing.
@@ -130,6 +131,7 @@ spec:
             {{ $businessOrAllHoursExpression }}
           labels:
             {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+        {{ end }}
 
         - alert: KubeHpaReplicasMismatch
           annotations:
