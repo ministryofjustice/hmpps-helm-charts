@@ -12,7 +12,7 @@ than the saved restore date then a new backup is created.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgres-restore-script
+  name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.fullname" .)) }}
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 data:
@@ -46,7 +46,7 @@ spec:
               command:
                 - /bin/entrypoint.sh
               volumeMounts:
-                - name: postgres-restore-script
+                - name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.fullname" .)) }}
                   mountPath: /bin/entrypoint.sh
                   readOnly: true
                   subPath: entrypoint.sh
@@ -62,8 +62,8 @@ spec:
     {{- include "postgresRestore.envs" .Values | nindent 14 }}
           restartPolicy: "Never"
           volumes:
-            - name: postgres-restore-script
+            - name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.fullname" .)) }}
               configMap:
-                name: postgres-restore-script
+                name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.fullname" .)) }}
                 defaultMode: 0755
 {{- end }}
