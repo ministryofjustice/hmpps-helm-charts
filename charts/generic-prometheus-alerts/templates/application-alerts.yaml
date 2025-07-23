@@ -88,7 +88,7 @@ spec:
           labels:
             {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
-        - record: job:kube_job_status_start_time_{{ $targetApplicationUnderscore }}:max
+        - record: job:kube_job_status_start_time_{{ $targetNamespaceUnderscore }}_{{ $targetApplicationUnderscore }}:max
           expr: |
             label_replace(
               label_replace(
@@ -108,9 +108,9 @@ spec:
               "job", "$1", "job_name", "(.+)"),
             "cronjob", "$1", "owner_name", "(.+)")
             {{ $businessOrAllHoursExpression }}
-        - record: job:kube_job_status_failed_{{ $targetApplicationUnderscore }}:sum
+        - record: job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}_{{ $targetApplicationUnderscore }}:sum
           expr: |
-            clamp_max(job:kube_job_status_start_time_{{ $targetApplicationUnderscore }}:max,1)
+            clamp_max(job:kube_job_status_start_time_{{ $targetNamespaceUnderscore }}_{{ $targetApplicationUnderscore }}:max,1)
               * ON(job) GROUP_LEFT()
               label_replace(
                 label_replace(
@@ -126,7 +126,7 @@ spec:
             runbook_url: {{ .Values.runbookUrl }}application-cronjob-failed
             dashboard_url: {{ $.Values.grafanaUrl }}/d/golden-signals/golden-signals?orgId=1&var-namespace={{ $targetNamespace }}&var-service={{ $targetApplication }}
           expr: |
-            (count_over_time(job:kube_job_status_failed_{{ $targetApplicationUnderscore }}:sum[{{ .Values.applicationCronJobStatusFailedWindowMinutes }}m])
+            (count_over_time(job:kube_job_status_failed_{{ $targetNamespaceUnderscore }}_{{ $targetApplicationUnderscore }}:sum[{{ .Values.applicationCronJobStatusFailedWindowMinutes }}m])
             * ON(cronjob,namespace) GROUP_LEFT()
             (kube_cronjob_spec_suspend == 0))
             {{ $businessOrAllHoursExpression }}
