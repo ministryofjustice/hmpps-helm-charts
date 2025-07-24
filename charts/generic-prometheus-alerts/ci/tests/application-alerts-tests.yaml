@@ -37,17 +37,17 @@ tests:
 
     promql_expr_test:
       # assert we're getting the timestamp of the last ran job...
-      - expr: job:kube_job_status_start_time_test_application_dev:max
+      - expr: job:kube_job_status_start_time_test_application_dev_test_application:max
         eval_time: 0m
         exp_samples:
-          - labels: 'job:kube_job_status_start_time_test_application_dev:max{cronjob="test-application-cronjob", job="test-application-cronjob-2", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+          - labels: 'job:kube_job_status_start_time_test_application_dev_test_application:max{cronjob="test-application-cronjob", job="test-application-cronjob-2", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_name="test-application-cronjob"}'
             value: 900
 
       # assert that the last ran job failed
-      - expr: job:kube_job_status_failed_test_application_dev:sum
+      - expr: job:kube_job_status_failed_test_application_dev_test_application:sum
         eval_time: 0m
         exp_samples:
-          - labels: 'job:kube_job_status_failed_test_application_dev:sum{cronjob="test-application-cronjob", job="test-application-cronjob-2", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+          - labels: 'job:kube_job_status_failed_test_application_dev_test_application:sum{cronjob="test-application-cronjob", job="test-application-cronjob-2", job_name="test-application-cronjob-2", namespace="test-application-dev", owner_name="test-application-cronjob"}'
             value: 1
 
     alert_rule_test:
@@ -104,14 +104,14 @@ tests:
 
     promql_expr_test:
       # assert we're getting the timestamp of the last ran job...
-      - expr: job:kube_job_status_start_time_test_application_dev:max
+      - expr: job:kube_job_status_start_time_test_application_dev_test_application:max
         eval_time: 0m
         exp_samples:
-          - labels: 'job:kube_job_status_start_time_test_application_dev:max{cronjob="test-application-cronjob", job="test-application-cronjob-3", job_name="test-application-cronjob-3", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+          - labels: 'job:kube_job_status_start_time_test_application_dev_test_application:max{cronjob="test-application-cronjob", job="test-application-cronjob-3", job_name="test-application-cronjob-3", namespace="test-application-dev", owner_name="test-application-cronjob"}'
             value: 1800
 
       # assert that the last ran job did not fail (we expect nil from the rule)
-      - expr: job:kube_job_status_failed_test_application_dev:sum
+      - expr: job:kube_job_status_failed_test_application_dev_test_application:sum
         eval_time: 0m
         exp_samples: []
 
@@ -134,23 +134,23 @@ tests:
         values: '0+0x12'
     promql_expr_test:
       # at 0 the job will have failed
-      - expr: job:kube_job_status_failed_test_application_dev:sum
+      - expr: job:kube_job_status_failed_test_application_dev_test_application:sum
         eval_time: 0m
         exp_samples:
-          - labels: 'job:kube_job_status_failed_test_application_dev:sum{cronjob="test-application-cronjob", job="test-application-cronjob-1", job_name="test-application-cronjob-1", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+          - labels: 'job:kube_job_status_failed_test_application_dev_test_application:sum{cronjob="test-application-cronjob", job="test-application-cronjob-1", job_name="test-application-cronjob-1", namespace="test-application-dev", owner_name="test-application-cronjob"}'
             value: 0
       # at 5 the job will have not failed yet - will be running
-      - expr: job:kube_job_status_failed_test_application_dev:sum
+      - expr: job:kube_job_status_failed_test_application_dev_test_application:sum
         eval_time: 5m
         exp_samples: []
       # at 6 the job will have now failed again
-      - expr: job:kube_job_status_failed_test_application_dev:sum
+      - expr: job:kube_job_status_failed_test_application_dev_test_application:sum
         eval_time: 6m
         exp_samples:
-          - labels: 'job:kube_job_status_failed_test_application_dev:sum{cronjob="test-application-cronjob", job="test-application-cronjob-1", job_name="test-application-cronjob-1", namespace="test-application-dev", owner_name="test-application-cronjob"}'
+          - labels: 'job:kube_job_status_failed_test_application_dev_test_application:sum{cronjob="test-application-cronjob", job="test-application-cronjob-1", job_name="test-application-cronjob-1", namespace="test-application-dev", owner_name="test-application-cronjob"}'
             value: 0
       # count over last 5 minutes will show the failures though
-      - expr: count_over_time(job:kube_job_status_failed_test_application_dev:sum[5m])
+      - expr: count_over_time(job:kube_job_status_failed_test_application_dev_test_application:sum[5m])
         eval_time: 6m
         exp_samples:
           - labels: '{cronjob="test-application-cronjob", job="test-application-cronjob-1", job_name="test-application-cronjob-1", namespace="test-application-dev", owner_name="test-application-cronjob"}'
