@@ -292,3 +292,13 @@ Again, you can override the default cron schedule when scheduled downtime is ena
 scheduledDowntime:
   retryDlqSchedule: "*/45 * * * 1-3"
 ```
+
+### Authenticating Cronjobs
+
+> [!WARNING]
+> This is a work in progress! If you bump into authenticating-cronjob.yaml please do not use it yet.
+
+TODO:
+- explain what the authenticating cronjob template is for and why it is needed
+- explain how the authenticating cronjob template works
+- point to examples in the wild

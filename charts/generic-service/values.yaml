@@ -265,3 +265,6 @@ retryDlqCronjob:
   image: *devopsToolsImage
   tag: *devopsToolsTag
   securityContext: *securityContext
+
+authenticatingCronjobs:
+  jobs: []

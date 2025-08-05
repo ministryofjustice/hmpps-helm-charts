@@ -1,0 +1,13 @@
+{{- /*
+This template provides utility functions for retrieving a JWT from HMPPS Auth.
+*/}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hmpps-auth-tokens-script
+  labels:
+    {{- include "generic-service.labels" . | nindent 4 }}
+data:
+  hmpps-auth-token-requests.sh: |-
+{{ .Files.Get "hmpps-auth-tokens.sh" | indent 4 }}

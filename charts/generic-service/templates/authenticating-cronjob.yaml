@@ -1,0 +1,62 @@
+{{- /*
+This template is a work in progress - please do not use yet!
+*/}}
+---
+{{- range $cron := .Values.authenticatingCronjobs.jobs }}
+{{- with $ -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "generic-service.fullname" . }}
+  labels:
+    {{- include "generic-service.labels" . | nindent 4 }}
+spec:
+  schedule: {{ $cron.schedule | quote }}
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      # Tidy up all jobs after 4 days
+      ttlSecondsAfterFinished: 345600
+      template:
+        spec:
+          containers:
+            - name: {{ $cron.name }}
+              image: {{ .Values.devopsToolsImage }}
+              volumeMounts:
+                - name: hmpps-auth-tokens
+                  mountPath: /bin/hmpps-auth-tokens.sh
+                  readOnly: true
+                  subPath: hmpps-auth-tokens.sh
+              args:
+                - /bin/sh
+                - -c
+                - |
+                  #!/bin/bash
+                  set -eu
+
+                  . /bin/hmpps-auth-tokens.sh
+
+                  {{ tpl $cron.script . | indent 18 }}
+              securityContext:
+                capabilities:
+                  drop:
+                    - ALL
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                seccompProfile:
+                  type: RuntimeDefault
+              envFrom:
+                - secretRef:
+                    name: {{ include "generic-service.fullname" . }}
+          restartPolicy: Never
+          volumes:
+            - name: hmpps-auth-tokens
+              configMap:
+                name: hmpps-auth-token-script
+                defaultMode: 0755
+---
+{{- end}}
+{{- end}}
