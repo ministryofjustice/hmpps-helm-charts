@@ -176,7 +176,7 @@ see the `values.yaml` in this repository for an example of the secrets and other
 
 Currently, Flyway and ActiveRecord database migrations are supported. The default is Flyway. You can change this by
 supplying the `MIGRATIONS_VENDOR` environment variable in the `env:` section (see `values.yaml` for an example). Possible 
-values are `flyway` and `active_record`.
+values are `flyway`, `alembic` and `active_record`. If you use `alembic`, you must additionally specify the schema containing the `alembic_version` table as `ALEMBIC_SCHEMA`
 
 If you have set up a schema separate to the default 'public' schema and want to refresh that schema, you must additionally
 supply the `SCHEMA_TO_RESTORE` environment variable in the `env:` section (again see the `values.yaml` for an example).
