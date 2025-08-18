@@ -238,6 +238,8 @@ postgresDatabaseRestore:
 #  env:
 #    SCHEMA_TO_RESTORE: "my_schema"
 #    MIGRATIONS_VENDOR: "active_record"
+#    ALEMBIC_SCHEMA: "public"
+
   image: *postgresToolsImage
   tag: *postgresToolsTag
   securityContext: *securityContext
