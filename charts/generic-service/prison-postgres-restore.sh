@@ -100,6 +100,6 @@ pg_restore -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" ${SCHEMA_TO_RESTORE:+-n $
 
 # now stash away the restore status in postgres
 echo -e "\nWriting restore date of $DATABASE_RESTORE_DATE to the preprod database"
-psql_preprod "delete from restore_status"
-psql_preprod "insert into restore_status (restore_date) values ('$DATABASE_RESTORE_DATE')"
+psql_preprod "delete from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status"
+psql_preprod "insert into ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status (restore_date) values ('$DATABASE_RESTORE_DATE')"
 echo -e "\nRestore successful"
