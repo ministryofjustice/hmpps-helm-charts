@@ -27,7 +27,7 @@ chmod 0600 ~/.pgpass
 
 # Check postgres server versions and adjust PATH to use the correct version of pg client tools.
 PSQL_PREPROD_VERSION=$(psql_preprod "SHOW server_version;" | cut -d"." -f1)
-PSQL_PROD_VERSION=$(psql_preprod "SHOW server_version;" | cut -d"." -f1)
+PSQL_PROD_VERSION=$(psql_prod "SHOW server_version;" | cut -d"." -f1)
 if [[ "$PSQL_PREPROD_VERSION" != "$PSQL_PROD_VERSION" ]]; then
   echo "Preprod and prod postgres server versions are different"
   echo "Preprod version: $PSQL_PREPROD_VERSION"
