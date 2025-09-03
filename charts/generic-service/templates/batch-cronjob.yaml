@@ -1,0 +1,46 @@
+{{- /*
+This template is a work in progress - please do not use yet!
+*/}}
+---
+{{- range $job := .Values.batchjobs }}
+{{- with $ -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "generic-service.fullname" . }}-{{ $job.name }}
+  labels:
+    {{- include "generic-service.labels" . | nindent 4 }}
+spec:
+  schedule: {{ $job.schedule | quote }}
+  concurrencyPolicy: Replace
+  failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      # Tidy up all jobs after 4 days
+      ttlSecondsAfterFinished: 345600
+      template:
+        spec:
+          {{- if .Values.serviceAccountName }}
+          serviceAccountName: {{ .Values.serviceAccountName }}
+          {{- end }}
+          securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+          containers:
+            - name: {{ $job.name }}
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              {{- include "deployment.envs" .Values | nindent 14 }}
+                - name: BATCH_ENABLED
+                  value: "true"
+                - name: BATCH_TYPE
+                  value: {{ $job.type }}
+              {{- with .Values.envFrom }}
+              envFrom:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+          restartPolicy: Never
+---
+{{- end}}
+{{- end}}
