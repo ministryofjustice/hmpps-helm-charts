@@ -11,7 +11,7 @@ metadata:
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
-  suspend:  {{ $job.suspend | default False }}
+  suspend:  {{ $job.suspend | default false }}
   schedule: {{ $job.schedule | quote }}
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 5
