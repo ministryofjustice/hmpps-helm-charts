@@ -30,6 +30,8 @@ spec:
           {{- toYaml .Values.securityContext | nindent 12 }}
           containers:
             - name: {{ $job.name }}
+              securityContext:
+              {{- toYaml .Values.securityContext | nindent 16 }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               {{- include "deployment.envs" .Values | nindent 14 }}
