@@ -27,7 +27,7 @@ spec:
           serviceAccountName: {{ .Values.serviceAccountName }}
           {{- end }}
           securityContext:
-          {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- toYaml .Values.podSecurityContext | nindent 12 }}
           containers:
             - name: {{ $job.name }}
               securityContext:
