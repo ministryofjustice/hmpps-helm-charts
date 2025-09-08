@@ -267,3 +267,9 @@ retryDlqCronjob:
   image: *devopsToolsImage
   tag: *devopsToolsTag
   securityContext: *securityContext
+
+# Cronjobs relying on apps that support env vars BATCH_ENABLED=true and BATCH_TYPE=<supported batch type>
+batchjobs: []
+# - name: foo
+#   schedule: "0 0 * * *"
+#   type: SOME_BATCH_JOB
