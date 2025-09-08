@@ -7,7 +7,7 @@ This template is a work in progress - please do not use yet!
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "generic-service.fullname" . }}-{{ $job.name }}
+  name: {{ include "generic-service.fullname" . | trunc 52 | trimSuffix "-" }}
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
