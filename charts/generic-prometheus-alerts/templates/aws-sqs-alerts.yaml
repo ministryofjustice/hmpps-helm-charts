@@ -1,12 +1,14 @@
 {{- $sqsOldestAlertQueueNames := default .Values.sqsAlertsQueueNames .Values.sqsOldestAlertQueueNames }}
 {{- $sqsNumberAlertQueueNames := default .Values.sqsAlertsQueueNames .Values.sqsNumberAlertQueueNames }}
 {{- $sqsNumberAlertQueueMappings := default .Values.sqsAlertsQueueMappings .Values.sqsNumberAlertQueueMappings }}
+{{- $sqsInactiveAlertQueueNames := default .Values.sqsAlertsQueueNames .Values.sqsInactiveAlertQueueNames }}
 
 {{- if or $sqsOldestAlertQueueNames $sqsNumberAlertQueueNames $sqsNumberAlertQueueMappings -}}
   {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
   {{- $targetNamespace := .Release.Namespace }}
   {{- $sqsAlertsOldestThreshold := default "30" .Values.sqsAlertsOldestThreshold }}
   {{- $sqsAlertsTotalMessagesThreshold := default "100" .Values.sqsAlertsTotalMessagesThreshold }}
+  {{- $sqsAlertsInactiveThreshold := default "60" .Values.sqsAlertsInactiveThreshold }}
   {{- $sqsLabelQueueName := printf "{{ $labels.queue_name }}"}}
   {{- $targetApplicationBusinessHours := printf "and ON() %s:business_hours" .Values.targetApplication | replace "-" "_" }}
   {{- $businessOrAllHoursExpression := ternary $targetApplicationBusinessHours "" .Values.businessHoursOnly}}
@@ -60,6 +62,20 @@ spec:
             (sum(aws_sqs_approximate_number_of_messages_visible_maximum{queue_name=~"{{ join "|" $queues }}"} offset 5m) by (queue_name) > {{ $sqsAlertsTotalMessagesThreshold }})
             {{ $businessOrAllHoursExpression }}
           for: 10m
+          labels:
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+{{ end }}
+{{ if $sqsInactiveAlertQueueNames }}
+        - alert: SQS-no-messages-received
+          annotations:
+            summary: SQS number of messages alert.
+            message: SQS - {{ $sqsLabelQueueName }} - has not received any messages in the last {{ $sqsAlertsInactiveThreshold }} mins.
+            runbook_url: {{ $.Values.runbookUrl }}sqs-no-messages-received
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue={{ $sqsLabelQueueName }}&from=now-6h&to=now
+          expr: |-
+            aws_sqs_number_of_messages_received_sum{queue_name=~"{{ join "|" $sqsNumberAlertQueueNames }}"}==0
+            {{ $businessOrAllHoursExpression }}
+          for: {{ $sqsAlertsInactiveThreshold }}m
           labels:
             {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 {{ end }}
