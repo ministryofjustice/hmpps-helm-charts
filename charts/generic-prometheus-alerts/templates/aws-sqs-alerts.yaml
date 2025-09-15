@@ -3,7 +3,7 @@
 {{- $sqsNumberAlertQueueMappings := default .Values.sqsAlertsQueueMappings .Values.sqsNumberAlertQueueMappings }}
 {{- $sqsInactiveAlertQueueNames := default .Values.sqsAlertsQueueNames .Values.sqsInactiveAlertQueueNames }}
 
-{{- if or $sqsOldestAlertQueueNames $sqsNumberAlertQueueNames $sqsNumberAlertQueueMappings -}}
+{{- if or $sqsOldestAlertQueueNames $sqsNumberAlertQueueNames $sqsNumberAlertQueueMappings $sqsInactiveAlertQueueNames -}}
   {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
   {{- $targetNamespace := .Release.Namespace }}
   {{- $sqsAlertsOldestThreshold := default "30" .Values.sqsAlertsOldestThreshold }}
@@ -68,7 +68,7 @@ spec:
 {{ if $sqsInactiveAlertQueueNames }}
         - alert: SQS-no-messages-received
           annotations:
-            summary: SQS number of messages alert.
+            summary: SQS no messages received alert
             message: SQS - {{ $sqsLabelQueueName }} - has not received any messages in the last {{ $sqsAlertsInactiveThreshold }} mins.
             runbook_url: {{ $.Values.runbookUrl }}sqs-no-messages-received
             dashboard_url: {{ $.Values.grafanaUrl }}/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue={{ $sqsLabelQueueName }}&from=now-6h&to=now

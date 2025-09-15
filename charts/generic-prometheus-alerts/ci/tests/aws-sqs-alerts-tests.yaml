@@ -1,0 +1,31 @@
+---
+rule_files:
+  - ../test-application-sqs.yaml
+  - ../test-business-hours-sqs.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - interval: 1m
+    name: SQS-no-messages-received alert fires when no messages received for configured duration
+    input_series:
+      - series: 'aws_sqs_number_of_messages_received_sum{queue_name="queue-name"}'
+        values: '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
+
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: SQS-no-messages-received
+        exp_alerts:
+          - exp_labels:
+              alertname: SQS-no-messages-received
+              application: test-application
+              businessUnit: hmpps
+              queue_name: queue-name
+              environment: none
+              productId: none
+              severity: alert-severity-tag
+            exp_annotations:
+              summary: SQS no messages received alert
+              message: SQS - queue-name - has not received any messages in the last 20 mins.
+              runbook_url: https://runbook.com/sqs-no-messages-received
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/AWSSQS000/aws-sqs?orgId=1&var-datasource=Cloudwatch&var-region=default&var-queue=queue-name&from=now-6h&to=now

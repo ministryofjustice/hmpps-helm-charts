@@ -10,3 +10,4 @@ generic-prometheus-alerts:
   openSearchAlertsDomainNames:
     cloud-platform-uuid: "test-domain"
   businessHoursOnly: true
+  sqsAlertsInactiveThreshold: 20
