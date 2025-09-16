@@ -1,7 +1,7 @@
 {{- $sqsOldestAlertQueueNames := default .Values.sqsAlertsQueueNames .Values.sqsOldestAlertQueueNames }}
 {{- $sqsNumberAlertQueueNames := default .Values.sqsAlertsQueueNames .Values.sqsNumberAlertQueueNames }}
 {{- $sqsNumberAlertQueueMappings := default .Values.sqsAlertsQueueMappings .Values.sqsNumberAlertQueueMappings }}
-{{- $sqsInactiveAlertQueueNames := default .Values.sqsAlertsQueueNames .Values.sqsInactiveAlertQueueNames }}
+{{- $sqsInactiveAlertQueueNames := .Values.sqsInactiveAlertQueueNames }}
 
 {{- if or $sqsOldestAlertQueueNames $sqsNumberAlertQueueNames $sqsNumberAlertQueueMappings $sqsInactiveAlertQueueNames -}}
   {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
