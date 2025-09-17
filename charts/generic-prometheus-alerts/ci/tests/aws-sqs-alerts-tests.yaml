@@ -9,7 +9,7 @@ tests:
   - interval: 1m
     name: SQS-no-messages-received alert fires when no messages received for configured duration
     input_series:
-      - series: 'aws_sqs_number_of_messages_received_sum{queue_name="queue-name"}'
+      - series: 'aws_sqs_number_of_messages_sent_sum{queue_name="queue-name"}'
         values: '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
 
     alert_rule_test:
