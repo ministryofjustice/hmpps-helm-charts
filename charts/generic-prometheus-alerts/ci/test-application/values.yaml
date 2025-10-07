@@ -11,3 +11,6 @@ generic-prometheus-alerts:
     cloud-platform-uuid: "test-domain"
   businessHoursOnly: false
   ingress2xxEnabled: true
+  sqsAlertsInactiveThreshold: 20
+  sqsInactiveAlertQueueNames:
+    - "queue-name"
