@@ -13,6 +13,7 @@ metadata:
 spec:
   suspend:  {{ $job.suspend | default false }}
   schedule: {{ $job.schedule | quote }}
+  timeZone: "Europe/London"
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 5
   startingDeadlineSeconds: 600
