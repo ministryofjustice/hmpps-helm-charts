@@ -1,0 +1,18 @@
+{
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "description": "Group GitHub Actions updates",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions updates"
+    },
+    {
+      "description": "Group Helm chart updates",
+      "matchManagers": ["helm-values"],
+      "groupName": "Helm chart updates"
+    }
+  ],
+  "github-actions": {
+    "enabled": true
+  }
+}
