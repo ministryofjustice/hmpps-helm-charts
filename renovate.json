@@ -8,11 +8,17 @@
     },
     {
       "description": "Group Helm chart updates",
-      "matchManagers": ["helm-values"],
+      "matchManagers": ["helm-values", "helm-requirements"],
       "groupName": "Helm chart updates"
     }
   ],
   "github-actions": {
+    "enabled": true
+  },
+  "helm-values": {
+    "enabled": true
+  },
+  "helm-requirements": {
     "enabled": true
   }
 }
