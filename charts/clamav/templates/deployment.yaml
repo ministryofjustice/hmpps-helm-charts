@@ -37,6 +37,14 @@ spec:
         fsGroup: {{ .Values.runasgroupid }}
       containers:
         - name: {{ template "app.fullname" . }}
+          securityContext:
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
           imagePullPolicy: Always
           command: ['clamd']
