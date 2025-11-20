@@ -203,3 +203,7 @@ openSearchAlertsCPUThresholdMinutes: 45
 # Maximum threshold for OpenSearch data node JVMMemoryPressure (percentage).
 openSearchAlertsJVMMemoryPressureThreshold: 95
 openSearchAlertsJVMMemoryPressureThresholdMinutes: 3
+
+# Maximum threshold for OpenSearch ReadIOPS + WriteIOPS (disk operations per second). Set this to 80% of the provisioned IOPS for the domain.
+openSearchAlertsIOPSThreshold: 2400
+openSearchAlertsIOPSThresholdMinutes: 5

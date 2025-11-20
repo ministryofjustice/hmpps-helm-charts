@@ -10,6 +10,8 @@
 {{- $openSearchAlertsFreeStorageSpaceThresholdMinutes := .Values.openSearchAlertsFreeStorageSpaceThresholdMinutes }}
 {{- $openSearchAlertsJVMMemoryPressureThreshold := .Values.openSearchAlertsJVMMemoryPressureThreshold }}
 {{- $openSearchAlertsJVMMemoryPressureThresholdMinutes := .Values.openSearchAlertsJVMMemoryPressureThresholdMinutes }}
+{{- $openSearchAlertsIOPSThreshold := .Values.openSearchAlertsIOPSThreshold }}
+{{- $openSearchAlertsIOPSThresholdMinutes := .Values.openSearchAlertsIOPSThresholdMinutes }}
 {{- $openSearchAlertsSnapshotFailureMinutes := .Values.openSearchAlertsSnapshotFailureMinutes }}
 {{- $targetApplicationBusinessHours := printf "and ON() %s:business_hours" .Values.targetApplication | replace "-" "_" }}
 {{- $businessOrAllHoursExpression := ternary $targetApplicationBusinessHours "" .Values.businessHoursOnly}}
@@ -32,7 +34,7 @@ spec:
             runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-red-cluster-status
             dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
           expr: |-
-            aws_es_cluster_status_red_maximum{domain_name='{{ $domainName }}'} >= 1
+            aws_es_cluster_status_red_maximum{domain_name = "{{ $domainName }}"} >= 1
             {{ $businessOrAllHoursExpression }}
           for: {{ $openSearchAlertsClusterStatusRedMinutes }}m
           labels:
@@ -45,7 +47,7 @@ spec:
             runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-yellow-cluster-status
             dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
           expr: |-
-            aws_es_cluster_status_yellow_maximum{domain_name='{{ $domainName }}'} >= 1
+            aws_es_cluster_status_yellow_maximum{domain_name = "{{ $domainName }}"} >= 1
             {{ $businessOrAllHoursExpression }}
           for: {{ $openSearchAlertsClusterStatusYellowMinutes }}m
           labels:
@@ -58,9 +60,9 @@ spec:
             runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-watermark
             dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
           expr: |-
-            (aws_es_free_storage_space_minimum{domain_name='{{ $domainName }}', node_id != ""} > 0)
+            (aws_es_free_storage_space_minimum{domain_name = "{{ $domainName }}", node_id != ""} > 0)
             and
-            (aws_es_free_storage_space_minimum{domain_name='{{ $domainName }}', node_id != ""} < {{ $openSearchAlertsFreeStorageSpaceThresholdGB }} * 1024)
+            (aws_es_free_storage_space_minimum{domain_name = "{{ $domainName }}", node_id != ""} < {{ $openSearchAlertsFreeStorageSpaceThresholdGB }} * 1024)
             {{ $businessOrAllHoursExpression }}
           for: {{ $openSearchAlertsFreeStorageSpaceThresholdMinutes }}m
           labels:
@@ -73,7 +75,7 @@ spec:
             runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#troubleshooting-cluster-block
             dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
           expr: |-
-            aws_es_cluster_index_writes_blocked_maximum{domain_name='{{ $domainName }}'} >= 1
+            aws_es_cluster_index_writes_blocked_maximum{domain_name = "{{ $domainName }}"} >= 1
             {{ $businessOrAllHoursExpression }}
           for: {{ $openSearchAlertsClusterIndexWritesBlockedMinutes }}m
           labels:
@@ -86,7 +88,7 @@ spec:
             runbook_url: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/handling-errors.html#handling-errors-red-cluster-status
             dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
           expr: |-
-            aws_es_automated_snapshot_failure_maximum{domain_name='{{ $domainName }}'} >= 1
+            aws_es_automated_snapshot_failure_maximum{domain_name = "{{ $domainName }}"} >= 1
             {{ $businessOrAllHoursExpression }}
           for: {{ $openSearchAlertsSnapshotFailureMinutes }}m
           labels:
@@ -98,7 +100,7 @@ spec:
             message: {{ $displayName }} in {{ $targetNamespace }} - Sustained high CPU usage. Consider using larger instance types or adding instances.
             dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
           expr: |-
-            aws_es_cpuutilization_maximum{domain_name='{{ $domainName }}', node_id != ""} > {{ $openSearchAlertsCPUThreshold }}
+            aws_es_cpuutilization_maximum{domain_name = "{{ $domainName }}", node_id != ""} > {{ $openSearchAlertsCPUThreshold }}
             {{ $businessOrAllHoursExpression }}
           for: {{ $openSearchAlertsCPUThresholdMinutes }}m
           labels:
@@ -110,9 +112,21 @@ spec:
             message: {{ $displayName }} in {{ $targetNamespace }} - High JVM memory pressure. The cluster could encounter out of memory errors if usage increases. Consider scaling vertically.
             dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
           expr: |-
-            aws_es_jvmmemory_pressure_maximum{domain_name='{{ $domainName }}', node_id != ""} > {{ $openSearchAlertsJVMMemoryPressureThreshold }}
+            aws_es_jvmmemory_pressure_maximum{domain_name = "{{ $domainName }}", node_id != ""} > {{ $openSearchAlertsJVMMemoryPressureThreshold }}
             {{ $businessOrAllHoursExpression }}
           for: {{ $openSearchAlertsJVMMemoryPressureThresholdMinutes }}m
+          labels:
+            {{ include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
+        - alert: OpenSearchIOPS
+          annotations:
+            summary: OpenSearch IOPS is too high
+            message: {{ $displayName }} in {{ $targetNamespace }} - High IOPS. Consistent high IOPS can result in performance degradation and lead to node failures.
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName={{ $domainName }}&from=now-6h&to=now
+          expr: |-
+            aws_es_read_iops_maximum { domain_name = "{{ $domainName }}", node_id != "" } + aws_es_write_iops_maximum { domain_name = "{{ $domainName }}", node_id != "" } > {{ $openSearchAlertsIOPSThreshold }}
+            {{ $businessOrAllHoursExpression }}
+          for: {{ $openSearchAlertsIOPSThresholdMinutes }}m
           labels:
             {{ include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
         {{- end }}
