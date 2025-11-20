@@ -127,3 +127,30 @@ tests:
               summary: OpenSearch JVM memory pressure is too high
               message: test-domain in test-application-dev - High JVM memory pressure. The cluster could encounter out of memory errors if usage increases. Consider scaling vertically.
               dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName=cloud-platform-uuid&from=now-6h&to=now
+
+  - interval: 1m
+    name: OpenSearchIOPS alert fires when combined read+write IOPS is too high for configured duration
+    input_series:
+      # provide read and write IOPS series; their sum should exceed the default threshold (2400) for 5 minutes
+      - series: 'aws_es_read_iops_maximum{domain_name="cloud-platform-uuid", node_id="node1"}'
+        values: '0 0 1500 1500 1500 1500 1500'
+      - series: 'aws_es_write_iops_maximum{domain_name="cloud-platform-uuid", node_id="node1"}'
+        values: '0 0 1500 1500 1500 1500 1500'
+
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: OpenSearchIOPS
+        exp_alerts:
+          - exp_labels:
+              alertname: OpenSearchIOPS
+              application: test-application
+              businessUnit: hmpps
+              domain_name: cloud-platform-uuid
+              environment: none
+              node_id: node1
+              productId: none
+              severity: alert-severity-tag
+            exp_annotations:
+              summary: OpenSearch IOPS is too high
+              message: test-domain in test-application-dev - High IOPS. Consistent high IOPS can result in performance degradation and lead to node failures.
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/eCN_s8yWk/aws-elasticsearch?orgId=1&var-domainName=cloud-platform-uuid&from=now-6h&to=now

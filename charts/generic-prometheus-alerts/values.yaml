@@ -40,12 +40,12 @@ orgId: 1
 
 # modSecBlockingStatusCodeOverride: "406"
 
-extraAnnotations: {}
+extraAnnotations: { }
 
 extraLabels:
   prometheus: cloud-platform
 
-additionalRuleLabels: {}
+additionalRuleLabels: { }
 
 # To monitor AWS SQS queues with oldest message and number of messages alerts, either add the name of the queue in a list like this:
 # sqsAlertsQueueNames:
@@ -203,3 +203,7 @@ openSearchAlertsCPUThresholdMinutes: 45
 # Maximum threshold for OpenSearch data node JVMMemoryPressure (percentage).
 openSearchAlertsJVMMemoryPressureThreshold: 95
 openSearchAlertsJVMMemoryPressureThresholdMinutes: 3
+
+# Maximum threshold for OpenSearch ReadIOPS + WriteIOPS (disk operations per second). Set this to 80% of the provisioned IOPS for the domain
+openSearchAlertsIOPSThreshold: 2400
+openSearchAlertsIOPSThresholdMinutes: 5
