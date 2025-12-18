@@ -22,7 +22,6 @@ tests:
               businessUnit: hmpps
               domain_name: cloud-platform-uuid
               environment: none
-              productId: none
               severity: alert-severity-tag
             exp_annotations:
               summary: OpenSearch cluster status is red
@@ -46,7 +45,6 @@ tests:
               businessUnit: hmpps
               domain_name: cloud-platform-uuid
               environment: none
-              productId: none
               severity: alert-severity-tag
             exp_annotations:
               summary: OpenSearch cluster status is yellow
@@ -71,7 +69,6 @@ tests:
               domain_name: cloud-platform-uuid
               environment: none
               node_id: node1
-              productId: none
               severity: alert-severity-tag
             exp_annotations:
               summary: OpenSearch free storage space is low
@@ -96,7 +93,6 @@ tests:
               domain_name: cloud-platform-uuid
               environment: none
               node_id: node1
-              productId: none
               severity: alert-severity-tag
             exp_annotations:
               summary: OpenSearch automated snapshot failed
@@ -121,7 +117,6 @@ tests:
               domain_name: cloud-platform-uuid
               environment: none
               node_id: node1
-              productId: none
               severity: alert-severity-tag
             exp_annotations:
               summary: OpenSearch JVM memory pressure is too high
@@ -148,7 +143,6 @@ tests:
               domain_name: cloud-platform-uuid
               environment: none
               node_id: node1
-              productId: none
               severity: alert-severity-tag
             exp_annotations:
               summary: OpenSearch IOPS is too high

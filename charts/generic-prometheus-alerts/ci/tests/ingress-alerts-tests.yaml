@@ -40,7 +40,6 @@ tests:
               application: test-application
               businessUnit: hmpps
               environment: none
-              productId: none
             exp_annotations:
               summary: "Ingress serving 5xx responses."
               message: "Ingress test-application-dev/test-application-v1-2 is serving 5xx responses."
@@ -87,7 +86,6 @@ tests:
               application: test-application
               businessUnit: hmpps
               environment: none
-              productId: none
             exp_annotations:
               summary: "High rate of 5xx errors on /health."
               message: "High rate of 5xx errors detected on /health path in Ingress test-application-dev/test-application-v1-2."
@@ -171,7 +169,6 @@ tests:
               application: test-application
               businessUnit: hmpps
               environment: none
-              productId: none
             exp_annotations:
               summary: "Ingress is being rate limited."
               message: "Rate limit is being applied on ingress test-application-dev/test-application-v1-2."
@@ -233,7 +230,6 @@ tests:
               application: test-application
               businessUnit: hmpps
               environment: none
-              productId: none
             exp_annotations:
               summary: "Mod_Security blocking ingress."
               message: "Mod_Security is blocking ingress test-application-dev/test-application-v1-2. Blocking http requests at rate of 0.37 per second."
