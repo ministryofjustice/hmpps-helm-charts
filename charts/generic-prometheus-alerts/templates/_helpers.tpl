@@ -60,7 +60,6 @@ Prometheus Rule labels
 {{- $businessUnit := required "A value for businessUnit must be set" .Values.businessUnit }}
 {{- $alertSeverity := required "A value for alertSeverity must be set" .Values.alertSeverity }}
 {{- $environment := default "none" (.Values.global).environment -}}
-{{- $productId := default "none" (.Values.global).productId -}}
 {{- if .Values.additionalRuleLabels -}}
 {{ toYaml .Values.additionalRuleLabels }}
 {{ end -}}
@@ -68,5 +67,4 @@ severity: {{ $alertSeverity }}
 application: {{ $targetApplication }}
 businessUnit: {{ $businessUnit }}
 environment: {{ $environment }}
-productId: {{ $productId }}
 {{- end }}
