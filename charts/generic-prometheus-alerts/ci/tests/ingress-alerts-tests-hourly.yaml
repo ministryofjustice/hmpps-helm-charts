@@ -42,7 +42,6 @@ tests:
               application: test-application
               businessUnit: hmpps
               environment: none
-              productId: none
             exp_annotations:
               message: "Ingress test-application-dev/test-application-v1-2 is not serving enough 2xx responses."
               runbook_url: "https://runbook.com/ingress-2xx-responses"

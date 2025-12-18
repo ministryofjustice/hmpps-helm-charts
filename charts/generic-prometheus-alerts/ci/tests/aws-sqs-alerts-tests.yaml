@@ -22,7 +22,6 @@ tests:
               businessUnit: hmpps
               queue_name: queue-name
               environment: none
-              productId: none
               severity: alert-severity-tag
             exp_annotations:
               summary: SQS no messages received alert
