@@ -35,6 +35,8 @@ spec:
               {{- toYaml .Values.securityContext | nindent 16 }}
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
+              resources:
+                {{- toYaml .Values.resources | nindent 16 }}
               {{- include "deployment.envs" .Values | nindent 14 }}
                 - name: BATCH_ENABLED
                   value: "true"
