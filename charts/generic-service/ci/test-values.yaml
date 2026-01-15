@@ -32,18 +32,17 @@ postgresDatabaseRestore:
 env:
   APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
 
-resources:
-  limits:
-    cpu: 120m
-    memory: 150Mi
-  requests:
-    cpu: 1200m
-    memory: 1500Mi
-
 batchjobs:
   - name: my-job
     type: A_TYPE
     schedule: "30 2 * * 1"
+    resources:
+      requests:
+        cpu: 5m
+        memory: 500Mi
+      limits:
+        cpu: 10m
+        memory: 1000Mi
   - name: my-job2
     type: A_TYPE
     schedule: "30 2 * * 1"
