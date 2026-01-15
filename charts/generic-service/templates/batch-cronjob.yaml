@@ -1,9 +1,9 @@
 {{- /*
 This template is a work in progress - please do not use yet!
 */}}
----
 {{- range $job := .Values.batchjobs }}
 {{- with $ -}}
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -47,6 +47,5 @@ spec:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
           restartPolicy: Never
----
-{{- end}}
-{{- end}}
+{{- end }}
+{{- end }}

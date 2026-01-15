@@ -44,3 +44,6 @@ batchjobs:
   - name: my-job
     type: A_TYPE
     schedule: "30 2 * * 1"
+  - name: my-job2
+    type: A_TYPE
+    schedule: "30 2 * * 1"
