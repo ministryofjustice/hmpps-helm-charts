@@ -28,3 +28,21 @@ retryDlqCronjob:
 
 postgresDatabaseRestore:
   enabled: true
+
+env:
+  APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
+
+batchjobs:
+  - name: my-job
+    type: A_TYPE
+    schedule: "30 2 * * 1"
+    resources:
+      requests:
+        cpu: 5m
+        memory: 500Mi
+      limits:
+        cpu: 10m
+        memory: 1000Mi
+  - name: my-job2
+    type: A_TYPE
+    schedule: "30 2 * * 1"

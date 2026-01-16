@@ -270,7 +270,16 @@ retryDlqCronjob:
   securityContext: *securityContext
 
 # Cronjobs relying on apps that support env vars BATCH_ENABLED=true and BATCH_TYPE=<supported batch type>
+#   suspend and resources are optional
 batchjobs: []
 # - name: foo
 #   schedule: "0 0 * * *"
 #   type: SOME_BATCH_JOB
+#   suspend: true
+#   resources:
+#     requests:
+#       cpu: 10m
+#       memory: 640Mi
+#     limits:
+#       cpu: 2000m
+#       memory: 2048Mi
