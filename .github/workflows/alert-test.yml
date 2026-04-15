@@ -20,9 +20,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # - name: Install Helm
-      #   uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/tool-installers/setup-helm@a74bbf022fd665b8c2f58decdf051475968541a3
-
       - name: Install promtool
         run: |
           echo "Checking the latest version of Promtool"
