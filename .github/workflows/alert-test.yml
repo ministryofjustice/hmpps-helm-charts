@@ -21,9 +21,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install Helm
-        uses: azure/setup-helm@bf6a7d304bc2fdb57e0331155b7ebf2c504acf0a # v4
-        with:
-          version: v3.10.2
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/tool-installers/setup-helm@v1
 
       - name: Install promtool
         run: |
