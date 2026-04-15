@@ -13,8 +13,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Helm
-        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/tool-installers/setup-helm@a74bbf022fd665b8c2f58decdf051475968541a3
+      # - name: Set up Helm
+      #   uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/tool-installers/setup-helm@a74bbf022fd665b8c2f58decdf051475968541a3
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
