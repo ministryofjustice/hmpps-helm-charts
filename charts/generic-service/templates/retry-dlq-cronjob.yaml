@@ -8,6 +8,7 @@ metadata:
 spec:
   {{- if .Values.scheduledDowntime.enabled }}
   schedule: "{{ .Values.scheduledDowntime.retryDlqSchedule }}"
+  timeZone: {{ .Values.scheduledDowntime.timeZone }}
   {{- else }}
   schedule: "{{ .Values.retryDlqCronjob.retryDlqSchedule }}"
   {{- end }}
