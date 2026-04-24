@@ -37,7 +37,7 @@ metadata:
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
-  schedule: {{ .Values.scheduledDowntime.startup }}
+  schedule: {{ default "30 6 * * 1-5" .Values.scheduledDowntime.startup }}
   timeZone: {{ .Values.scheduledDowntime.timeZone }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 0
