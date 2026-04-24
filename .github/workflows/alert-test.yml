@@ -22,15 +22,22 @@ jobs:
 
       - name: Install promtool
         run: |
-          echo "Checking the latest version of Promtool"
+          set -euo pipefail
+
+          echo "Installing pinned Promtool version"
           promtoolVersion="2.40.6"
+          promtoolSha256="a14b049b2f0f3b1ea0251a34fe8a01a835e6ba494c5bb5ea4014104eba7b956a"
+          archivePath="/tmp/promtool_${promtoolVersion}.tar.gz"
           url="https://github.com/prometheus/prometheus/releases/download/v${promtoolVersion}/prometheus-${promtoolVersion}.linux-amd64.tar.gz"
 
           echo "Downloading Promtool v${promtoolVersion}"
-          curl -s -S -L -o /tmp/promtool_${promtoolVersion} ${url}
+          curl -sSL -o "${archivePath}" "${url}"
+
+          echo "Verifying Promtool v${promtoolVersion} checksum"
+          echo "${promtoolSha256}  ${archivePath}" | sha256sum -c -
 
           echo "Unzipping Promtool v${promtoolVersion}"
-          tar -zxf /tmp/promtool_${promtoolVersion} --strip-components=1 --directory /usr/local/bin &> /dev/null
+          tar -zxf "${archivePath}" --strip-components=1 --directory /usr/local/bin &> /dev/null
 
       - name: Test Alert Rules
         run: make test
