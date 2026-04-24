@@ -37,7 +37,7 @@ metadata:
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
-  schedule: {{ (include "generic-service.fullname" .) | len | printf "%d 6 * * 1-5" | default .Values.scheduledDowntime.startup }}
+  schedule:  {{- if .Values.scheduledDowntime.startup }} {{ .Values.scheduledDowntime.startup }} {{- else }} {{ (include "generic-service.fullname" .) | len | printf "%d 6 * * 1-5" }} {{- end }}
   timeZone: {{ .Values.scheduledDowntime.timeZone }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 0
