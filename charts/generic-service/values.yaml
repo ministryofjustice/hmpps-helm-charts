@@ -248,8 +248,6 @@ postgresDatabaseRestore:
 
 scheduledDowntime:
   enabled: false
-  # Start at 6:30am UTC Monday-Friday
-  startup: '30 6 * * 1-5'
   # Stop at 10pm UTC Monday-Friday
   shutdown: '0 22 * * 1-5'
   timeZone: Etc/UTC

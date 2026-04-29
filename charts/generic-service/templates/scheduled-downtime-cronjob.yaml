@@ -1,4 +1,6 @@
 {{- if .Values.scheduledDowntime.enabled -}}
+{{- $hashServiceName  := regexReplaceAll "[^0-9]+" ((include "generic-service.fullname" .)  | sha256sum)  ""  | trunc 3 -}}
+{{- $randomMinute := printf "%d" (mod (atoi $hashServiceName) 60) -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -37,7 +39,7 @@ metadata:
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
-  schedule: {{ .Values.scheduledDowntime.startup }}
+  schedule:  {{- if .Values.scheduledDowntime.startup }} {{ .Values.scheduledDowntime.startup }} {{- else }} {{ print $randomMinute " 6 * * 1-5" }} {{- end }}
   timeZone: {{ .Values.scheduledDowntime.timeZone }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 0
