@@ -39,7 +39,7 @@ metadata:
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
-  schedule:  {{- if .Values.scheduledDowntime.startup }} {{ .Values.scheduledDowntime.startup }} {{- else }} {{ print $randomMinute " 6 * * 1-5" }} {{- end }}
+  schedule:  {{- if .Values.scheduledDowntime.startupOverride }} {{ .Values.scheduledDowntime.startupOverride }} {{- else }} {{ print $randomMinute " 6 * * 1-5" }} {{- end }}
   timeZone: {{ .Values.scheduledDowntime.timeZone }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 0
