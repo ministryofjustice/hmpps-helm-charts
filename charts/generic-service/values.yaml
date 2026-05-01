@@ -248,6 +248,8 @@ postgresDatabaseRestore:
 
 scheduledDowntime:
   enabled: false
+  # Set this to override the automatically generated startup time.
+  # startupOverride: '30 6 * * 1-5'
   # Stop at 10pm UTC Monday-Friday
   shutdown: '0 22 * * 1-5'
   timeZone: Etc/UTC

@@ -260,7 +260,7 @@ scheduledDowntime:
 ```
 
 By default, this will shut down pods between 10pm UTC and a quasi-random minute between 6am and 7am UTC derived from the name of your service on weekdays and all day on weekends.
-To change this schedule, update the `startup` and `shutdown` values
+To change this schedule, update the `startupOverride` and `shutdown` values
 
 You can have the schedule respect British Summer Time by setting `timeZone: Europe/London`
 
@@ -270,7 +270,7 @@ You can have the schedule respect British Summer Time by setting `timeZone: Euro
 ---
 scheduledDowntime:
   enabled: true
-  startup: '0 6 * * 1-5' # Start at 6am UTC Monday-Friday
+  startupOverride: '0 6 * * 1-5' # Start at 6am UTC Monday-Friday
   shutdown: '0 22 * * 1-5' # Stop at 10pm UTC Monday-Friday
   timeZone: Etc/UTC
   serviceAccountName: scheduled-downtime-serviceaccount # This must match the service account name in the Terraform module
