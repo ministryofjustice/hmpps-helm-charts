@@ -7,25 +7,37 @@ check_http() { http --stream --check-status --ignore-stdin --timeout=600 "$@"; }
 psql_preprod() { psql -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" -d "$DB_NAME_PREPROD" -At -c "$@"; }
 psql_prod() { psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -At -c "$@"; }
 
-# grab last restore date from Prison API
-if ! DATABASE_RESTORE_INFO=$(check_http GET "$PRISON_API_BASE_URL/api/restore-info"); then
+############################################## script start
+
+# grab last restore details from Prison API
+DATABASE_RESTORE_INFO=$(check_http GET "$PRISON_API_BASE_URL/api/restore-info")
+if ! DATABASE_RESTORE_JSON=$(check_http GET "$PRISON_API_BASE_URL/api/restore-details"); then
   echo -e "\nUnable to find any restore information."
   if [[ -z "${FORCE_RUN+x}" ]]; then
     echo -e "\nTo force a run set the FORCE_RUN environment variable when creating the job (see README.md in hmpps-helm-charts/generic-service)"
-    echo "$DATABASE_RESTORE_INFO"
+    echo "DATABASE_RESTORE_JSON"
     exit 0
   fi
   echo -e "\nRun forced"
   DATABASE_RESTORE_DATE=$(date +%F) # default to current date
+  DATABASE_BACKUP_TIMESTAMP=$(date +'%FT%T') # default to current datetime
+  DATABASE_RESTORE_TIMESTAMP=$DATABASE_BACKUP_TIMESTAMP
 else
   DATABASE_RESTORE_DATE=$(echo "$DATABASE_RESTORE_INFO" | jq -r .)
+  DATABASE_BACKUP_TIMESTAMP=$(echo $DATABASE_RESTORE_JSON | jq -r .backup)
+  DATABASE_RESTORE_TIMESTAMP=$(echo $DATABASE_RESTORE_JSON | jq -r .restore)
 fi
+
+# DATABASE_RESTORE_JSON is e.g. {
+#  "backup": "2026-03-01T04:34:56",
+#  "restore": "2026-03-01T12:34:56"
+#}
 
 echo "${DB_HOST}:5432:${DB_NAME}:${DB_USER}:${DB_PASS}" > ~/.pgpass
 echo "${DB_HOST_PREPROD}:5432:${DB_NAME_PREPROD}:${DB_USER_PREPROD}:${DB_PASS_PREPROD}" >> ~/.pgpass
 chmod 0600 ~/.pgpass
 
-# Check postgres server versions and adjust PATH to use the correct version of pg client tools.
+# Check postgres server versions and adjust PATH to use the correct version of pg client tools.
 PSQL_PREPROD_VERSION=$(psql_preprod "SHOW server_version;" | cut -d"." -f1)
 PSQL_PROD_VERSION=$(psql_prod "SHOW server_version;" | cut -d"." -f1)
 if [[ "$PSQL_PREPROD_VERSION" != "$PSQL_PROD_VERSION" ]]; then
@@ -52,13 +64,28 @@ if ! OUTPUT=$(psql_preprod "create table if not exists ${SCHEMA_TO_RESTORE:+${SC
   echo "$OUTPUT"
   exit 1
 fi
+# Add timestamp columns if not there
+psql_preprod "alter table ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status add column if not exists backup_timestamp timestamp"
+psql_preprod "alter table ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status add column if not exists restore_timestamp timestamp"
 
-# Grab last restore date from postgres
+# Grab last restore info from postgres
 SAVED_RESTORE_DATE=$(psql_preprod "select restore_date from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status")
+SAVED_RESTORE_TIMESTAMP=$(psql_preprod "select restore_timestamp from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status")
+SAVED_BACKUP_TIMESTAMP=$(psql_preprod "select backup_timestamp from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status")
 
 # we've found a date, check to see if we've had a newer restore
-if [[ -n $SAVED_RESTORE_DATE && ! $DATABASE_RESTORE_DATE > $SAVED_RESTORE_DATE ]]; then
-  echo -e "\nExisting restore date of $SAVED_RESTORE_DATE no newer than $DATABASE_RESTORE_DATE"
+# Try the new timestamp-based refresh criterion, and revert to the old if it fails
+if [[ -n "$SAVED_RESTORE_TIMESTAMP" ]]; then
+  if [[ $DATABASE_RESTORE_TIMESTAMP < $SAVED_RESTORE_TIMESTAMP ]]; then
+    echo -e "\nExisting restore time of $SAVED_RESTORE_TIMESTAMP is newer than $DATABASE_RESTORE_TIMESTAMP"
+    if [[ -z "${FORCE_RUN+x}" ]]; then
+      echo -e "\nTo force a run set the FORCE_RUN environment variable when creating the job (see README.md in hmpps-helm-charts/generic-service)"
+      exit 0
+    fi
+    echo -e "\nRun forced"
+  fi
+elif [[ -n $SAVED_RESTORE_DATE && ! $DATABASE_RESTORE_DATE > $SAVED_RESTORE_DATE ]]; then
+  echo -e "\nExisting restore date of $SAVED_RESTORE_DATE is newer than $DATABASE_RESTORE_DATE"
   if [[ -z "${FORCE_RUN+x}" ]]; then
     echo -e "\nTo force a run set the FORCE_RUN environment variable when creating the job (see README.md in hmpps-helm-charts/generic-service)"
     exit 0
@@ -101,5 +128,5 @@ pg_restore -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" ${SCHEMA_TO_RESTORE:+-n $
 # now stash away the restore status in postgres
 echo -e "\nWriting restore date of $DATABASE_RESTORE_DATE to the preprod database"
 psql_preprod "delete from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status"
-psql_preprod "insert into ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status (restore_date) values ('$DATABASE_RESTORE_DATE')"
+psql_preprod "insert into ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status (restore_date,backup_timestamp, restore_timestamp) values ('$DATABASE_RESTORE_DATE','$DATABASE_BACKUP_TIMESTAMP', '$DATABASE_RESTORE_TIMESTAMP')"
 echo -e "\nRestore successful"
