@@ -159,6 +159,7 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
+  # scaleUpStabilizationWindowSeconds: 180
 
 poddisruptionbudget:
   enabled: true
