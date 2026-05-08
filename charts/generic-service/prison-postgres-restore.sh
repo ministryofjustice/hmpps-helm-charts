@@ -28,11 +28,6 @@ else
   DATABASE_RESTORE_TIMESTAMP=$(echo $DATABASE_RESTORE_JSON | jq -r .restore)
 fi
 
-# DATABASE_RESTORE_JSON is e.g. {
-#  "backup": "2026-03-01T04:34:56",
-#  "restore": "2026-03-01T12:34:56"
-#}
-
 echo "${DB_HOST}:5432:${DB_NAME}:${DB_USER}:${DB_PASS}" > ~/.pgpass
 echo "${DB_HOST_PREPROD}:5432:${DB_NAME_PREPROD}:${DB_USER_PREPROD}:${DB_PASS_PREPROD}" >> ~/.pgpass
 chmod 0600 ~/.pgpass
@@ -68,16 +63,16 @@ fi
 psql_preprod "alter table ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status add column if not exists backup_timestamp timestamp"
 psql_preprod "alter table ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status add column if not exists restore_timestamp timestamp"
 
-# Grab last restore info from postgres
-SAVED_RESTORE_DATE=$(psql_preprod "select restore_date from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status")
-SAVED_RESTORE_TIMESTAMP=$(psql_preprod "select restore_timestamp from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status")
-SAVED_BACKUP_TIMESTAMP=$(psql_preprod "select backup_timestamp from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status")
+# Grab last restore info from postgres. The 'to_json' conversions ensure we get ISO timestamps with a 'T'
+SAVED_TIMES=$(psql_preprod "select restore_date, to_json(restore_timestamp)#>>'{}', to_json(backup_timestamp)#>>'{}'
+  from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status")
+IFS='|' read SAVED_RESTORE_DATE SAVED_RESTORE_TIMESTAMP SAVED_BACKUP_TIMESTAMP <<< $SAVED_TIMES
 
 # we've found a date, check to see if we've had a newer restore
 # Try the new timestamp-based refresh criterion, and revert to the old if it fails
 if [[ -n "$SAVED_RESTORE_TIMESTAMP" ]]; then
-  if [[ $DATABASE_RESTORE_TIMESTAMP < $SAVED_RESTORE_TIMESTAMP ]]; then
-    echo -e "\nExisting restore time of $SAVED_RESTORE_TIMESTAMP is newer than $DATABASE_RESTORE_TIMESTAMP"
+  if [[ ! $DATABASE_RESTORE_TIMESTAMP > $SAVED_RESTORE_TIMESTAMP ]]; then
+    echo -e "\nExisting Postgres restore time of $SAVED_RESTORE_TIMESTAMP is no older than Nomis restore at $DATABASE_RESTORE_TIMESTAMP"
     if [[ -z "${FORCE_RUN+x}" ]]; then
       echo -e "\nTo force a run set the FORCE_RUN environment variable when creating the job (see README.md in hmpps-helm-charts/generic-service)"
       exit 0
@@ -85,7 +80,7 @@ if [[ -n "$SAVED_RESTORE_TIMESTAMP" ]]; then
     echo -e "\nRun forced"
   fi
 elif [[ -n $SAVED_RESTORE_DATE && ! $DATABASE_RESTORE_DATE > $SAVED_RESTORE_DATE ]]; then
-  echo -e "\nExisting restore date of $SAVED_RESTORE_DATE is newer than $DATABASE_RESTORE_DATE"
+  echo -e "\nExisting restore date of $SAVED_RESTORE_DATE is no older than $DATABASE_RESTORE_DATE"
   if [[ -z "${FORCE_RUN+x}" ]]; then
     echo -e "\nTo force a run set the FORCE_RUN environment variable when creating the job (see README.md in hmpps-helm-charts/generic-service)"
     exit 0
@@ -126,7 +121,7 @@ pg_dump -h "$DB_HOST" -U "$DB_USER" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} 
 pg_restore -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} --clean --if-exists --no-owner --single-transaction -v -d "$DB_NAME_PREPROD" /tmp/db.dump
 
 # now stash away the restore status in postgres
-echo -e "\nWriting restore date of $DATABASE_RESTORE_DATE to the preprod database"
+echo -e "\nWriting DATABASE_RESTORE_DATE = $DATABASE_RESTORE_DATE, DATABASE_BACKUP_TIMESTAMP = $DATABASE_BACKUP_TIMESTAMP, DATABASE_RESTORE_TIMESTAMP = $DATABASE_RESTORE_TIMESTAMP to the preprod database"
 psql_preprod "delete from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status"
 psql_preprod "insert into ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status (restore_date,backup_timestamp, restore_timestamp) values ('$DATABASE_RESTORE_DATE','$DATABASE_BACKUP_TIMESTAMP', '$DATABASE_RESTORE_TIMESTAMP')"
 echo -e "\nRestore successful"
