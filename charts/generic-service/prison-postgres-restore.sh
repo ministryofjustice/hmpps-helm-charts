@@ -59,9 +59,10 @@ if ! OUTPUT=$(psql_preprod "create table if not exists ${SCHEMA_TO_RESTORE:+${SC
   echo "$OUTPUT"
   exit 1
 fi
-# Add timestamp columns if not there
+# Add timestamp columns if not there and initialise
 psql_preprod "alter table ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status add column if not exists backup_timestamp timestamp"
 psql_preprod "alter table ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status add column if not exists restore_timestamp timestamp"
+psql_preprod "update ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status set restore_timestamp = now() where restore_timestamp is null"
 
 # Grab last restore info from postgres. The 'to_json' conversions ensure we get ISO timestamps with a 'T'
 SAVED_TIMES=$(psql_preprod "select restore_date, to_json(restore_timestamp)#>>'{}', to_json(backup_timestamp)#>>'{}'
