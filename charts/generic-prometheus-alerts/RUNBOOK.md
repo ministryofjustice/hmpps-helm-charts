@@ -190,11 +190,11 @@ Other reasons why you could run out is if perhaps you're running r2dbc and you'v
 
 ### sqs-oldest-message
 
-> SQS - {{ $sqsLabelQueueName }} has message older than {{ $sqsAlertsOldestThreshold }} mins, check consumers are healthy. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
+> SQS - \$sqsLabelQueueName has message older than \$sqsAlertsOldestThreshold  mins, check consumers are healthy. This alert configured by app \$targetNamespace / \$targetApplication.
 
 ### sqs-number-of-messages
 
-> SQS - {{ $sqsLabelQueueName }} - number of messages={{`{{`}} $value {{`}}`}} (exceeds {{ $sqsAlertsTotalMessagesThreshold }}), check consumers are healthy.
+> SQS - \$sqsLabelQueueName - number of messages=\$value (exceeds \$sqsAlertsTotalMessagesThreshold), check consumers are healthy.
 
 ## Elasticache Alerts
 
