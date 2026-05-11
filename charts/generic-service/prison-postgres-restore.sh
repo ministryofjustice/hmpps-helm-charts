@@ -98,6 +98,8 @@ elif [[ "$MIGRATIONS_VENDOR" == "active_record" ]]; then
   SCHEMA_VERSIONS_SQL="select count(version) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}schema_migrations"
 elif [[ "$MIGRATIONS_VENDOR" == "alembic" ]]; then
   SCHEMA_VERSIONS_SQL="select version_num from ${ALEMBIC_SCHEMA:+${ALEMBIC_SCHEMA}.}alembic_version"
+elif [[ "$MIGRATIONS_VENDOR" == "knex" ]]; then
+  SCHEMA_VERSIONS_SQL="select count(name) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}knex_migrations"
 else
   echo -e "\nUnrecognized MIGRATIONS_VENDOR value: $MIGRATIONS_VENDOR. Valid values are 'flyway', 'alembic' or 'active_record'"
   exit 1
