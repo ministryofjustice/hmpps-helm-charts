@@ -223,6 +223,7 @@ postgresToolsImage: &postgresToolsImage ghcr.io/ministryofjustice/hmpps-postgres
 postgresToolsTag: &postgresToolsTag main
 
 postgresDatabaseRestore:
+  backupJobName:
   jobName:
   enabled: false
 # Required environment secrets for the restore script:
@@ -237,6 +238,9 @@ postgresDatabaseRestore:
 #      DB_USER_PREPROD: "database_username"
 #      DB_PASS_PREPROD: "database_password"
 #      DB_HOST_PREPROD: "rds_instance_address"
+#    s3-db-restore-bucket:
+#      BUCKET_NAME: "bucket_name"
+
 # Optional schema name and migrations vendor if not using the default 'public' schema or 'flyway' vendor:
 #  env:
 #    SCHEMA_TO_RESTORE: "my_schema"
@@ -248,6 +252,7 @@ postgresDatabaseRestore:
   securityContext: *securityContext
   # Default schedule is every 30 minutes from 6am through 9pm UTC Sunday to Friday
   # schedule: "0/30 6-21 * * 0-5"
+  # timeout: 2400
 
 scheduledDowntime:
   enabled: false
