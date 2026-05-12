@@ -12,7 +12,7 @@ than the saved restore date then a new backup is created.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.fullname" .)) }}
+  name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.cronPrefixName" .)) }}
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 data:
@@ -24,7 +24,7 @@ data:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.fullname" .)) }}
+  name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.cronPrefixName" .)) }}
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
@@ -46,7 +46,7 @@ spec:
               command:
                 - /bin/entrypoint.sh
               volumeMounts:
-                - name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.fullname" .)) }}
+                - name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.cronPrefixName" .)) }}
                   mountPath: /bin/entrypoint.sh
                   readOnly: true
                   subPath: entrypoint.sh
@@ -62,8 +62,8 @@ spec:
     {{- include "postgresRestore.envs" .Values | nindent 14 }}
           restartPolicy: "Never"
           volumes:
-            - name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.fullname" .)) }}
+            - name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.cronPrefixName" .)) }}
               configMap:
-                name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.fullname" .)) }}
+                name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.cronPrefixName" .)) }}
                 defaultMode: 0755
 {{- end }}

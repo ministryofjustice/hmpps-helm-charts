@@ -25,6 +25,17 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Create a default cron prefix name. Using fullname is sometimes excessive so allow it to be shortened.
+*/}}
+{{- define "generic-service.cronPrefixName" -}}
+{{- if .Values.cronPrefixName }}
+{{- .Values.cronPrefixName }}
+{{- else }}
+{{- include "generic-service.fullname" . }}
+{{- end }}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "generic-service.chart" -}}
