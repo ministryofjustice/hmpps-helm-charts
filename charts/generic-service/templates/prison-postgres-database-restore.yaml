@@ -1,4 +1,6 @@
 {{- if .Values.postgresDatabaseRestore.enabled -}}
+{{- $hashServiceName := regexReplaceAll "[^0-9]+" ((include "generic-service.fullname" .)  | sha256sum)  ""  | trunc 3 -}}
+{{- $randomMinute := printf "%d" (mod (atoi $hashServiceName) 30) -}}
 {{- /*
 This template creates a shell script config map and a cronjob (running every 4 hours).  It should only be enabled in
 the production namespace in order to copy the production database to pre-production.  This is so that the production
@@ -28,7 +30,7 @@ metadata:
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
-  schedule: {{ .Values.postgresDatabaseRestore.schedule }}
+  schedule: {{- if .Values.postgresDatabaseRestore.schedule }} {{ .Values.postgresDatabaseRestore.schedule }} {{- else }} {{ print $randomMinute "/30 6-21 * * 0-5" }} {{- end }}
   concurrencyPolicy: "Forbid"
   successfulJobsHistoryLimit: 5
   failedJobsHistoryLimit: 5
