@@ -1,13 +1,16 @@
-#!/bin/bash
-set -ue
 
 PRISON_API_BASE_URL=https://prison-api-preprod.prison.service.justice.gov.uk
 
-check_http() { http --stream --check-status --ignore-stdin --timeout=600 "$@"; }
-psql_preprod() { psql -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" -d "$DB_NAME_PREPROD" -At -c "$@"; }
-psql_prod() { psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -At -c "$@"; }
+DB_NAME=dbb58b51dd02b491a0
+DB_HOST=cloud-platform-b58b51dd02b491a0.cdwm328dlye6.eu-west-2.rds.amazonaws.com
+DB_USER=cpYHgphGY9
+DB_PASS=vgyS6OIGF6qzMXgI
 
-############################################## script start
+DB_NAME_PREPROD=dbecaa06ca3b89ae46
+DB_HOST_PREPROD=cloud-platform-ecaa06ca3b89ae46.cdwm328dlye6.eu-west-2.rds.amazonaws.com
+DB_USER_PREPROD=cpCDOVLUH0
+DB_PASS_PREPROD=1z5cBebCPINqFaIU
+
 
 # grab last restore details from Prison API
 DATABASE_RESTORE_INFO=$(check_http GET "$PRISON_API_BASE_URL/api/restore-info")
@@ -26,31 +29,6 @@ else
   DATABASE_RESTORE_DATE=$(echo "$DATABASE_RESTORE_INFO" | jq -r .)
   DATABASE_BACKUP_TIMESTAMP=$(echo $DATABASE_RESTORE_JSON | jq -r .backup)
   DATABASE_RESTORE_TIMESTAMP=$(echo $DATABASE_RESTORE_JSON | jq -r .restore)
-fi
-
-echo "${DB_HOST}:5432:${DB_NAME}:${DB_USER}:${DB_PASS}" > ~/.pgpass
-echo "${DB_HOST_PREPROD}:5432:${DB_NAME_PREPROD}:${DB_USER_PREPROD}:${DB_PASS_PREPROD}" >> ~/.pgpass
-chmod 0600 ~/.pgpass
-
-# Check postgres server versions and adjust PATH to use the correct version of pg client tools.
-PSQL_PREPROD_VERSION=$(psql_preprod "SHOW server_version;" | cut -d"." -f1)
-PSQL_PROD_VERSION=$(psql_prod "SHOW server_version;" | cut -d"." -f1)
-if [[ "$PSQL_PREPROD_VERSION" != "$PSQL_PROD_VERSION" ]]; then
-  echo "Preprod and prod postgres server versions are different"
-  echo "Preprod version: $PSQL_PREPROD_VERSION"
-  echo "Prod version: $PSQL_PROD_VERSION"
-  exit 1
-fi
-echo "Detected PostgreSQL server version: $PSQL_PROD_VERSION"
-
-# Set the path to the specific version of psql
-PSQL_PATH="/usr/lib/postgresql/$PSQL_PROD_VERSION/bin"
-if [[ -d "$PSQL_PATH" ]]; then
-  export PATH="$PSQL_PATH:$PATH"
-  echo "Set PATH to: $PATH"
-else
-  echo "Path $PSQL_PATH does not exist"
-  exit 1
 fi
 
 # Check that we can connect to preprod postgres and create restore table

@@ -223,6 +223,7 @@ postgresToolsImage: &postgresToolsImage ghcr.io/ministryofjustice/hmpps-postgres
 postgresToolsTag: &postgresToolsTag main
 
 postgresDatabaseRestore:
+  backupJobName:
   jobName:
   enabled: false
 # Required environment secrets for the restore script:
@@ -237,6 +238,8 @@ postgresDatabaseRestore:
 #      DB_USER_PREPROD: "database_username"
 #      DB_PASS_PREPROD: "database_password"
 #      DB_HOST_PREPROD: "rds_instance_address"
+#    s3-db-restore-bucket:
+#      BUCKET_NAME: "bucket_name"
 # Optional schema name and migrations vendor if not using the default 'public' schema or 'flyway' vendor:
 #  env:
 #    SCHEMA_TO_RESTORE: "my_schema"
