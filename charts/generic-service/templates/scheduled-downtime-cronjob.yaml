@@ -4,7 +4,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "generic-service.fullname" . | trunc 43 }}-shutdown
+  name: {{ include "generic-service.cronPrefixName" . | trunc 43 }}-shutdown
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
@@ -35,7 +35,7 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "generic-service.fullname" . | trunc 43 }}-startup
+  name: {{ include "generic-service.cronPrefixName" . | trunc 43 }}-startup
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
