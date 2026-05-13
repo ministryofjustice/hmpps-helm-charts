@@ -1,24 +1,13 @@
 
 PRISON_API_BASE_URL=https://prison-api-preprod.prison.service.justice.gov.uk
 
-DB_NAME=dbb58b51dd02b491a0
-DB_HOST=cloud-platform-b58b51dd02b491a0.cdwm328dlye6.eu-west-2.rds.amazonaws.com
-DB_USER=cpYHgphGY9
-DB_PASS=vgyS6OIGF6qzMXgI
-
-DB_NAME_PREPROD=dbecaa06ca3b89ae46
-DB_HOST_PREPROD=cloud-platform-ecaa06ca3b89ae46.cdwm328dlye6.eu-west-2.rds.amazonaws.com
-DB_USER_PREPROD=cpCDOVLUH0
-DB_PASS_PREPROD=1z5cBebCPINqFaIU
-
-
 # grab last restore details from Prison API
 DATABASE_RESTORE_INFO=$(check_http GET "$PRISON_API_BASE_URL/api/restore-info")
 if ! DATABASE_RESTORE_JSON=$(check_http GET "$PRISON_API_BASE_URL/api/restore-details"); then
   echo -e "\nUnable to find any restore information."
   if [[ -z "${FORCE_RUN+x}" ]]; then
     echo -e "\nTo force a run set the FORCE_RUN environment variable when creating the job (see README.md in hmpps-helm-charts/generic-service)"
-    echo "DATABASE_RESTORE_JSON"
+    echo "$DATABASE_RESTORE_JSON"
     exit 0
   fi
   echo -e "\nRun forced"
@@ -30,6 +19,8 @@ else
   DATABASE_BACKUP_TIMESTAMP=$(echo $DATABASE_RESTORE_JSON | jq -r .backup)
   DATABASE_RESTORE_TIMESTAMP=$(echo $DATABASE_RESTORE_JSON | jq -r .restore)
 fi
+
+echo "Obtained database restore details:\n$DATABASE_RESTORE_JSON"
 
 # Check that we can connect to preprod postgres and create restore table
 if ! OUTPUT=$(psql_preprod "create table if not exists ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status(restore_date date)"); then
@@ -95,9 +86,19 @@ else
   echo -e "\n$MIGRATIONS_VENDOR migrations check passed, both schemas have $PROD_SCHEMA_VERSION versions installed"
 fi
 
-# Retrieve the postgres database production backup
-aws s3 cp s3://$BUCKET_NAME/db.dump /tmp/db.dump
-# TODO: check age of backup vs DATABASE_BACKUP_TIMESTAMP ?
+POSTGRES_BACKUP_DATE=$(aws s3api head-object --bucket $BUCKET_NAME --key rds-backup/db.dump | jq -r .Metadata.created | cut -c 1-10)
+NOMIS_BACKUP_DATE=$(echo $DATABASE_BACKUP_TIMESTAMP | cut -c 1-10)
+
+# Check the postgres backup we are using is the right one. We are not too fussy, the right date is good enough.
+if [[ "$POSTGRES_BACKUP_DATE" == "$NOMIS_BACKUP_DATE" ]]; then
+
+  echo "s3 backup create date $POSTGRES_BACKUP_DATE matches nomis backup at $DATABASE_BACKUP_TIMESTAMP"
+  # Retrieve the postgres database production backup
+  aws s3 cp s3://$BUCKET_NAME/rds-backup/db.dump /tmp/db.dump
+else
+  echo "s3 backup create date $POSTGRES_BACKUP_DATE does not match nomis backup at $DATABASE_BACKUP_TIMESTAMP, falling back to dumping prod now"
+  pg_dump -h "$DB_HOST" -U "$DB_USER" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"
+fi
 
 # Restore database to preprod
 pg_restore -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} --clean --if-exists --no-owner --single-transaction -v -d "$DB_NAME_PREPROD" /tmp/db.dump
@@ -108,6 +109,6 @@ psql_preprod "delete from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_sta
 psql_preprod "insert into ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status (restore_date,backup_timestamp, restore_timestamp) values ('$DATABASE_RESTORE_DATE','$DATABASE_BACKUP_TIMESTAMP', '$DATABASE_RESTORE_TIMESTAMP')"
 
 # Delete the backup
-aws s3 rm s3://$BUCKET_NAME/db.dump
+aws s3 rm s3://$BUCKET_NAME/rds-backup/db.dump
 
 echo -e "\nRestore successful"
