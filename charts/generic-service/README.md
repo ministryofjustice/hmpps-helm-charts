@@ -168,15 +168,23 @@ postgresDatabaseRestore:
   enabled: true
 ```
 in your `values-prod.yaml`
-will create a scheduled job runs every four hours in production only.  This checks to see if there is a newer version of
-the NOMIS database since the last database restore and if so then does another restore.  The pre-production credentials
-should be injected into the production namespace, see https://github.com/ministryofjustice/cloud-platform-environments/pull/8325
-for an example PR. Both production and pre-production credentials should then be added as a `namespace_secrets:` section,
-see the `values.yaml` in this repository for an example of the secrets and other options.
+will create two scheduled jobs:
+- one which runs weekly in production only and backs up production at the same time as Nomis, currently 04:30 on Sundays;
+- one which runs every 1/2 hour during the day by default in production only.  This checks to see if there is a newer version of
+the NOMIS preprod database since the last database restore and if so then does another restore using the backup above.
 
-Currently, Flyway and ActiveRecord database migrations are supported. The default is Flyway. You can change this by
+Requisites:
+1. The pre-production credentials should be injected into the production namespace, see https://github.com/ministryofjustice/cloud-platform-environments/pull/8325
+for an example PR.
+1. There should be a private s3 bucket available, see https://github.com/ministryofjustice/cloud-platform-environments/pull/42361
+and https://github.com/ministryofjustice/cloud-platform-environments/pull/42363 as an example.
+1. The production and pre-production credentials and a private local s3 bucket name should then be added as a `namespace_secrets:` section,
+see the `values.yaml` in this repository for an example of the secrets and other options. The bucket is used to temporarily store the backup
+between backup time and restore time which will typically be several hours apart.
+
+Currently, Flyway, ActiveRecord, Alembic and Knex database migrations are supported. The default is Flyway. You can change this by
 supplying the `MIGRATIONS_VENDOR` environment variable in the `env:` section (see `values.yaml` for an example). Possible 
-values are `flyway`, `alembic` and `active_record`. If you use `alembic`, you must additionally specify the schema containing the `alembic_version` table as `ALEMBIC_SCHEMA`
+values are `flyway`, `alembic`, `knex` and `active_record`. If you use `alembic`, you must additionally specify the schema containing the `alembic_version` table as `ALEMBIC_SCHEMA`
 
 If you have set up a schema separate to the default 'public' schema and want to refresh that schema, you must additionally
 supply the `SCHEMA_TO_RESTORE` environment variable in the `env:` section (again see the `values.yaml` for an example).
@@ -191,10 +199,10 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA <SCHEMA_TO_RESTORE> GRANT SELECT, INSERT, UPD
 
 #### Inputs
 
-| Name     | Description                                                                                                                                                                                 | Example     |
-|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| Name     | Description                                                                                                                                                                                | Example     |
+|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
 | timeout  | Sets the active deadline seconds after which the job will be terminated and the Job status will become `type: Failed` with `reason: DeadlineExceeded`. Default is 2400 seconds (40 minutes) | 7200        |
-| schedule | Overrides the default cron schedule (30 6-21/4 * * 1-5) allowing preprod databases which are up continuously to be restored as soon as possible after Nomis is restored                     | 5 */2 * * * |
+| schedule | Overrides the default cron schedule allowing preprod databases which are up continuously to be restored as soon as possible after Nomis is restored                     | 5 */2 * * * |
 
 #### Manually running the database restore cronjob
 The restore cronjob script only runs if there is a newer NOMIS database so we need to override the configuration to ensure to force the run.
