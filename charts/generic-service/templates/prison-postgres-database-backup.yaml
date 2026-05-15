@@ -62,6 +62,7 @@ spec:
                   memory: 500Mi
     {{- include "postgresRestore.envs" .Values | nindent 14 }}
           restartPolicy: "Never"
+          serviceAccountName: {{ .Values.postgresDatabaseRestore.serviceAccountName | default .Values.serviceAccountName }}
           volumes:
             - name: {{ (.Values.postgresDatabaseRestore.backupJobName) | default (printf "%s-postgres-backup" (include "generic-service.fullname" .)) }}
               configMap:
