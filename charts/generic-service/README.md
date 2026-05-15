@@ -199,8 +199,8 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA <SCHEMA_TO_RESTORE> GRANT SELECT, INSERT, UPD
 
 #### Inputs
 
-| Name     | Description                                                                                                                                                                                 | Example     |
-|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| Name     | Description                                                                                                                                                                                | Example     |
+|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
 | timeout  | Sets the active deadline seconds after which the job will be terminated and the Job status will become `type: Failed` with `reason: DeadlineExceeded`. Default is 2400 seconds (40 minutes) | 7200        |
 | schedule | Overrides the default cron schedule allowing preprod databases which are up continuously to be restored as soon as possible after Nomis is restored                                         | 5 */2 * * * |
 
