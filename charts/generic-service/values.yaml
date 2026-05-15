@@ -253,6 +253,7 @@ postgresDatabaseRestore:
   # Default schedule is every 30 minutes from 6am through 9pm UTC Sunday to Friday
   # schedule: "0/30 6-21 * * 0-5"
   # timeout: 2400
+  # serviceAccountName:
 
 scheduledDowntime:
   enabled: false

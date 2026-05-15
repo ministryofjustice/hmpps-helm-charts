@@ -33,7 +33,7 @@ metadata:
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
 spec:
-  schedule: {{- if .Values.postgresDatabaseRestore.schedule }} {{ .Values.postgresDatabaseRestore.schedule }} {{- else }} {{ print $randomMinute "/30 6-21 * * 0-5" }} {{- end }}
+  schedule: {{ .Values.postgresDatabaseRestore.schedule | default (print $randomMinute "/30 6-21 * * 0-5") }}
   concurrencyPolicy: "Forbid"
   successfulJobsHistoryLimit: 5
   failedJobsHistoryLimit: 5
@@ -66,6 +66,7 @@ spec:
                   memory: 500Mi
     {{- include "postgresRestore.envs" .Values | nindent 14 }}
           restartPolicy: "Never"
+          serviceAccountName: {{ .Values.postgresDatabaseRestore.serviceAccountName | default .Values.serviceAccountName }}
           volumes:
             - name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.cronPrefixName" .)) }}
               configMap:
