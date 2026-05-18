@@ -27,3 +27,19 @@ else
   echo "Path $PSQL_PATH does not exist"
   exit 1
 fi
+
+# Grab schema versions from preprod and prod.  If schema history different then backup and restore won't really work
+# Only solution is to release to production before then doing the restore.
+MIGRATIONS_VENDOR="${MIGRATIONS_VENDOR:-flyway}"
+if [[ "$MIGRATIONS_VENDOR" == "flyway" ]]; then
+  SCHEMA_VERSIONS_SQL="select count(version) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}flyway_schema_history"
+elif [[ "$MIGRATIONS_VENDOR" == "active_record" ]]; then
+  SCHEMA_VERSIONS_SQL="select count(version) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}schema_migrations"
+elif [[ "$MIGRATIONS_VENDOR" == "alembic" ]]; then
+  SCHEMA_VERSIONS_SQL="select version_num from ${ALEMBIC_SCHEMA:+${ALEMBIC_SCHEMA}.}alembic_version"
+elif [[ "$MIGRATIONS_VENDOR" == "knex" ]]; then
+  SCHEMA_VERSIONS_SQL="select count(name) from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}knex_migrations"
+else
+  echo -e "\nUnrecognized MIGRATIONS_VENDOR value: $MIGRATIONS_VENDOR. Valid values are 'flyway', 'alembic' or 'active_record'"
+  exit 1
+fi
