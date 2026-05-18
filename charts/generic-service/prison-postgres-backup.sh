@@ -1,4 +1,9 @@
 
+if [[ -z "$BUCKET_NAME" ]]; then
+  echo "BUCKET_NAME not defined so skipping the backup to an s3 bucket. Will rely on dumping prod at restore time."
+  exit 0
+fi
+
 # Dump postgres database from production
 if ! pg_dump -h "$DB_HOST" -U "$DB_USER" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"; then
   echo -e "\nUnable to talk to postgres"
