@@ -159,8 +159,8 @@ generic-service:
 ```
 
 ### Prison Postgres database restore cronjob
-The NOMIS pre-production database gets refreshed from production approximately every two weeks.  It is normally a good
-idea to copy the other Prison databases at the same time so that the pre-production environment is in sync.
+The NOMIS pre-production database gets refreshed from production approximately every two weeks on Sundays.  It is normally a good
+idea to copy the DPS Prison-related databases at the same time so that the pre-production environment is in sync.
 Setting
 ```yaml
 ---
@@ -169,18 +169,21 @@ postgresDatabaseRestore:
 ```
 in your `values-prod.yaml`
 will create two scheduled jobs:
-- one which runs weekly in production only and backs up production at the same time as Nomis, currently 04:30 on Sundays;
-- one which runs every 1/2 hour during the day by default in production only.  This checks to see if there is a newer version of
+- backup: which runs weekly in production only and backs up production at the same time as Nomis, currently 04:30 on Sundays;
+- restore: which runs every 1/2 hour during the day by default in production only.  This checks to see if there is a newer version of
 the NOMIS preprod database since the last database restore and if so then does another restore using the backup above.
 
-Requisites:
+Prerequisites:
 1. The pre-production credentials should be injected into the production namespace, see https://github.com/ministryofjustice/cloud-platform-environments/pull/8325
 for an example PR.
-1. There should be a private s3 bucket available, see https://github.com/ministryofjustice/cloud-platform-environments/pull/42361
-and https://github.com/ministryofjustice/cloud-platform-environments/pull/42363 as an example.
+1. There should be a private s3 bucket available, see https://github.com/ministryofjustice/cloud-platform-environments/pull/42609 as an example of how to create this.
 1. The production and pre-production credentials and a private local s3 bucket name should then be added as a `namespace_secrets:` section,
 see the `values.yaml` in this repository for an example of the secrets and other options. The bucket is used to temporarily store the backup
 between backup time and restore time which will typically be several hours apart.
+
+Note that the use of an s3 bucket is optional: if you do not have a bucket, and you therefore leave the `BUCKET_NAME` env variable unset, the restore job will do a backup of prod itself rather than using the backup
+in the bucket. The disadvantage of this is that the version of prod copied into the postgres preprod database is a few hours later than the version of Nomis,
+so it may be out of sync, e.g. records normally synchonised with Nomis may exist in it that have no Nomis counterpart.
 
 Currently, Flyway, ActiveRecord, Alembic and Knex database migrations are supported. The default is Flyway. You can change this by
 supplying the `MIGRATIONS_VENDOR` environment variable in the `env:` section (see `values.yaml` for an example). Possible 
