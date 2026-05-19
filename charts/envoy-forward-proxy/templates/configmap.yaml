@@ -1,0 +1,106 @@
+{{- if .Values.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "envoy-forward-proxy.fullname" . }}
+  labels:
+    {{- include "envoy-forward-proxy.labels" . | nindent 4 }}
+data:
+  envoy.yaml: |
+    admin:
+      address:
+        socket_address:
+          address: 127.0.0.1
+          port_value: {{ .Values.ports.admin }}
+
+    static_resources:
+      listeners:
+        - name: https_proxy_listener
+          address:
+            socket_address:
+              address: 0.0.0.0
+              port_value: {{ .Values.ports.proxy }}
+          filter_chains:
+            - filters:
+                - name: envoy.filters.network.http_connection_manager
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                    stat_prefix: https_proxy
+                    codec_type: AUTO
+                    use_remote_address: true
+                    access_log:
+                      - name: envoy.access_loggers.stdout
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+                          log_format:
+                            json_format:
+                              start_time: "%START_TIME%"
+                              method: "%REQ(:METHOD)%"
+                              authority: "%REQ(:AUTHORITY)%"
+                              path: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
+                              protocol: "%PROTOCOL%"
+                              downstream_client_address: "%DOWNSTREAM_DIRECT_REMOTE_ADDRESS%"
+                              downstream_client_ip: "%DOWNSTREAM_DIRECT_REMOTE_ADDRESS_WITHOUT_PORT%"
+                              downstream_remote_address: "%DOWNSTREAM_REMOTE_ADDRESS%"
+                              downstream_remote_ip: "%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%"
+                              response_code: "%RESPONSE_CODE%"
+                              response_code_details: "%RESPONSE_CODE_DETAILS%"
+                              upstream_host: "%UPSTREAM_HOST%"
+                              upstream_cluster: "%UPSTREAM_CLUSTER%"
+                              upstream_service_time_ms: "%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%"
+                              bytes_received: "%BYTES_RECEIVED%"
+                              bytes_sent: "%BYTES_SENT%"
+                              duration_ms: "%DURATION%"
+                              route_name: "%ROUTE_NAME%"
+                              requested_server_name: "%REQUESTED_SERVER_NAME%"
+                    route_config:
+                      name: https_proxy_route
+                      virtual_hosts:
+                        - name: approved-upstreams
+                          domains: ["*"]
+                          routes:
+                            - match:
+                                connect_matcher: {}
+                              route:
+                                cluster: dynamic_forward_proxy_cluster
+                                upgrade_configs:
+                                  - upgrade_type: CONNECT
+                                    connect_config: {}
+                    upgrade_configs:
+                      - upgrade_type: CONNECT
+                    http_filters:
+                      - name: envoy.filters.http.rbac
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.rbac.v3.RBAC
+                          rules:
+                            action: ALLOW
+                            policies:
+                              approved-hosts:
+                                permissions:
+{{ include "envoy-forward-proxy.rbacPermissions" . | indent 34 }}
+                                principals:
+                                  - any: true
+                      - name: envoy.filters.http.dynamic_forward_proxy
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.dynamic_forward_proxy.v3.FilterConfig
+                          dns_cache_config:
+                            name: dynamic_forward_proxy_cache_config
+                            dns_lookup_family: {{ .Values.dns.lookupFamily }}
+                            host_ttl: {{ .Values.dns.hostTtl }}
+                      - name: envoy.filters.http.router
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+
+      clusters:
+        - name: dynamic_forward_proxy_cluster
+          connect_timeout: {{ .Values.connectTimeout }}
+          lb_policy: CLUSTER_PROVIDED
+          cluster_type:
+            name: envoy.clusters.dynamic_forward_proxy
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.clusters.dynamic_forward_proxy.v3.ClusterConfig
+              dns_cache_config:
+                name: dynamic_forward_proxy_cache_config
+                dns_lookup_family: {{ .Values.dns.lookupFamily }}
+                host_ttl: {{ .Values.dns.hostTtl }}
+{{- end }}

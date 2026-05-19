@@ -1,0 +1,16 @@
+---
+fullnameOverride: envoy-https-proxy
+
+allowedHosts:
+  exact:
+    - custom-api.example.com
+  suffixes:
+    - .internal.example.com
+
+allowedHostEnvVars:
+  - HMPPS_AUTH_URL
+  - TOKEN_VERIFICATION_API_URL
+
+envSource:
+  HMPPS_AUTH_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+  TOKEN_VERIFICATION_API_URL: "https://token-verification-api-dev.prison.service.justice.gov.uk"
