@@ -1,0 +1,16 @@
+{{- if .Values.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "envoy-forward-proxy.fullname" . }}
+  labels:
+    {{- include "envoy-forward-proxy.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "envoy-forward-proxy.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: https-proxy
+      port: {{ .Values.ports.proxy }}
+      targetPort: proxy
+{{- end }}
