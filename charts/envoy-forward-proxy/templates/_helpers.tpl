@@ -48,7 +48,6 @@ Selector labels
 */}}
 {{- define "envoy-forward-proxy.selectorLabels" -}}
 app: {{ include "envoy-forward-proxy.fullname" . }}
-release: {{ .Release.Name }}
 {{- end -}}
 
 {{/*
