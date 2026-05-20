@@ -103,6 +103,16 @@ entries:
   envoy-forward-proxy:
   - apiVersion: v2
     appVersion: "1.0"
+    created: "2026-05-20T13:49:51.055545886Z"
+    description: A Helm chart for deploying an Envoy forward proxy for HTTPS CONNECT
+      tunnelling
+    digest: 4f58ed3f694ca0d0f42530b451e938133146812b568259359220fe93cbceaa11
+    name: envoy-forward-proxy
+    urls:
+    - envoy-forward-proxy-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v2
+    appVersion: "1.0"
     created: "2026-05-20T09:50:24.589502902Z"
     description: A Helm chart for deploying an Envoy forward proxy for HTTPS CONNECT
       tunnelling
@@ -1812,4 +1822,4 @@ entries:
     urls:
     - https://github.com/ministryofjustice/hmpps-helm-charts/releases/download/generic-service-1.0.0/generic-service-1.0.0.tgz
     version: 1.0.0
-generated: "2026-05-20T09:50:24.589937613Z"
+generated: "2026-05-20T13:49:51.055964713Z"
