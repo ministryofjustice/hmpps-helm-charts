@@ -183,7 +183,7 @@ between backup time and restore time which will typically be several hours apart
 
 Note that the use of an s3 bucket is optional: if you do not have a bucket, and you therefore leave the `BUCKET_NAME` env variable unset, the restore job will do a backup of prod itself rather than using the backup
 in the bucket. The disadvantage of this is that the version of prod copied into the postgres preprod database is a few hours later than the version of Nomis,
-so it may be out of sync, e.g. records normally synchonised with Nomis may exist in it that have no Nomis counterpart.
+so it may be out of sync, e.g. records normally synchronised with Nomis may exist in it that have no Nomis counterpart.
 
 Currently, Flyway, ActiveRecord, Alembic and Knex database migrations are supported. The default is Flyway. You can change this by
 supplying the `MIGRATIONS_VENDOR` environment variable in the `env:` section (see `values.yaml` for an example). Possible 
