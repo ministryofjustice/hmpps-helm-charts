@@ -169,7 +169,7 @@ postgresDatabaseRestore:
 ```
 in your `values-prod.yaml`
 will create two scheduled jobs:
-- backup: which runs weekly in production only and backs up production at the same time as Nomis, currently 04:30 on Sundays;
+- backup (if an s3 bucket is provided, see below): which runs weekly in production only and backs up production at the same time as Nomis, currently 04:30 on Sundays;
 - restore: which runs every 1/2 hour during the day by default in production only.  This checks to see if there is a newer version of
 the NOMIS preprod database since the last database restore and if so then does another restore using the backup above.
 
@@ -177,7 +177,7 @@ Prerequisites:
 1. The pre-production credentials should be injected into the production namespace, see https://github.com/ministryofjustice/cloud-platform-environments/pull/8325
 for an example PR.
 1. There should be a private s3 bucket available, see https://github.com/ministryofjustice/cloud-platform-environments/pull/42609 as an example of how to create this.
-1. The production and pre-production credentials and a private local s3 bucket name should then be added as a `namespace_secrets:` section,
+1. The production and pre-production credentials and the s3 bucket name should then be added as a `namespace_secrets:` section,
 see the `values.yaml` in this repository for an example of the secrets and other options. The bucket is used to temporarily store the backup
 between backup time and restore time which will typically be several hours apart.
 
