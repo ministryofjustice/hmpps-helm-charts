@@ -1,10 +1,16 @@
-{{- if .Values.postgresDatabaseRestore.enabled -}}
+{{- $path := .Values.postgresDatabaseRestore.namespace_secrets -}}
+{{- $foundBucket := false }}
+{{- range $secretGroups := values $path }}
+  {{- if has "BUCKET_NAME" (keys $secretGroups) }} {{- $foundBucket = true }} {{ end -}}
+{{- end }}
+{{- if and .Values.postgresDatabaseRestore.enabled $foundBucket -}}
 {{- /*
 This template creates a shell script config map and a cronjob (running every Sunday).  It should only be enabled in
 the production namespace in order to copy the production database to pre-production.  This is so that the production
 secrets aren't exposed outside the production namespace.
 
-The script creates a backup of the production database in an s3 bucket.
+The script creates a backup of the production database in an s3 bucket. So it can only run successfully if an s3 bucket is defined.
+If there is no bucket in the config, this CronJob will not exist and the restore CronJob will take its own copy of prod to restore to preprod.
 */}}
 ---
 apiVersion: v1
