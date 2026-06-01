@@ -1,0 +1,78 @@
+{{- if .Values.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "envoy-forward-proxy.fullname" . }}
+  labels:
+    {{- include "envoy-forward-proxy.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "envoy-forward-proxy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "envoy-forward-proxy.labels" . | nindent 8 }}
+      annotations:
+        checksum/envoy-config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ include "envoy-forward-proxy.fullname" . }}
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: envoy
+          image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}
+          imagePullPolicy: Always
+          args:
+            - -c
+            - /etc/envoy/envoy.yaml
+            - --service-cluster
+            - {{ include "envoy-forward-proxy.fullname" . }}
+            - --log-level
+            - {{ .Values.logLevel }}
+          ports:
+            - name: proxy
+              containerPort: {{ .Values.ports.proxy }}
+            - name: admin
+              containerPort: {{ .Values.ports.admin }}
+          readinessProbe:
+            tcpSocket:
+              port: proxy
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: proxy
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: envoy-config
+              mountPath: /etc/envoy/envoy.yaml
+              subPath: envoy.yaml
+      volumes:
+        - name: envoy-config
+          configMap:
+            name: {{ include "envoy-forward-proxy.fullname" . }}
+{{- end }}

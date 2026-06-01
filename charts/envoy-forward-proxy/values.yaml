@@ -1,0 +1,52 @@
+# Default values for envoy-forward-proxy.
+# This is a YAML-formatted file.
+
+# Whether to enable the envoy forward proxy deployment
+enabled: true
+
+replicas: 2
+
+logLevel: info
+
+image:
+  repository: envoyproxy/envoy
+  tag: v1.38-latest
+
+ports:
+  proxy: 3128
+  admin: 9901
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+# Additional allowed upstream hosts (added to built-in defaults).
+# Built-in defaults include:
+#   exact: sqs.eu-west-2.amazonaws.com, sts.eu-west-2.amazonaws.com, agent.azureserviceprofiler.net
+#   suffixes: .in.applicationinsights.azure.com, .livediagnostics.monitor.azure.com, .service.justice.gov.uk
+allowedHosts:
+  # Additional exact hostnames to allow
+  exact: []
+  # Additional hostname suffixes to allow (e.g. ".example.com" matches "foo.example.com")
+  suffixes: []
+
+# Environment variable names (from the parent chart's generic-service env block)
+# whose values are URLs. The hostname will be extracted and added to the allow list.
+allowedHostEnvVars: []
+
+# Reference to the parent chart's generic-service env block for resolving allowedHostEnvVars.
+# This should be set by the parent chart, e.g.:
+#   envoy-forward-proxy:
+#     envSource:
+#       HMPPS_AUTH_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+envSource: {}
+
+dns:
+  lookupFamily: V4_ONLY
+  hostTtl: 300s
+
+connectTimeout: 10s
