@@ -58,7 +58,7 @@ else
 fi
 
 FALLBACK=""
-if [[ -z "$BUCKET_NAME" ]]; then
+if [[ ! -v BUCKET_NAME || -z "$BUCKET_NAME" ]]; then
   echo "BUCKET_NAME not defined so falling back to dumping prod now"
   FALLBACK=true
 else
@@ -91,6 +91,8 @@ psql_preprod "delete from ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_sta
 psql_preprod "insert into ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status (backup_timestamp, restore_timestamp) values ('$DATABASE_BACKUP_TIMESTAMP', '$DATABASE_RESTORE_TIMESTAMP')"
 
 # Delete the backup
-aws s3 rm s3://$BUCKET_NAME/rds-backup/db.dump
+if [[ -v BUCKET_NAME && -n "$BUCKET_NAME" ]]; then
+  aws s3 rm s3://$BUCKET_NAME/rds-backup/db.dump
+fi
 
 echo -e "\nRestore successful"
