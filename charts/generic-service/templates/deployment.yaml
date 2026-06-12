@@ -25,6 +25,11 @@ spec:
     {{- end }}
       labels:
         {{- include "generic-service.selectorLabels" . | nindent 8 }}
+        {{- if and .Values.ingress.enabled .Values.ingress.modsecurity_enabled }}
+        networking/allow-modsec-ingress: "true"
+        {{- else if .Values.ingress.enabled }}
+        networking/allow-ingress: "true"
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
