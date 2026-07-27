@@ -162,6 +162,11 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
   # scaleUpStabilizationWindowSeconds: 180
+  # scaleDownStabilizationWindowSeconds: 300
+  # scaleDownPolicies:
+  #   - type: Pods
+  #     value: 1
+  #     periodSeconds: 300
 
 poddisruptionbudget:
   enabled: true
@@ -199,6 +204,10 @@ readinessProbe:
 #   preStop:
 #     exec:
 #       command: ["/bin/sh", "-c", "echo Hello from the preStop handler"]
+
+# Grace period (seconds) k8s waits after preStop before SIGKILL. Must be >= preStop duration
+# plus time for the app to gracefully drain in-flight requests/connections. Defaults to 30 if unset.
+# terminationGracePeriodSeconds: 60
 
 strategy:
   type: RollingUpdate

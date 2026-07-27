@@ -29,9 +29,21 @@ spec:
           type: Utilization
           averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
   {{- end }}
-  {{- if .Values.autoscaling.scaleUpStabilizationWindowSeconds }}
+  {{- if or .Values.autoscaling.scaleUpStabilizationWindowSeconds .Values.autoscaling.scaleDownStabilizationWindowSeconds .Values.autoscaling.scaleDownPolicies }}
   behavior:
+    {{- if .Values.autoscaling.scaleUpStabilizationWindowSeconds }}
     scaleUp:
       stabilizationWindowSeconds: {{ .Values.autoscaling.scaleUpStabilizationWindowSeconds }}
+    {{- end }}
+    {{- if or .Values.autoscaling.scaleDownStabilizationWindowSeconds .Values.autoscaling.scaleDownPolicies }}
+    scaleDown:
+      {{- if .Values.autoscaling.scaleDownStabilizationWindowSeconds }}
+      stabilizationWindowSeconds: {{ .Values.autoscaling.scaleDownStabilizationWindowSeconds }}
+      {{- end }}
+      {{- if .Values.autoscaling.scaleDownPolicies }}
+      policies:
+        {{- toYaml .Values.autoscaling.scaleDownPolicies | nindent 8 }}
+      {{- end }}
+    {{- end }}
   {{- end }}
 {{- end }}
