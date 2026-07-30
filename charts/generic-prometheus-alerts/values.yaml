@@ -9,9 +9,6 @@ targetApplication: ""
 # To disable inclusion of ingress alerts, set to false, defaults true
 ingressAlertsEnabled: true
 
-# The alert severity label is used within Alert Manager and determines which slack channel alerts are sent to.
-alertSeverity: ""
-
 # These values used in the rule labels, which enables better filtering of alerts in alertmanager.  Global helm values used by these labels are passed in at helm upgrade/install time.
 businessUnit: hmpps
 # global:

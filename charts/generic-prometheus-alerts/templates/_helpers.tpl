@@ -58,8 +58,15 @@ Prometheus Rule labels
 {{- define "generic-prometheus-alerts.ruleLabels" -}}
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
 {{- $businessUnit := required "A value for businessUnit must be set" .Values.businessUnit }}
-{{- $alertSeverity := required "A value for alertSeverity must be set" .Values.alertSeverity }}
+{{- if .Values.alertSeverity -}}
+{{- fail "alertSeverity is deprecated for generic-prometheus-alerts and must be removed. Please see release notes for this major version upgrade." -}}
+{{- end -}}
 {{- $environment := default "none" (.Values.global).environment -}}
+{{- $environmentLower := lower $environment -}}
+{{- $alertSeverity := "hmpps_alerts_nonprod" -}}
+{{- if or (eq $environmentLower "prod") (eq $environmentLower "production") -}}
+{{- $alertSeverity = "hmpps_alerts_prod" -}}
+{{- end -}}
 {{- if .Values.additionalRuleLabels -}}
 {{ toYaml .Values.additionalRuleLabels }}
 {{ end -}}

@@ -18,7 +18,7 @@ tests:
         exp_alerts:
           - exp_labels:
               dbinstance_identifier: cloud-platform-uuid
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
               application: test-application
               businessUnit: hmpps
               environment: none

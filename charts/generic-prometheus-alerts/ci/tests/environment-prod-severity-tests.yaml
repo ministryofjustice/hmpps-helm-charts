@@ -1,0 +1,46 @@
+---
+rule_files:
+  - ../test-prod-app.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - interval: 5m
+    input_series:
+      - series: 'kube_job_status_failed{job="kube-state-metrics", job_name="test-prod-cronjob-1", namespace="test-prod-dev", reason="BackoffLimitExceeded"}'
+        values: '1+0x12'
+      - series: 'kube_job_status_start_time{job="kube-state-metrics", job_name="test-prod-cronjob-1", namespace="test-prod-dev"}'
+        values: '0+0x12'
+      - series: 'kube_job_owner{job="kube-state-metrics", job_name="test-prod-cronjob-1", namespace="test-prod-dev", owner_kind="CronJob", owner_name="test-prod-cronjob"}'
+        values: '1+1x12'
+      - series: 'kube_cronjob_spec_suspend{cronjob="test-prod-cronjob", job="kube-state-metrics", namespace="test-prod-dev"}'
+        values: '0+0x12'
+
+      - series: 'kube_job_status_failed{job="kube-state-metrics", job_name="test-prod-cronjob-2", namespace="test-prod-dev", reason="DeadLineExceeded"}'
+        values: '1+0x12'
+      - series: 'kube_job_status_start_time{job="kube-state-metrics", job_name="test-prod-cronjob-2", namespace="test-prod-dev"}'
+        values: '900+0x12'
+      - series: 'kube_job_owner{job="kube-state-metrics", job_name="test-prod-cronjob-2", namespace="test-prod-dev", owner_kind="CronJob", owner_name="test-prod-cronjob"}'
+        values: '1+1x12'
+      - series: 'kube_cronjob_spec_suspend{cronjob="test-prod-cronjob", job="kube-state-metrics", namespace="test-prod-dev"}'
+        values: '0+0x12'
+
+    alert_rule_test:
+      - eval_time: 35m
+        alertname: CronJobStatusFailed
+        exp_alerts:
+          - exp_labels:
+              cronjob: test-prod-cronjob
+              job: test-prod-cronjob-2
+              job_name: test-prod-cronjob-2
+              namespace: test-prod-dev
+              owner_name: test-prod-cronjob
+              severity: hmpps_alerts_prod
+              application: test-prod
+              businessUnit: hmpps
+              environment: prod
+            exp_annotations:
+              message: CronJob test-prod-dev/test-prod-cronjob is failing.
+              runbook_url: https://runbook.com/application-cronjob-failed
+              dashboard_url: "https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=test-prod-dev&var-service=test-prod"
+              summary: CronJob is failing.
