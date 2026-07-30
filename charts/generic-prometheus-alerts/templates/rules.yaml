@@ -2,6 +2,8 @@
 
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
 {{- $targetApplicationUnderscore := .Values.targetApplication | replace "-" "_" }}
+{{- $startHour := default 8 .Values.businessHours.startHour }}
+{{- $endHour := default 18 .Values.businessHours.endHour }}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
@@ -29,7 +31,7 @@ spec:
         - record: {{ $targetApplicationUnderscore }}:business_day
           expr: 0 < day_of_week({{ $targetApplicationUnderscore }}:british_time) < 6
         - record: {{ $targetApplicationUnderscore }}:business_hour
-          expr: 8 <= hour({{ $targetApplicationUnderscore }}:british_time) < 18
+          expr: {{ $startHour }} <= hour({{ $targetApplicationUnderscore }}:british_time) < {{ $endHour }}
         - record: {{ $targetApplicationUnderscore }}:business_hours
           expr: {{ $targetApplicationUnderscore }}:business_hour and {{ $targetApplicationUnderscore }}:business_day
 {{- end }}
