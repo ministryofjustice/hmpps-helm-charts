@@ -13,12 +13,12 @@ If `alertSeverity` is still set, chart rendering will fail with a deprecation me
 - Remove `alertSeverity` from your chart values.
 - Ensure these repository variables are set with appropriate values, for example the Slack channel where alerts are sent (do not include a preceding `#`; a Slack ID is also valid, as well as the Slack channel name):
   - `PROD_ALERTS_SLACK_CHANNEL`
-  - `PROD_RELEASES_SLACK_CHANNEL`
+  - `NONPROD_ALERTS_SLACK_CHANNEL`
 
 Alert routing depends on repository variables. You must ensure these are set with appropriate values, for example the Slack channel where alerts are sent (do not include a preceding `#`; a Slack ID is also valid, as well as the Slack channel name):
 
 - `PROD_ALERTS_SLACK_CHANNEL`
-- `PROD_RELEASES_SLACK_CHANNEL`
+- `NONPROD_ALERTS_SLACK_CHANNEL`
 
 Alert delivery and forwarding now works as follows:
 
