@@ -2,8 +2,9 @@
 
 {{- $targetApplication := required "A value for targetApplication must be set" .Values.targetApplication }}
 {{- $targetApplicationUnderscore := .Values.targetApplication | replace "-" "_" }}
-{{- $startHour := dig "businessHours" "startHour" 8 .Values }}
-{{- $endHour := dig "businessHours" "endHour" 18 .Values }}
+{{- $businessHours := .Values.businessHours | default dict }}
+{{- $startHour := $businessHours.startHour | default 8 }}
+{{- $endHour := $businessHours.endHour | default 18 }}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
