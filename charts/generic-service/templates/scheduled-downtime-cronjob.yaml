@@ -17,6 +17,9 @@ spec:
     spec:
       ttlSecondsAfterFinished: 345600 # 4 days
       template:
+        metadata:
+          labels:
+            egress-access: kube-api
         spec:
           containers:
             - name: hmpps-devops-tools
@@ -48,6 +51,9 @@ spec:
     spec:
       ttlSecondsAfterFinished: 345600 # 4 days
       template:
+        metadata:
+          labels:
+            egress-access: kube-api
         spec:
           containers:
             - name: hmpps-devops-tools
