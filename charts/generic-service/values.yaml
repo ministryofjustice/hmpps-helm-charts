@@ -266,6 +266,15 @@ scheduledDowntime:
   # every 10 minutes between 7am and 8.50pm UTC Monday-Friday
   # the shutdown time is varied on deployment so this is deliberately much earlier
   retryDlqSchedule: "*/10 7-20 * * 1-5"
+  # Optional list of extra resources to scale down/up alongside the main deployment.
+  # On shutdown each target is always scaled to 0 replicas.
+  # On startup each target scales to its required startupReplicas value.
+  # additionalScaleTargets:
+  #   - name: my-service-events-processor
+  #     startupReplicas: 1
+  #   - name: my-service-jobs-processor
+  #     startupReplicas: 2
+  additionalScaleTargets: []
   image: *devopsToolsImage
   tag: *devopsToolsTag
   securityContext: *securityContext

@@ -275,6 +275,9 @@ To change this schedule, update the `startupOverride` and `shutdown` values
 
 You can have the schedule respect British Summer Time by setting `timeZone: Europe/London`
 
+By default, only the main deployment managed by this chart is scaled.
+You can also scale additional workloads (for example events processor or jobs processor deployments)
+using `scheduledDowntime.additionalScaleTargets`.
 
 
 ```yaml
@@ -286,6 +289,32 @@ scheduledDowntime:
   timeZone: Etc/UTC
   serviceAccountName: scheduled-downtime-serviceaccount # This must match the service account name in the Terraform module
 ```
+
+#### Scaling additional workloads during downtime
+
+`scheduledDowntime.additionalScaleTargets` is optional and defaults to an empty list.
+
+Only Kubernetes `Deployment` targets are supported by `additionalScaleTargets`.
+
+For each target:
+
+- `name` is required
+- `startupReplicas` is required
+
+Each additional target is always scaled to `0` during shutdown.
+
+```yaml
+---
+scheduledDowntime:
+  enabled: true
+  additionalScaleTargets:
+    - name: my-service-events-processor
+      startupReplicas: 1
+    - name: my-service-jobs-processor
+      startupReplicas: 2
+```
+
+If you use additional targets, ensure the scheduled downtime service account has scale permissions for those workloads too.
 
 ### Retrying messages on a dead letter queue
 

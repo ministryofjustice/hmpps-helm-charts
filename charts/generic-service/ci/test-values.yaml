@@ -22,6 +22,11 @@ allowlist_groups:
 
 scheduledDowntime:
   enabled: true
+  additionalScaleTargets:
+    - name: example-events-processor
+      startupReplicas: 1
+    - name: example-jobs-processor
+      startupReplicas: 2
 
 retryDlqCronjob:
   enabled: true
