@@ -1,6 +1,8 @@
 {{- if .Values.scheduledDowntime.enabled -}}
-{{- $hashServiceName  := regexReplaceAll "[^0-9]+" ((include "generic-service.fullname" .)  | sha256sum)  ""  | trunc 3 -}}
+{{- $fullName := include "generic-service.fullname" . -}}
+{{- $hashServiceName  := regexReplaceAll "[^0-9]+" ($fullName | sha256sum)  ""  | trunc 3 -}}
 {{- $randomMinute := printf "%d" (mod (atoi $hashServiceName) 60) -}}
+{{- $additionalScaleTargets := .Values.scheduledDowntime.additionalScaleTargets | default (list) -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -24,12 +26,15 @@ spec:
           containers:
             - name: hmpps-devops-tools
               image: "{{ .Values.scheduledDowntime.image }}:{{ .Values.scheduledDowntime.tag }}"
+              command:
+                - /bin/sh
+                - -ec
               args:
-                - kubectl
-                - scale
-                - deploy
-                - {{ include "generic-service.fullname" . }}
-                - --replicas=0
+                - |
+                  kubectl scale deployment/{{ $fullName }} --replicas=0
+                  {{- range $index, $target := $additionalScaleTargets }}
+                  kubectl scale deployment/{{ required (printf "scheduledDowntime.additionalScaleTargets[%d].name is required" $index) $target.name }} --replicas=0
+                  {{- end }}
               securityContext:
                 {{- toYaml .Values.scheduledDowntime.securityContext | nindent 16 }}
           restartPolicy: OnFailure
@@ -58,12 +63,15 @@ spec:
           containers:
             - name: hmpps-devops-tools
               image: ghcr.io/ministryofjustice/hmpps-devops-tools:latest
+              command:
+                - /bin/sh
+                - -ec
               args:
-                - kubectl
-                - scale
-                - deploy
-                - {{ include "generic-service.fullname" . }}
-                - --replicas={{ .Values.replicaCount }}
+                - |
+                  kubectl scale deployment/{{ $fullName }} --replicas={{ .Values.replicaCount }}
+                  {{- range $index, $target := $additionalScaleTargets }}
+                  kubectl scale deployment/{{ required (printf "scheduledDowntime.additionalScaleTargets[%d].name is required" $index) $target.name }} --replicas={{ required (printf "scheduledDowntime.additionalScaleTargets[%d].startupReplicas is required" $index) $target.startupReplicas }}
+                  {{- end }}
               securityContext:
                 {{- toYaml .Values.securityContext | nindent 16 }}
           restartPolicy: OnFailure
