@@ -275,6 +275,9 @@ To change this schedule, update the `startupOverride` and `shutdown` values
 
 You can have the schedule respect British Summer Time by setting `timeZone: Europe/London`
 
+By default, only the main deployment managed by this chart is scaled.
+You can also scale additional workloads (for example events processor or jobs processor deployments)
+using `scheduledDowntime.additionalScaleTargets`.
 
 
 ```yaml
@@ -286,6 +289,32 @@ scheduledDowntime:
   timeZone: Etc/UTC
   serviceAccountName: scheduled-downtime-serviceaccount # This must match the service account name in the Terraform module
 ```
+
+#### Scaling additional workloads during downtime
+
+`scheduledDowntime.additionalScaleTargets` is optional and defaults to an empty list.
+
+Only Kubernetes `Deployment` targets are supported by `additionalScaleTargets`.
+
+For each target:
+
+- `name` is required
+- `startupReplicas` is required
+
+Each additional target is always scaled to `0` during shutdown.
+
+```yaml
+---
+scheduledDowntime:
+  enabled: true
+  additionalScaleTargets:
+    - name: my-service-events-processor
+      startupReplicas: 1
+    - name: my-service-jobs-processor
+      startupReplicas: 2
+```
+
+If you use additional targets, ensure the scheduled downtime service account has scale permissions for those workloads too.
 
 ### Retrying messages on a dead letter queue
 
@@ -306,3 +335,122 @@ Again, you can override the default cron schedule when scheduled downtime is ena
 scheduledDowntime:
   retryDlqSchedule: "*/45 * * * 1-3"
 ```
+
+### Batch cronjobs
+
+For Kotlin projects the generic-service helm chart provides a way to create batch jobs which are scheduled as Kubernetes Cronjobs.
+(This could probably be adapted to Typescript projects too, we just haven't tried it yet).
+
+This involves a Kube job that starts your application, runs a task and then shuts down the application when 
+it's complete. The job starts a pod to perform this one-off task, but shouldn't perform any of the application's normal work such as processing
+API calls or SQS messages.
+
+The batch job pod reuses the same container image, `env`/`envFrom` values, and security context as your main deployment.
+
+A few scheduling behaviours are fixed by the template and are not currently configurable:
+
+* the `schedule` is evaluated in the `Europe/London` timezone
+* `concurrencyPolicy` is set to `Forbid`, so if a run is still in progress when the next scheduled time arrives, the new run is skipped rather than queued
+* `startingDeadlineSeconds` is `600`, so if a scheduled run is missed by more than 10 minutes (e.g. the cluster was unavailable) it will not run until the next scheduled time
+* completed job pods are cleaned up automatically after 4 days (`ttlSecondsAfterFinished`)
+
+#### Adding batch job support to your application
+
+When the Cronjob runs, it will call your application with 2 environment variables:
+
+* `BATCH_ENABLED=true` - this tells your application to start in batch mode
+* `BATCH_TYPE=<batch job type identifier>` - this tells your application which batch job to run
+
+To start your application in batch mode you need to configure a Spring `@Service` bean which:
+
+* is created only if the `BATCH_ENABLED` env var is `true`
+* listens for a Spring `ContextRefreshedEvent` to tell us the app has started
+* runs the batch job task declared in environment variable `BATCH_TYPE`
+* closes the application
+
+We have a couple of examples [here](https://github.com/search?q=repo%3Aministryofjustice%2Fhmpps-visit-allocation-api+BatchManager.kt&type=code) and [here](https://github.com/search?q=repo%3Aministryofjustice%2Fhmpps-prisoner-to-nomis-update+BatchManager.kt&type=code).
+In each you should see the `@ConditionalOnProperty` annotation on the `BATCH_ENABLED` env var, an `@EventListener`
+annotation to trigger the task being run on application start, and a call to close the application when finished.
+
+> [!IMPORTANT]
+> When the application starts it will not receive traffic from the ingress, but if it has an event listener then it will start
+> listening, and if it has a database it will create a connection pool. These can be avoided - see below.
+
+##### Stopping the event listener from starting
+
+Create a Spring bean conditional on the `BATCH_ENABLED` env var that removes event listener beans. We have examples
+[here](https://github.com/search?q=repo%3Aministryofjustice%2Fhmpps-prisoner-to-nomis-update+DomainEventListenerSuppressor.kt&type=code) and [here](https://github.com/search?q=repo%3Aministryofjustice%2Fhmpps-visit-allocation-api+SqsListenerSuppressor.kt&type=code).
+
+##### Preventing database connections
+
+> [!WARNING]
+> Obviously you don't want to do this if your batch job needs to connect to the database. But be aware that you will have extra 
+> connections to the DB as if you'd increased the number of pods.
+
+Create a Spring application configuration dependent upon the `BATCH_ENABLED` env var that excludes database related AutoConfiguration,
+and run that configuration on startup. There is a good example [here](https://github.com/search?q=repo%3Aministryofjustice%2Fhmpps-visit-allocation-api+VisitAllocationApi.kt&type=code).
+
+#### Adding a batch job
+Add your batch job details to the `batchjobs` section of your `values.yaml` file (or env specific values yaml for a single environemnt).
+This will create a Kubernetes Cronjob based from the `batch-cronjob.yaml` template. `batchjobs` is a list, so you can configure
+multiple batch jobs for your application.
+
+The `batchjobs` configuration requires the following parameters:
+
+* name - the name of the job
+* type - a hardcoded value passed to your application via the `BATCH_TYPE` env var
+* schedule - the cron schedule for the job to run
+
+And has the following optional parameters:
+
+* suspend - if `true` then the schedule is ignored and the batch job must be started using manually using `kubectl`. Defaults to `false`.
+* resources - the resources to allocate to the container. See [Cloud Platform docs](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/namespace-limits.html#namespace-container-resource-limits) for more details.
+
+```yaml
+---
+batchjobs:
+  - name: my-batch-job
+    type: MY_BATCH_JOB
+    schedule: "0 2 * * *"
+```
+
+> [!WARNING]
+> The Cronjob name is generated from your application name plus the `name` you give the job, and is truncated to 52 characters.
+> If your application name is long, you can set the top-level value `cronPrefixName` to override the application name, e.g. `cronPrefixName: "batch"`.
+
+There are examples of `batchjobs` configuration [here](https://github.com/search?q=repo%3Aministryofjustice%2Fhmpps-prisoner-to-nomis-update+values-prod.yaml+batchjobs&type=code) and [here](https://github.com/search?q=repo%3Aministryofjustice%2Fhmpps-visit-allocation-api+Values.yaml+batchjobs&type=code).
+
+##### Manually running a batch job
+
+If your job is suspended, or you want to trigger an ad-hoc run outside of its schedule, you can create a one-off Job from the
+Cronjob using `kubectl`:
+
+```shell
+kubectl create job --from=cronjob/<application-name>-<job-name> <application-name>-<job-name>-manual-<user>
+```
+
+Job progress can then be seen by running `kubectl logs -f` on the newly created pod.
+
+#### Known limitations
+
+##### Batch jobs can be killed by the scheduler
+
+Any pod in Cloud Platform can be killed at any time (which is why CP normally requires at least 2 pods per deployment). 
+And this does happen, albeit rarely. This means that creating a batch job for mission-critical tasks needs extra work to
+make it resilient, such as using an SQS queue-based approach to managing the job's progress. This would mean that if the 
+pod is killed, any SQS messages in progress won't be acknowledged and are sent back to the queue to be retried once the 
+pod is restarted. (Note you'd need a dedicated queue and listener for the batch job to prevent deployed pods from reading it).
+
+##### Queue listeners and database connections are created
+
+Your batch job probably shouldn't be doing the BAU tasks of your deployed application, such as listening for SQS messages.
+If the batch job doesn't need DB access, it shouldn't create database connections.
+
+Workarounds to these problems can be found above in [Stopping the event listener from starting](#stopping-the-event-listener-from-starting) and [Preventing database connections](#preventing-database-connections).
+
+##### Spring application start-up can be slow
+
+It can take a long time for a Spring application to start depending upon its complexity.
+
+If this is a problem for you, consider creating a custom Spring application configuration to limit the beans created while
+running the batch job. See the example in [Preventing database connections](#preventing-database-connections) for inspiration.

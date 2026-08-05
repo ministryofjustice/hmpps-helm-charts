@@ -159,6 +159,10 @@ ingress2xxThreshold: 100
 
 # Alert for business hours only - 8am to 6pm on week days (Monday to Friday)
 businessHoursOnly: false
+# Optional override for business hours
+businessHours:
+  startHour: 8
+  endHour: 18
 
 # Set the time frame in minutes for CronJobStatusFailed alert
 # The job used to check whether the status was failure and alert at that specific moment, however in the period when
