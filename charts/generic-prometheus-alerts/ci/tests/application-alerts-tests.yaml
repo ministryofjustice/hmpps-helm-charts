@@ -61,7 +61,7 @@ tests:
               job_name: test-application-cronjob-2
               namespace: test-application-dev
               owner_name: test-application-cronjob
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
               application: test-application
               businessUnit: hmpps
               environment: none
@@ -167,7 +167,7 @@ tests:
               job_name: test-application-cronjob-1
               namespace: test-application-dev
               owner_name: test-application-cronjob
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
               application: test-application
               businessUnit: hmpps
               environment: none
