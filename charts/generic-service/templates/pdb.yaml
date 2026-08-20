@@ -5,6 +5,8 @@ metadata:
   name: {{ include "generic-service.fullname" . }}
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
+  annotations:
+    {{- include "generic-service.gitAnnotations" . | nindent 4 }}
 spec:
   minAvailable: {{ .Values.poddisruptionbudget.minAvailable }}
   selector:

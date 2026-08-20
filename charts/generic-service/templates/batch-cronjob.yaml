@@ -7,6 +7,8 @@ metadata:
   name: {{ printf "%s-%s" (include "generic-service.cronPrefixName" .) $job.name | trunc 52 | trimSuffix "-" | quote }}
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
+  annotations:
+    {{- include "generic-service.gitAnnotations" . | nindent 4 }}
 spec:
   suspend:  {{ $job.suspend | default false }}
   schedule: {{ $job.schedule | quote }}
