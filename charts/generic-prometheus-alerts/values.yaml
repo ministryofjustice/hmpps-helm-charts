@@ -33,6 +33,9 @@ orgId: 1
 
 # hpaTargetOverride: ".*"
 
+# CronJob owner-name regex used by the CronJob failure alert. Defaults to targetApplication with an optional suffix.
+# cronJobTargetOverride: ".*"
+
 # Mod_Security normally blocks requests with http status 403 - forbidden.
 # To be able to distinguish and specifically alert on mod_security blocking
 # the general pattern has been to update the mod_security config to block

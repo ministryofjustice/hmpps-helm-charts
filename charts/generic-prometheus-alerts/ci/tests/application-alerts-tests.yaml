@@ -26,6 +26,15 @@ tests:
       - series: 'kube_cronjob_spec_suspend{cronjob="test-application-cronjob", job="kube-state-metrics", namespace="test-application-dev"}'
         values: '0+0x12'
 
+      - series: 'kube_job_status_failed{job="kube-state-metrics", job_name="other-application-cronjob-1", namespace="test-application-dev", reason="BackoffLimitExceeded"}'
+        values: '1+0x12'
+      - series: 'kube_job_status_start_time{job="kube-state-metrics", job_name="other-application-cronjob-1", namespace="test-application-dev"}'
+        values: '1800+0x12'
+      - series: 'kube_job_owner{job="kube-state-metrics", job_name="other-application-cronjob-1", namespace="test-application-dev", owner_kind="CronJob", owner_name="other-application-cronjob"}'
+        values: '1+1x12'
+      - series: 'kube_cronjob_spec_suspend{cronjob="other-application-cronjob", job="kube-state-metrics", namespace="test-application-dev"}'
+        values: '0+0x12'
+
       - series: 'kube_job_status_failed{job="kube-state-metrics", job_name="test-application-cronjob-2", namespace="test-application-dev", reason="DeadLineExceeded"}'
         values: '1+0x12'
       - series: 'kube_job_status_start_time{job="kube-state-metrics", job_name="test-application-cronjob-2", namespace="test-application-dev"}'
