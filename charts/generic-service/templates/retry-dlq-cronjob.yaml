@@ -5,6 +5,8 @@ metadata:
   name: {{ include "generic-service.cronPrefixName" . | trunc 26 }}-retry-dlqs
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
+  annotations:
+    {{- include "generic-service.gitAnnotations" . | nindent 4 }}
 spec:
   {{- if .Values.scheduledDowntime.enabled }}
   schedule: "{{ .Values.scheduledDowntime.retryDlqSchedule }}"
