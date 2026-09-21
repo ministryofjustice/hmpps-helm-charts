@@ -7,7 +7,7 @@ if ! DATABASE_RESTORE_JSON=$(check_http GET "$PRISON_API_BASE_URL/api/restore-de
   if [[ -z "${FORCE_RUN+x}" ]]; then
     echo -e "\nTo force a run set the FORCE_RUN environment variable when creating the job (see README.md in hmpps-helm-charts/generic-service)"
     echo "$DATABASE_RESTORE_JSON"
-    exit 0
+    exit 1
   fi
   echo -e "\nRun forced"
   DATABASE_BACKUP_TIMESTAMP=$(date +'%FT%T') # default to current datetime
