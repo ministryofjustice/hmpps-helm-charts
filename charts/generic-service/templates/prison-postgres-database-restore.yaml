@@ -64,6 +64,10 @@ spec:
                 requests:
                   cpu: 500m
                   memory: 500Mi
+              {{- with .Values.envFrom }}
+              envFrom:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
     {{- include "postgresRestore.envs" .Values | nindent 14 }}
           restartPolicy: "Never"
           serviceAccountName: {{ .Values.postgresDatabaseRestore.serviceAccountName | default .Values.serviceAccountName }}

@@ -1,5 +1,10 @@
 
-check_http() { http --stream --check-status --ignore-stdin --timeout=600 "$@"; }
+check_http() {
+  local proxy_args=()
+  [[ -n "${HTTPS_PROXY:-}" ]] && proxy_args+=(--proxy=https:"$HTTPS_PROXY")
+  [[ -n "${HTTP_PROXY:-}" ]] && proxy_args+=(--proxy=http:"$HTTP_PROXY")
+  http --stream --check-status --ignore-stdin --timeout=600 "${proxy_args[@]}" "$@"
+}
 psql_preprod() { psql -h "$DB_HOST_PREPROD" -U "$DB_USER_PREPROD" -d "$DB_NAME_PREPROD" -At -c "$@"; }
 psql_prod() { psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -At -c "$@"; }
 
