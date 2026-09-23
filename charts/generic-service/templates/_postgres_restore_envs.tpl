@@ -3,8 +3,18 @@
 Environment variables for postgres database restore
 */}}
 {{- define "postgresRestore.envs" -}}
-{{- if or (or .postgresDatabaseRestore.namespace_secrets .postgresDatabaseRestore.env) .env -}}
+{{- if or (or (or .postgresDatabaseRestore.namespace_secrets .postgresDatabaseRestore.env) .env) .postgresDatabaseRestore.egressProxySecretName -}}
 env:
+{{- if .postgresDatabaseRestore.egressProxySecretName }}
+  {{- range list "HTTP_PROXY" "HTTPS_PROXY" "NO_PROXY" }}
+  - name: {{ . }}
+    valueFrom:
+      secretKeyRef:
+        key: {{ . }}
+        name: {{ $.postgresDatabaseRestore.egressProxySecretName }}
+        optional: true
+  {{- end }}
+{{- end }}
 {{- range $secret, $envs := .postgresDatabaseRestore.namespace_secrets }}
   {{- range $key, $val := $envs }}
   - name: {{ $key }}

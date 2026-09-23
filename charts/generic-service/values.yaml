@@ -226,26 +226,31 @@ postgresDatabaseRestore:
   backupJobName:
   jobName:
   enabled: false
-# Required environment secrets for the restore script:
-#  namespace_secrets:
-#    dps-rds-instance-output:
-#      DB_NAME: "database_name"
-#      DB_USER: "database_username"
-#      DB_PASS: "database_password"
-#      DB_HOST: "rds_instance_address"
-#    dps-rds-instance-output-preprod:
-#      DB_NAME_PREPROD: "database_name"
-#      DB_USER_PREPROD: "database_username"
-#      DB_PASS_PREPROD: "database_password"
-#      DB_HOST_PREPROD: "rds_instance_address"
-#    s3-db-restore-bucket:
-#      BUCKET_NAME: "bucket_name"
+  # Name of the k8s Secret created by the cloud-platform-terraform-hmpps-egress-controls module (defaults
+  # to its org-wide convention). If present in the namespace, HTTP_PROXY/HTTPS_PROXY/NO_PROXY are picked up
+  # automatically by the restore/backup jobs; if absent, these env vars are simply left unset. Set to ""
+  # to disable.
+  egressProxySecretName: "hmpps-envoy-https-proxy-env"
+  # Required environment secrets for the restore script:
+  #  namespace_secrets:
+  #    dps-rds-instance-output:
+  #      DB_NAME: "database_name"
+  #      DB_USER: "database_username"
+  #      DB_PASS: "database_password"
+  #      DB_HOST: "rds_instance_address"
+  #    dps-rds-instance-output-preprod:
+  #      DB_NAME_PREPROD: "database_name"
+  #      DB_USER_PREPROD: "database_username"
+  #      DB_PASS_PREPROD: "database_password"
+  #      DB_HOST_PREPROD: "rds_instance_address"
+  #    s3-db-restore-bucket:
+  #      BUCKET_NAME: "bucket_name"
 
-# Optional schema name and migrations vendor if not using the default 'public' schema or 'flyway' vendor:
-#  env:
-#    SCHEMA_TO_RESTORE: "my_schema"
-#    MIGRATIONS_VENDOR: "active_record"
-#    ALEMBIC_SCHEMA: "public"
+  # Optional schema name and migrations vendor if not using the default 'public' schema or 'flyway' vendor:
+  #  env:
+  #    SCHEMA_TO_RESTORE: "my_schema"
+  #    MIGRATIONS_VENDOR: "active_record"
+  #    ALEMBIC_SCHEMA: "public"
 
   image: *postgresToolsImage
   tag: *postgresToolsTag
