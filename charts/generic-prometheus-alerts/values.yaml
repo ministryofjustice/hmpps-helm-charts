@@ -4,13 +4,19 @@
 # Declare variables to be passed into your templates.
 
 # Name of application, which is used to filter the alert queries, override specific resource types below.
-targetApplication: ""
+# Teams must set this explicitly in their app values.
+targetApplication: "example-app-name"
 
 # To disable inclusion of ingress alerts, set to false, defaults true
 ingressAlertsEnabled: true
 
 # These values used in the rule labels, which enables better filtering of alerts in alertmanager.  Global helm values used by these labels are passed in at helm upgrade/install time.
 businessUnit: hmpps
+
+# Optional override for the Prometheus severity label used for routing alerts.
+# If not set, prod/production uses hmpps_alerts_prod and all other environments use hmpps_alerts_nonprod.
+# alertSeverityOverride: "hmpps_alerts_custom"
+
 # global:
 #   environment: "xxx"
 #   productId: "xxx"

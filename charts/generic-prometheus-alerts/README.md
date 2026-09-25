@@ -11,6 +11,7 @@ If `alertSeverity` is still set, chart rendering will fail with a deprecation me
 ### Required team actions
 
 - Remove `alertSeverity` from your chart values.
+- Set `alertSeverityOverride` only when you need a custom severity label for your team.
 - Ensure these repository variables are set with appropriate values, for example the Slack channel where alerts are sent (do not include a preceding `#`; a Slack ID is also valid, as well as the Slack channel name):
   - `PROD_ALERTS_SLACK_CHANNEL`
   - `NONPROD_ALERTS_SLACK_CHANNEL`
@@ -28,7 +29,7 @@ Alert delivery and forwarding now works as follows:
 - Alerts are then forwarded to the relevant team alerting channel by the hmpps-slack-relay-bot.
 - The relay bot determines the correct app/environment/channel mapping from Developer Portal (Service Catalogue) data.
 
-For context, this chart still uses an alert `severity` label to split prod/non-prod routing:
+Use `alertSeverityOverride` only when a team needs a non-default severity label for alert routing. If unset, the chart defaults to:
 
 - `prod` or `production` -> `hmpps_alerts_prod`
 - any other value (or unset) -> `hmpps_alerts_nonprod`
