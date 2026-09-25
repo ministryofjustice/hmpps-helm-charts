@@ -6,6 +6,7 @@
 {{- $targetPod := default $targetPodRegex .Values.podTargetOverride }}
 {{- $targetDeployment := default .Values.targetApplication .Values.deploymentTargetOverride }}
 {{- $targetHpa := default .Values.targetApplication .Values.hpaTargetOverride }}
+{{- $targetCronJob := default (printf "%s(-.*)?" .Values.targetApplication) .Values.cronJobTargetOverride }}
 {{- $targetApplicationBusinessHours := printf "and ON() %s:business_hours" .Values.targetApplication | replace "-" "_" }}
 {{- $businessOrAllHoursExpression := ternary $targetApplicationBusinessHours "" .Values.businessHoursOnly}}
 ---
@@ -95,14 +96,14 @@ spec:
                 max(
                   kube_job_status_start_time{namespace=~"{{ $targetNamespace }}"}
                   * ON(job_name,namespace) GROUP_RIGHT()
-                  kube_job_owner{owner_name!="", namespace=~"{{ $targetNamespace }}"}
+                  kube_job_owner{owner_name=~"{{ $targetCronJob }}", namespace=~"{{ $targetNamespace }}"}
                 )
                 BY (job_name, owner_name, namespace)
                 == ON(owner_name) GROUP_LEFT()
                 max(
                   kube_job_status_start_time{namespace=~"{{ $targetNamespace }}"}
                   * ON(job_name,namespace) GROUP_RIGHT()
-                  kube_job_owner{owner_name!="", namespace=~"{{ $targetNamespace }}"}
+                  kube_job_owner{owner_name=~"{{ $targetCronJob }}", namespace=~"{{ $targetNamespace }}"}
                 )
                 BY (owner_name),
               "job", "$1", "job_name", "(.+)"),
