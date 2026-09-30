@@ -38,7 +38,7 @@ tests:
               alertname: 2xxResponses
               exported_namespace: test-application-dev
               ingress: test-application-v1-2
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
               application: test-application
               businessUnit: hmpps
               environment: none

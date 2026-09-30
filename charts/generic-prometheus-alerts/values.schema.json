@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "alertSeverity": false,
+    "alertSeverityOverride": {
+      "type": "string",
+      "description": "Optional override for the Prometheus severity label used for alert routing. Defaults to hmpps_alerts_prod in prod and hmpps_alerts_nonprod elsewhere."
+    },
+    "targetApplication": {
+      "type": "string"
+    },
+    "businessUnit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ingressAlertsEnabled": {
+      "type": "boolean"
+    },
+    "runbookUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "grafanaUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "orgId": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "extraAnnotations": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "extraLabels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "additionalRuleLabels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "businessHoursOnly": {
+      "type": "boolean"
+    },
+    "businessHours": {
+      "type": "object",
+      "properties": {
+        "startHour": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 23
+        },
+        "endHour": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 23
+        }
+      },
+      "required": [
+        "startHour",
+        "endHour"
+      ],
+      "additionalProperties": false
+    },
+    "applicationCronJobAlertsEnabled": {
+      "type": "boolean"
+    },
+    "applicationCronJobStatusFailedWindowMinutes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "ingress2xxEnabled": {
+      "type": "boolean"
+    },
+    "ingress2xxWindowMinutes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "ingress2xxThreshold": {
+      "type": "number",
+      "minimum": 0
+    },
+    "rdsAlertsCPUThreshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "rdsAlertsConnectionThreshold": {
+      "type": "number",
+      "minimum": 0
+    },
+    "openSearchAlertsFreeStorageSpaceThresholdGB": {
+      "type": "number",
+      "minimum": 0
+    },
+    "openSearchAlertsCPUThreshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "openSearchAlertsJVMMemoryPressureThreshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    }
+  },
+  "required": [
+    "targetApplication",
+    "businessUnit"
+  ],
+  "additionalProperties": true
+}
