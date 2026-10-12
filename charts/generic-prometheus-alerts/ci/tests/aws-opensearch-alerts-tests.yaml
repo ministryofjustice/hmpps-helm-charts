@@ -22,7 +22,7 @@ tests:
               businessUnit: hmpps
               domain_name: cloud-platform-uuid
               environment: none
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
             exp_annotations:
               summary: OpenSearch cluster status is red
               message: test-domain in test-application-dev - Cluster status is red. At least one primary shard and its replicas are not allocated to a node.
@@ -45,7 +45,7 @@ tests:
               businessUnit: hmpps
               domain_name: cloud-platform-uuid
               environment: none
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
             exp_annotations:
               summary: OpenSearch cluster status is yellow
               message: test-domain in test-application-dev - Cluster status is yellow. At least one replica shard is not allocated to a node.
@@ -69,7 +69,7 @@ tests:
               domain_name: cloud-platform-uuid
               environment: none
               node_id: node1
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
             exp_annotations:
               summary: OpenSearch free storage space is low
               message: test-domain in test-application-dev - A node in your cluster has less than 20 GiB of free storage space.
@@ -93,7 +93,7 @@ tests:
               domain_name: cloud-platform-uuid
               environment: none
               node_id: node1
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
             exp_annotations:
               summary: OpenSearch automated snapshot failed
               message: test-domain in test-application-dev - An automated snapshot failed. This failure is often the result of a red cluster health status.
@@ -117,7 +117,7 @@ tests:
               domain_name: cloud-platform-uuid
               environment: none
               node_id: node1
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
             exp_annotations:
               summary: OpenSearch JVM memory pressure is too high
               message: test-domain in test-application-dev - High JVM memory pressure. The cluster could encounter out of memory errors if usage increases. Consider scaling vertically.
@@ -143,7 +143,7 @@ tests:
               domain_name: cloud-platform-uuid
               environment: none
               node_id: node1
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
             exp_annotations:
               summary: OpenSearch IOPS is too high
               message: test-domain in test-application-dev - High IOPS. Consistent high IOPS can result in performance degradation and lead to node failures.

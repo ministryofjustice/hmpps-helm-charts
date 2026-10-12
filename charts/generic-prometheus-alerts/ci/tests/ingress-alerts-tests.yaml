@@ -36,7 +36,7 @@ tests:
               alertname: 5xxErrorResponses
               exported_namespace: test-application-dev
               ingress: test-application-v1-2
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
               application: test-application
               businessUnit: hmpps
               environment: none
@@ -82,7 +82,7 @@ tests:
               alertname: 5xxErrorResponsesOnHealthEndpoint
               exported_namespace: test-application-dev
               ingress: test-application-v1-2
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
               application: test-application
               businessUnit: hmpps
               environment: none
@@ -165,7 +165,7 @@ tests:
               alertname: RatelimitBlocking
               exported_namespace: test-application-dev
               ingress: test-application-v1-2
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
               application: test-application
               businessUnit: hmpps
               environment: none
@@ -226,7 +226,7 @@ tests:
               alertname: ModSecurityBlocking
               exported_namespace: test-application-dev
               ingress: test-application-v1-2
-              severity: alert-severity-tag
+              severity: hmpps_alerts_nonprod
               application: test-application
               businessUnit: hmpps
               environment: none

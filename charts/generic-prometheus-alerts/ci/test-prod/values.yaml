@@ -1,0 +1,18 @@
+---
+generic-prometheus-alerts:
+  targetApplication: "test-prod"
+  runbookUrl: "https://runbook.com/"
+  rdsAlertsDatabases:
+    cloud-platform-uuid: "test rds"
+  sqsAlertsQueueNames:
+    - "queue-name"
+  openSearchAlertsDomainNames:
+    cloud-platform-uuid: "test-domain"
+  businessHoursOnly: false
+  ingress2xxEnabled: true
+  sqsAlertsInactiveThreshold: 20
+  sqsInactiveAlertQueueNames:
+    - "queue-name"
+
+global:
+  environment: prod

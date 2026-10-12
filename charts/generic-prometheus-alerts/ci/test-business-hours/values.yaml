@@ -2,7 +2,6 @@
 generic-prometheus-alerts:
   targetApplication: "test-business-hours"
   runbookUrl: "https://runbook.com/"
-  alertSeverity: "alert-severity-tag"
   rdsAlertsDatabases:
     cloud-platform-uuid: "test rds"
   sqsAlertsQueueNames:
