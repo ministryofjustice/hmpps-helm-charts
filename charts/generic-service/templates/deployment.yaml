@@ -4,6 +4,8 @@ metadata:
   name: {{ include "generic-service.fullname" . }}
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
+  annotations:
+    {{- include "generic-service.gitAnnotations" . | nindent 4 }}
 spec:
 {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -19,10 +21,11 @@ spec:
       {{- include "generic-service.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-    {{- with .Values.podAnnotations }}
       annotations:
+        {{- include "generic-service.gitAnnotations" . | nindent 8 }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-    {{- end }}
+        {{- end }}
       labels:
         {{- include "generic-service.selectorLabels" . | nindent 8 }}
     spec:

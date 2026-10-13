@@ -58,6 +58,15 @@ hmpps.justice.gov.uk/product-id: {{ .Values.productId }}
 {{- end }}
 
 {{/*
+Git metadata annotations, identifying the source repo/commit/ref that deployed this release.
+*/}}
+{{- define "generic-service.gitAnnotations" -}}
+hmpps.justice.gov.uk/repo-url: {{ .Values.gitRepoUrl | default "unknown" | quote }}
+hmpps.justice.gov.uk/commit-sha: {{ .Values.gitCommitSha | default "unknown" | quote }}
+hmpps.justice.gov.uk/ref-name: {{ .Values.gitRefName | default "unknown" | quote }}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
 {{- define "generic-service.selectorLabels" -}}

@@ -17,6 +17,8 @@ metadata:
   name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.cronPrefixName" .)) }}
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
+  annotations:
+    {{- include "generic-service.gitAnnotations" . | nindent 4 }}
 data:
   entrypoint.sh: |-
     #!/bin/bash
@@ -32,6 +34,8 @@ metadata:
   name: {{ (.Values.postgresDatabaseRestore.jobName) | default (printf "%s-postgres-restore" (include "generic-service.cronPrefixName" .)) }}
   labels:
     {{- include "generic-service.labels" . | nindent 4 }}
+  annotations:
+    {{- include "generic-service.gitAnnotations" . | nindent 4 }}
 spec:
   schedule: {{ .Values.postgresDatabaseRestore.schedule | default (print $randomMinute "/30 6-21 * * 0-5") }}
   concurrencyPolicy: "Forbid"

@@ -21,6 +21,12 @@ fullnameOverride: ""
 # Product ID as specified in the service catalogue
 # productId: "ID"
 
+# Git metadata, normally supplied by CI/CD, used to annotate all resources so the source
+# of a deployment can be identified. Each defaults to "unknown" if not set.
+gitRepoUrl: ""
+gitCommitSha: ""
+gitRefName: ""
+
 # override docker image CMD
 containerArgs: []
 
