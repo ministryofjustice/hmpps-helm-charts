@@ -8,6 +8,27 @@ evaluation_interval: 1m
 tests:
   - interval: 1m
     input_series:
+      - series: 'aws_rds_database_connections_average{dbinstance_identifier="cloud-platform-custom-uuid"}'
+        values: '101+0x6'
+
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: rds-connection-count
+        exp_alerts:
+          - exp_labels:
+              dbinstance_identifier: cloud-platform-custom-uuid
+              severity: hmpps_alerts_nonprod
+              application: test-application
+              businessUnit: hmpps
+              environment: none
+            exp_annotations:
+              message: RDS database test rds with custom threshold in test-application-dev - there are 101 connections which is over threshold of 100 for last 5 mins. This alert configured by app test-application-dev/test-application.
+              runbook_url: https://runbook.com/rds-connection-count
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/VR46pmwWk/aws-rds?orgId=1&var-datasource=Cloudwatch&var-region=default&var-dbinstanceidentifier=cloud-platform-custom-uuid&from=now-6h&to=now
+              summary: Too many RDS connections
+
+  - interval: 1m
+    input_series:
       - series: 'aws_rds_database_connections_average{dbinstance_identifier="cloud-platform-uuid"}'
         values: '181 190 181 181 181 190 170'
 
