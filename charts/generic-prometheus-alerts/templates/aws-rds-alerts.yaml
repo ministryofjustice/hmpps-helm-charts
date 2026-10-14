@@ -19,6 +19,8 @@ spec:
     - name: {{ $targetApplication }}-rds
       rules:
 {{- range $key, $val := $.Values.rdsAlertsDatabases }}
+    {{- $connectionThreshold := default $.Values.rdsAlertsConnectionThreshold (index $.Values.rdsAlertsConnectionThresholds $key) }}
+  {{- $freeStorageThresholdGiB := default $.Values.rdsAlertsFreeStorageSpaceThresholdGiB (index $.Values.rdsAlertsFreeStorageSpaceThresholdsGiB $key) }}
         - alert: rds-cpu-utilisation
           annotations:
             summary: RDS CPU usage too high
@@ -32,14 +34,26 @@ spec:
           labels:
             {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
 
+        - alert: rds-free-storage-space-low
+          annotations:
+            summary: RDS free storage is low
+            message: RDS database {{ $val }} in {{ $targetNamespace }} has {{`{{`}} printf "%.2f" $value {{`}}`}} GiB free, below warning threshold of {{ $freeStorageThresholdGiB }} GiB for last {{ $.Values.rdsAlertsFreeStorageSpaceThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
+            runbook_url: {{ $.Values.runbookUrl }}rds-free-storage-space-low
+            dashboard_url: {{ $.Values.grafanaUrl }}/d/VR46pmwWk/aws-rds?orgId=1&var-datasource=Cloudwatch&var-region=default&var-dbinstanceidentifier={{ $key }}&from=now-6h&to=now
+          expr: |-
+            aws_rds_free_storage_space_minimum{dbinstance_identifier='{{ $key }}'} / 1073741824 < {{ $freeStorageThresholdGiB }}
+          for: {{ $.Values.rdsAlertsFreeStorageSpaceThresholdMinutes }}m
+          labels:
+            {{- include "generic-prometheus-alerts.ruleLabels" $ | nindent 12 }}
+
         - alert: rds-connection-count
           annotations:
             summary: Too many RDS connections
-            message: RDS database {{ $val }} in {{ $targetNamespace }} - there are {{`{{`}} $value {{`}}`}} connections which is over threshold of {{ $rdsAlertsConnectionThreshold }} for last {{ $rdsAlertsConnectionThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
+            message: RDS database {{ $val }} in {{ $targetNamespace }} - there are {{`{{`}} $value {{`}}`}} connections which is over threshold of {{ $connectionThreshold }} for last {{ $rdsAlertsConnectionThresholdMinutes }} mins. This alert configured by app {{ $targetNamespace }}/{{ $targetApplication }}.
             runbook_url: {{ $.Values.runbookUrl }}rds-connection-count
             dashboard_url: {{ $.Values.grafanaUrl }}/d/VR46pmwWk/aws-rds?orgId=1&var-datasource=Cloudwatch&var-region=default&var-dbinstanceidentifier={{ $key }}&from=now-6h&to=now
           expr: |-
-            aws_rds_database_connections_average{dbinstance_identifier='{{ $key }}'} > {{ $rdsAlertsConnectionThreshold }}
+            aws_rds_database_connections_average{dbinstance_identifier='{{ $key }}'} > {{ $connectionThreshold }}
             {{ $businessOrAllHoursExpression }}
           for: {{ $rdsAlertsConnectionThresholdMinutes }}m
           labels:

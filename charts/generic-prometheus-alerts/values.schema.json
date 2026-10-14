@@ -95,6 +95,28 @@
       "type": "number",
       "minimum": 0
     },
+    "rdsAlertsConnectionThresholds": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 1
+      }
+    },
+    "rdsAlertsFreeStorageSpaceThresholdGiB": {
+      "type": "number",
+      "minimum": 1
+    },
+    "rdsAlertsFreeStorageSpaceThresholdMinutes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "rdsAlertsFreeStorageSpaceThresholdsGiB": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 1
+      }
+    },
     "openSearchAlertsFreeStorageSpaceThresholdGB": {
       "type": "number",
       "minimum": 0

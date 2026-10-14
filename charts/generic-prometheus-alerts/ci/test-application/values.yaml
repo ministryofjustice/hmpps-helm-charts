@@ -4,6 +4,11 @@ generic-prometheus-alerts:
   runbookUrl: "https://runbook.com/"
   rdsAlertsDatabases:
     cloud-platform-uuid: "test rds"
+    cloud-platform-custom-uuid: "test rds with custom threshold"
+  rdsAlertsConnectionThresholds:
+    cloud-platform-custom-uuid: 100
+  rdsAlertsFreeStorageSpaceThresholdsGiB:
+    cloud-platform-custom-uuid: 1
   sqsAlertsQueueNames:
     - "queue-name"
   openSearchAlertsDomainNames:

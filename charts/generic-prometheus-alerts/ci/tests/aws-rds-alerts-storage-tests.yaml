@@ -1,0 +1,40 @@
+---
+rule_files:
+  - ../test-application-rds.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'aws_rds_free_storage_space_minimum{dbinstance_identifier="cloud-platform-uuid"}'
+        values: '2684354560+0x10'
+      - series: 'aws_rds_free_storage_space_minimum{dbinstance_identifier="cloud-platform-custom-uuid"}'
+        values: '536870912+0x10'
+
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: rds-free-storage-space-low
+        exp_alerts:
+          - exp_labels:
+              dbinstance_identifier: cloud-platform-uuid
+              severity: hmpps_alerts_nonprod
+              application: test-application
+              businessUnit: hmpps
+              environment: none
+            exp_annotations:
+              message: RDS database test rds in test-application-dev has 2.50 GiB free, below warning threshold of 3 GiB for last 10 mins. This alert configured by app test-application-dev/test-application.
+              runbook_url: https://runbook.com/rds-free-storage-space-low
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/VR46pmwWk/aws-rds?orgId=1&var-datasource=Cloudwatch&var-region=default&var-dbinstanceidentifier=cloud-platform-uuid&from=now-6h&to=now
+              summary: RDS free storage is low
+          - exp_labels:
+              dbinstance_identifier: cloud-platform-custom-uuid
+              severity: hmpps_alerts_nonprod
+              application: test-application
+              businessUnit: hmpps
+              environment: none
+            exp_annotations:
+              message: RDS database test rds with custom threshold in test-application-dev has 0.50 GiB free, below warning threshold of 1 GiB for last 10 mins. This alert configured by app test-application-dev/test-application.
+              runbook_url: https://runbook.com/rds-free-storage-space-low
+              dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/VR46pmwWk/aws-rds?orgId=1&var-datasource=Cloudwatch&var-region=default&var-dbinstanceidentifier=cloud-platform-custom-uuid&from=now-6h&to=now
+              summary: RDS free storage is low
