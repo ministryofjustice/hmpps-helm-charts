@@ -183,8 +183,29 @@ So if you're running a `db.t3.small` postgres database and if you're configured 
 The alert should be configured so that it alerts for about 80% utilisation, so it could be that you need to set
 `rdsAlertsConnectionThreshold` to a more suitable value.
 
+The chart-wide threshold is used unless a database-specific threshold is set in `rdsAlertsConnectionThresholds`:
+
+```yaml
+rdsAlertsConnectionThreshold: 180
+rdsAlertsConnectionThresholds:
+	database-name-id: 100
+```
+
+Keys in `rdsAlertsConnectionThresholds` are RDS instance identifiers. Use the database-specific value when databases
+in the same application have different connection limits.
+
 Other reasons why you could run out is if perhaps you're running r2dbc and you've got a connection leak caused by a
 [bug](https://github.com/r2dbc/r2dbc-pool/issues/165).
+
+### rds-free-storage-space-low
+
+> RDS database `<database>` in `<namespace>` has `XX` GiB free, below the warning threshold of `YY` GiB for 10 mins.
+
+This warning defaults to 3 GiB free, which is 15% of the 20 GiB default allocation in the Cloud Platform RDS instance
+module. Set `rdsAlertsFreeStorageSpaceThresholdGiB` to change the chart-wide threshold, or use
+`rdsAlertsFreeStorageSpaceThresholdsGiB` to set a threshold for an individual RDS instance identifier. The alert uses
+the minimum `FreeStorageSpace` metric over the CloudWatch period and is intended for RDS instance storage; it does not
+measure Aurora cluster volume capacity.
 
 ## SQS Alerts
 

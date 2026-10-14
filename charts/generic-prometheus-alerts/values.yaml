@@ -131,7 +131,8 @@ rdsAlertsCPUThreshold: 80
 # Set the alert CPU threshold (minutes).
 rdsAlertsCPUThresholdMinutes: 5
 
-# Set the alert number of connections threshold.
+# Set the fallback alert number of connections threshold. Per-database values can be set in
+# rdsAlertsConnectionThresholds, keyed by RDS instance identifier.
 # AWS cloudwatch doesn't expose the maximum number of connections, so this needs to be calculated.
 # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html contains information on how
 # much memory each instance class has e.g. db.t3.small is 2Gib, db.t3.medium is 4GiB.
@@ -139,6 +140,21 @@ rdsAlertsCPUThresholdMinutes: 5
 # calculations for each database on the maximum number of database connections so for a db.t3.small database it will be
 # LEAST({2Gib/9531392}, 5000) = LEAST({2 * 1024 * 1024 * 1024/9531392}, 5000) = LEAST(225, 5000) = 225.
 rdsAlertsConnectionThreshold: 180
+
+# Optional per-database connection thresholds. Databases not listed here use the fallback above.
+# rdsAlertsConnectionThresholds:
+#   database-name-id: 180
+rdsAlertsConnectionThresholds: {}
+
+# Warn when free RDS instance storage is below this value for the configured duration.
+# The default is 15% of the RDS module's default 20 GiB allocation.
+rdsAlertsFreeStorageSpaceThresholdGiB: 3
+rdsAlertsFreeStorageSpaceThresholdMinutes: 10
+
+# Optional per-database free storage thresholds. Databases not listed here use the default above.
+# rdsAlertsFreeStorageSpaceThresholdsGiB:
+#   database-name-id: 5
+rdsAlertsFreeStorageSpaceThresholdsGiB: {}
 
 # Set the alert number of connections threshold (minutes).
 rdsAlertsConnectionThresholdMinutes: 5
