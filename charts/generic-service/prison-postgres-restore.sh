@@ -21,7 +21,7 @@ else
   DATABASE_RESTORE_TIMESTAMP=$(echo $DATABASE_RESTORE_JSON | jq -r .restore)
 fi
 
-echo -e "Obtained database restore details:\n$DATABASE_RESTORE_JSON"
+echo -e "Obtained database restore details: $DATABASE_RESTORE_JSON"
 
 # Check that we can connect to preprod postgres and create restore table
 if ! OUTPUT=$(psql_preprod "create table if not exists ${SCHEMA_TO_RESTORE:+${SCHEMA_TO_RESTORE}.}restore_status(restore_date date)"); then
