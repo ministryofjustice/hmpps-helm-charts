@@ -2,11 +2,15 @@
 PRISON_API_BASE_URL=https://prison-api-preprod.prison.service.justice.gov.uk
 
 # grab last restore details from Prison API
-if ! DATABASE_RESTORE_JSON=$(check_http GET "$PRISON_API_BASE_URL/api/restore-details"); then
+if ! DATABASE_RESTORE_JSON=$(check_http GET "$PRISON_API_BASE_URL/api/restore-details?client-host=$HOSTNAME"); then
   echo -e "\nUnable to find any restore information."
   if [[ -z "${FORCE_RUN+x}" ]]; then
     echo -e "\nTo force a run set the FORCE_RUN environment variable when creating the job (see README.md in hmpps-helm-charts/generic-service)"
     echo "$DATABASE_RESTORE_JSON"
+    if [[ "${DATABASE_RESTORE_JSON#*"No restore data found"}" != "$DATABASE_RESTORE_JSON" ]]; then
+      # Not really an error, just a 404: no restore data found. This is expected if the preprod database is down.
+      exit 0
+    fi
     exit 1
   fi
   echo -e "\nRun forced"
