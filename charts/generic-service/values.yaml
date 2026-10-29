@@ -127,6 +127,13 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+# Name of the k8s Secret created by the cloud-platform-terraform-hmpps-egress-controls module.
+# When set, HTTP_PROXY/HTTPS_PROXY/NO_PROXY (and lowercase equivalents) are loaded from it into the app
+# containers and batch jobs; if the secret does not exist in the namespace they are simply left unset.
+# Set this in an environment's values file to mean "this app proxies egress when deployed". Variables of
+# the same name set explicitly via env or namespace_secrets take precedence. Leave empty to disable.
+egressProxySecretName: ""
+
 envFrom: []
   # - configMapRef:
   #     name: example-config-map
