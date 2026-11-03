@@ -104,6 +104,25 @@ generic-service:
   # Pre-existing kubernetes secrets to load as mounted file(s) within pod/container
 ```
 
+### Egress proxy environment variables
+
+Namespaces with the [egress controls module](https://github.com/ministryofjustice/cloud-platform-terraform-hmpps-egress-controls)
+have a `hmpps-envoy-https-proxy-env` secret holding the proxy settings. Rather than mapping each variable under
+`namespace_secrets`, set the secret name in the values file of each environment that should proxy egress:
+
+```yaml
+generic-service:
+  egressProxySecretName: "hmpps-envoy-https-proxy-env"
+```
+
+- `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` and their lowercase equivalents are loaded into the deployment and batch jobs
+  with `optional: true`, so if the secret does not exist in the namespace they are left unset and pods still start.
+- Setting this value means the application proxies its egress when deployed. Leave it unset (the default) or set it
+  to `""` to disable.
+- Variables of the same name set explicitly in `env` or `namespace_secrets` take precedence and are not duplicated, so
+  existing explicit configuration keeps working.
+- Application-specific settings such as `NODE_USE_ENV_PROXY` are not set by the chart.
+
 ### Mounting Secrets
 
 [K8s documentation to mount secrets](https://kubernetes.io/docs/concepts/configuration/secret/#use-case-dotfiles-in-a-secret-volume)
