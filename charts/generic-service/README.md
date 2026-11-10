@@ -199,6 +199,9 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA <SCHEMA_TO_RESTORE>
 ALTER DEFAULT PRIVILEGES IN SCHEMA <SCHEMA_TO_RESTORE> GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO <NON_ADMIN_USER_NAME>;
 ```
 
+The `dpr_dms` schema is never copied from production. It holds the HMPPS Data Hub (DPR) replication heartbeat, which is
+specific to each environment, so the preprod schema and its grants are left as they are.
+
 
 #### Inputs
 
