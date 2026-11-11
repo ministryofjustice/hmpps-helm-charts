@@ -83,7 +83,7 @@ else
   fi
 fi
 if [[ -n "$FALLBACK" ]]; then
-  pg_dump -h "$DB_HOST" -U "$DB_USER" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"
+  pg_dump -h "$DB_HOST" -U "$DB_USER" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} --exclude-schema=dpr_dms -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"
 fi
 
 # Restore database to preprod

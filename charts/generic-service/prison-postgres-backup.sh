@@ -5,7 +5,7 @@ if [[ -z "$BUCKET_NAME" ]]; then
 fi
 
 # Dump postgres database from production
-if ! pg_dump -h "$DB_HOST" -U "$DB_USER" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"; then
+if ! pg_dump -h "$DB_HOST" -U "$DB_USER" ${SCHEMA_TO_RESTORE:+-n $SCHEMA_TO_RESTORE} --exclude-schema=dpr_dms -Fc --no-privileges -v --file=/tmp/db.dump "$DB_NAME"; then
   echo -e "\nUnable to talk to postgres"
   exit 1
 fi
